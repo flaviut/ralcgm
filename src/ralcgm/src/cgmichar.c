@@ -77,15 +77,9 @@
 
 /*   Output drivers  */
 
-#ifdef PROTO
    extern void CGMoutput( Code ),
                CGMOtext( FILE *, Code );
    extern Code CGMframe( Code );
-#else
-   extern void CGMoutput(),      /* Output Routine */
-               CGMOtext();    /* Clear Text Output Routine */
-   extern Code CGMframe();    /* Output Routine */
-#endif
 
 /*  Files used  */
 
@@ -93,7 +87,6 @@ extern FILE *cgmi;
 
 /*  Routines in this Module  */
 
-#ifdef PROTO
    void CGMIchar( void );
    static void MICexternal( Code ),
                MICstring( char* ),
@@ -112,24 +105,6 @@ extern FILE *cgmi;
                MICpoints( Code *c, Long *pi, Float *pr, Logical set ),
                MICbit( Code *byte, Code *bit, Prec prec );
    static double MICreal( Code byte, Prec defexp, Prec *points, Prec allowed );
-#else
-   void CGMIchar();     /* Main input routine */
-   static void MICexternal(),  /* External elements */
-               MICstring(),    /* Input a text string */
-               MICvdc();       /* Input n VDCs */
-   static Code MICmfdesc(),    /* Metafile Descriptor elements */
-               MICpdesc(),     /* Picture Descriptor elements */
-               MICpbody(),     /* Picture body elements */
-               MICtext(),      /* Input text elemants */
-               MICnextbyte(),  /* Get next byte from input */
-               MICopcode();    /* Get a CGM element code */
-   static Long MICint();       /* Get an Integer */
-   static Long MICcol(),       /* Get a colour */
-               MICcells(),     /* Get a colour list */
-               MICpoints(),    /* Get a points list */
-               MICbit();       /* Get the next bit for bitstreams */
-   static double MICreal();    /* Get a real value */
-#endif
 
 /*  Macros to get next byte/ next opcode */
 
@@ -150,11 +125,7 @@ static Logical RALGKS111 = FALSE;
 
 /***************************************************** CGMIchar ********/
 
-#ifdef PROTO
 void CGMIchar ( void )
-#else
-void CGMIchar ()
-#endif
 
 {
    Code c = ZERO;
@@ -186,13 +157,7 @@ void CGMIchar ()
 
 /****************************************************** MICmfdesc ******/
 
-#ifdef PROTO
 static Code MICmfdesc ( Code code )
-#else
-static Code MICmfdesc ( code )
-
-Code code;
-#endif
 
    /*   Metafile Descriptor elements  */
 
@@ -467,14 +432,7 @@ Code code;
 
 /****************************************************** MICpdesc *******/
 
-#ifdef PROTO
 static Code MICpdesc ( Code code, Logical single )
-#else
-static Code MICpdesc ( code, single )
-
-Code code;
-Logical single;
-#endif
 
 {
 #ifdef DEBUG
@@ -578,14 +536,7 @@ Logical single;
 
 /****************************************************** MICpbody *******/
 
-#ifdef PROTO
 static Code MICpbody ( Code code, Logical single)
-#else
-static Code MICpbody ( code, single )
-
-Code code;
-Logical single;
-#endif
 
 {
    Code c, cf;
@@ -989,13 +940,7 @@ Logical single;
 
 /****************************************************** MICtext ********/
 
-#ifdef PROTO
 static Code MICtext ( Code code )
-#else
-static Code MICtext ( code )
-
-Code code;
-#endif
 
 {
    switch (code)
@@ -1073,13 +1018,7 @@ Code code;
 
 /****************************************************** MICexternal ****/
 
-#ifdef PROTO
 static void MICexternal ( Code code )
-#else
-static void MICexternal ( code )
-
-Code code;
-#endif
 
 {
 
@@ -1141,11 +1080,7 @@ Code code;
 
 /****************************************************** MICnextbyte ****/
 
-#ifdef PROTO
 static Code MICnextbyte ( void )
-#else
-static Code MICnextbyte ()
-#endif
 
 /*  get next Character from input perform character substitution
     (and translate - CMS only) */
@@ -1208,16 +1143,7 @@ static Code MICnextbyte ()
 
 /****************************************************** MICopcode ******/
 
-#ifdef PROTO
 static Code MICopcode( Logical ignore )
-#else
-static Code MICopcode( ignore )
-
-/*  Get next MF Element code and return its character value
-    ignore is TRUE if intermediate parameters should be ignored */
-
-Logical ignore;
-#endif
 
 {
    register Code c;
@@ -1246,15 +1172,7 @@ Logical ignore;
 
 /****************************************************** MICstring ******/
 
-#ifdef PROTO
 static void MICstring ( char *s1 )
-#else
-static void MICstring (s1)
-
-/*  Get a text string. If CMS translate EBCDIC to ASCII  */
-
-char *s1;
-#endif
 {
    register Code c;
    char *s2;
@@ -1290,19 +1208,7 @@ char *s1;
 
 /****************************************************** MICpoints ******/
 
-#ifdef PROTO
 static Long MICpoints ( Code *code, Long *pi, Float *pr, Logical set)
-#else
-static Long MICpoints (code, pi, pr, set)
-
-/*  Get a list of points starting at pi[0]/pr[0] and returns
-    Number of points and next code. 'set' indicates if POLYGON SET */
-
-Code *code;
-Long *pi;
-Float *pr;
-Logical set;
-#endif
 
 {
    register Long n = ZERO, j;
@@ -1390,17 +1296,7 @@ Logical set;
 
 /****************************************************** MICvdc *********/
 
-#ifdef PROTO
 static void MICvdc ( Int n, Long *pi, Float *pr)
-#else
-static void MICvdc (n, pi, pr)
-
-/*  Get 'n' VDC values starting at pint[i]/preal[i] */
-
-Int n;
-Long *pi;
-Float *pr;
-#endif
 
 {
    register Long j;
@@ -1415,17 +1311,7 @@ Float *pr;
 
 /****************************************************** MICint *********/
 
-#ifdef PROTO
 static Long MICint ( Code byte, Logical allowed, Logical *present )
-#else
-static Long MICint ( byte, allowed, present )
-
-/*  Get an integer. Byte contains next character if already found.
-    allowed says if Exponent allowed and present if Exponent Present  */
-
-Code byte;
-Logical allowed, *present;
-#endif
 
 {
    register Code mask, bits;
@@ -1462,23 +1348,7 @@ Logical allowed, *present;
 
 /****************************************************** MICreal ********/
 
-#ifdef PROTO
 static double MICreal ( Code byte, Prec defexp, Prec *ptlist, Prec allowed)
-#else
-static double MICreal ( byte, defexp, ptlist, allowed )
-
-/* Get a real value.
-   'byte' contains character if already read,
-   'defexp' give Default Exponent,
-   'ptlist' is set if in a Points list where Exponent
-          is derived from last point,
-   'allowed' indicates if Exponent is allowed  */
-
-Code byte;
-Prec defexp;
-Prec *ptlist;
-Prec allowed;
-#endif
 
 {
    static Logical first = TRUE;
@@ -1528,22 +1398,8 @@ Prec allowed;
 
 /****************************************************** MICcells *******/
 
-#ifdef PROTO
 static Long MICcells ( Code *code, register Long *pi,
                        Long nx, Long ny, Enum mode, Prec prec)
-#else
-static Long MICcells ( code, pi, nx, ny, mode, prec )
-
-/*  Get a Colour List starting at 'pi', with nx*ny cells
-    using color_mode 'mode' and precision 'prec'.
-    returns number of cells  */
-
-Code *code;
-register Long *pi;
-Long nx, ny;
-Enum mode;
-Prec prec;
-#endif
 
 {
    static Logical first = TRUE;
@@ -1795,21 +1651,7 @@ Prec prec;
 
 /****************************************************** MICcol *********/
 
-#ifdef PROTO
 static Long MICcol ( Code byte, struct colour *c, Enum type, Prec prec)
-#else
-static Long MICcol ( byte, c, type, prec )
-
-/*  Get a colour value.
-    byte is the last byte read, type is colour_mode
-    and prec is local precision.
-    Return next Byte for next colour in list and Colour 'c' */
-
-Code byte;
-struct colour *c;
-Enum type;
-Prec prec;
-#endif
 
 {
    register Long j, k = ZERO, r = ZERO, g = ZERO, b = ZERO;
@@ -1857,16 +1699,7 @@ Prec prec;
 
 /****************************************************** MICbit *********/
 
-#ifdef PROTO
 static Long MICbit ( Code *byte, Code *bit, Prec nbit)
-#else
-static Long MICbit ( byte, bit, nbit )
-
-/*  Get next bit ( for bitstream ) */
-
-Code *byte, *bit;
-Prec nbit;
-#endif
 
 {
     register Long n, col= ZERO;

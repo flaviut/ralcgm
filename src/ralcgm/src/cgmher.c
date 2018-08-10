@@ -68,11 +68,7 @@ static char *func = "CGMher";
       |
      */
 
-#ifdef PROTO
 static void HerOpen( void )
-#else
-static void HerOpen()
-#endif
 
 {
     int nread;
@@ -139,17 +135,8 @@ static void HerOpen()
       |
      */
 
-#ifdef PROTO
 void HERtext( Textitem *txtit, Point txtp,
               void (*linedraw)( int, Point*, Tmatrix, int ) )
-#else
-
-void HERtext(txtit, txtp, linedraw)
-
-Textitem *txtit;
-Point txtp;
-void (*linedraw)();
-#endif
 
 {
     register char *c;       /*  Pointer to current character in txtit */
@@ -232,13 +219,7 @@ void (*linedraw)();
       |
      */
 
-#ifdef PROTO
 static int HerLoad(Index font)
-#else
-static int HerLoad(font)
-
-Index font;
-#endif
 
 {
     FILE *binfile;
@@ -379,13 +360,7 @@ Index font;
      |
      */
 
-#ifdef PROTO
 void HERgetfd( Textitem *txtit )
-#else
-void HERgetfd(txtit)
-
-Textitem *txtit;
-#endif
 
 {
     register int i;        /*  looping variable  */
@@ -447,16 +422,8 @@ Textitem *txtit;
       |
      */
 
-#ifdef PROTO
 static void HerDraw(int ichar, Tmatrix xmat,
                    void (*linedraw)(int, Point *, Tmatrix, int))
-#else
-static void HerDraw(ichar, xmat, linedraw)
-
-int ichar;               /*  number of character to draw  */
-void (*linedraw)();      /*  device routine to do drawing  */
-Tmatrix xmat;            /*  transformation matrix  */
-#endif
 {
     register HerDef
            *cp;          /*  pointers into transformed control point list  */

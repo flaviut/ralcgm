@@ -28,7 +28,6 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 
 /* Work out Data path name */
    Extern char *CGMpath ( char*, char* );
@@ -49,13 +48,6 @@
 
    Extern unsigned short CGMgetfname(char *fname, char **fnptr);
 
-#else
-   Extern char *CGMpath ();
-   Extern FILE *CGMfopen();
-   Extern void CGMmodfextn();
-   Extern void CGMmodfname();
-   Extern unsigned short CGMgetfname();
-#endif
 
 #undef Extern
 #endif /* CGMFILEH */

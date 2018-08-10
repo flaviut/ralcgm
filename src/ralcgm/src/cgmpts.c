@@ -77,12 +77,7 @@ static Point *dynpts;            /* Pointer to dynamic point store */
 static Enum  *dynfls;            /* Pointer to dynamic flag store */
 
 /****************************************************** PTSfree ********/
-#ifdef PROTO
 void PTSfree ( )
-#else
-void PTSfree ()
-/* Free space allocated to points. */
-#endif
 
 {
    if(ndynpts > 0)
@@ -96,25 +91,7 @@ void PTSfree ()
 }
 /****************************************************** PTSget *****/
 
-#ifdef PROTO
 void PTSget( Long np, Long *pi, Float *pr, Point *pt, Enum *fl )
-#else
-void PTSget( np, pi, pr, pt, fl)
- /*
-    Get a points list out of the data provided.
-    If 'fl' is NULL  a simple points list is got
-    else  a polygon set point list is got.
- */
-
-   /* Input Arguments */
-Long np;     /* Number of Points (got from *(pi-1)) */
-Long *pi;    /* Integer Data */
-Float *pr;   /* Real Data */
-
-   /* Output Arguments */
-Point *pt;    /* The points (np Points needed) */
-Enum  *fl;    /* Flags for Polygon set (np Enums needed, or NULL) */
-#endif
 
 /* COMMENTS
    This utility is ideal for POLYGON and POLYGONSET for other primitives
@@ -182,19 +159,7 @@ Enum  *fl;    /* Flags for Polygon set (np Enums needed, or NULL) */
 }
 /**************************************************** PTSclipget ******/
 
-#ifdef PROTO
 void PTSclipget ( Enum *clipind, Rect *cliprect )
-#else
-void PTSclipget ( clipind, cliprect )
-/*
-     If required,
-     get a copy of the current CLIPPING INDICATOR and
-     if Clipping is ON,
-     get a copy of the current CLIPPING RECTANGLE, else VDC extent.
-*/
-Enum *clipind;         /* Clipping Indicator (NULL, if not required) */
-Rect *cliprect;        /* Clipping rectangle */
-#endif
 
 {
   float swap;          /*  Buffer for swapping */
@@ -254,14 +219,7 @@ Rect *cliprect;        /* Clipping rectangle */
   return;
 }
 /****************************************************** PTSdefclip *****/
-#ifdef PROTO
 void PTSdefclip ()
-#else
-void PTSdefclip ()
-/*
-Set default clipping rectangle (which is equal to the VDC extent).
-*/
-#endif
 
 /*
 This utility needs to be called at the VDCEXT entry-point,
@@ -287,20 +245,8 @@ to ensure that PTSclipget gets the true clipping rectangle.
 }
 /****************************************************** PTSlineclip ***/
 
-#ifdef PROTO
 void PTSlineclip ( Long np, Point *pt, Rect cl,
                 void (*linefunc)(Long, Point *))
-#else
-void PTSlineclip ( np, pt, cl, linefunc )
-/*
-     CLIPs a polyline and DRAWs it with the
-     supplied polyline drawing function.
-*/
-Long  np;            /* Number of vertices in Polyline Polygon */
-Point *pt;           /* The vertices in the Polyline Polygon   */
-Rect  cl;            /* Clipping rectangle */
-void  (*linefunc)(); /* The polyline drawing function */
-#endif
 
 /* NOTE on TERMINOLOGY
                     The term EDGE in this utility refers to a
@@ -506,25 +452,7 @@ void  (*linefunc)(); /* The polyline drawing function */
 }
 /****************************************************** PTSlist ****/
 
-#ifdef PROTO
 Point * PTSlist( Long np, Long *pi, Float *pr, Enum **fl )
-#else
-Point * PTSlist( np, pi, pr, fl)
- /*
-Get points from arguments, store them and return pointer to store.
-If fl is not NULL assume polygonset, get the edge-out flags too
-and set *fl to point to them.
-Returns an unitialised points list if all pointer arguments are NULL.
- */
-
-   /* Input Arguments */
-Long np;     /* Number of Points (got from *(pi-1)) */
-Long *pi;    /* Integer Data */
-Float *pr;   /* Real Data */
-
-   /* Output Arguments */
-Enum  **fl;    /* Flags for Polygon set (np Enums needed, or NULL) */
-#endif
 
 /* NOTE much of the code here is duplicated in PTSget */
 {
@@ -638,25 +566,9 @@ Enum  **fl;    /* Flags for Polygon set (np Enums needed, or NULL) */
 }
 /****************************************************** PTSmarker ****/
 
-#ifdef PROTO
 void PTSmarker ( Long nmk, Point *pt, Float nomsize, Markeratt *ma,
               Enum clipind,
               void (*linefunc)(Long, Point *))
-#else
-void PTSmarker ( nmk, pt, nomsize, ma, clipind, linefunc )
-
-/*   draws 'nmk' markers starting at 'pt',                     */
-/*   using the supplied line drawing function 'linefunc'       */
-/*   for any one of the mandatory marker types                 */
-/*   markers are clipped if 'clipind' & clipping are both on   */
-
-Long nmk;             /* Number of Markers */
-Point *pt;            /* The Marker Points */
-Float nomsize;        /* Nominal Marker Size */
-Markeratt *ma;        /* Marker attributes */
-Enum clipind;         /* Clipping indicator */
-void (* linefunc)();  /* Linedrawing function */
-#endif
 
 /*
    CLIPPING POLICY
@@ -825,16 +737,7 @@ void (* linefunc)();  /* Linedrawing function */
   return;
 }
 /***************************************************** PTSvdcextget ****/
-#ifdef PROTO
 void PTSvdcextget(Rect *vdcxt )
-#else
-void PTSvdcextget( vdcxt )
-
-/* Gets the VDC extent */
-
-Rect *vdcxt;  /* VDC extent */
-
-#endif
 {
 
    if(cur.vdc_type == REAL)

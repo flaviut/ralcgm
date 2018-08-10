@@ -36,7 +36,6 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 Extern void
 /* Get clipping rectangle */
        PTSclipget( Enum *, Rect *),
@@ -64,12 +63,6 @@ Extern void
 Extern Point*
 /* Get points from arguments, store them and return pointer to store */
        PTSlist( Long, Long *, Float *, Enum **);
-#else
-Extern void PTSclipget(), PTSdefclip(), PTSfree(), PTSget(),
-            PTSlineclip(), PTSmarker(), PTSvdcextget();
-
-Extern Point* PTSlist();
-#endif
 
 #undef Extern
 #endif /* CGMPTS_H */

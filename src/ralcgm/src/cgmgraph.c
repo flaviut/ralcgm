@@ -80,19 +80,8 @@ static Logical   *colour_defd;        /* colour defined flags */
 
 /****************************************************** GRAcross *******/
 
-#ifdef PROTO
 Logical GRAcross ( Point *a, Point *b, Point *c, Point *d,
                    Logical *coline, Point *pt )
-#else
-Logical GRAcross ( a, b, c, d, coline, pt )
-
-/*  Given two lines a - b and c - d,
-    returns TRUE if they intersect and finds intersection point x.
-    if points are co-linear coline is TRUE */
-
-Point *a, *b, *c, *d, *pt;
-Logical *coline;
-#endif
 
 {
    register double det, grad;
@@ -158,17 +147,7 @@ Logical *coline;
 
 /****************************************************** GRAinsect ******/
 
-#ifdef PROTO
 Logical GRAinsect ( Long np, Long *nip, Point *pt, Enum *edgeflag )
-#else
-Logical GRAinsect ( np, nip, pt, edgeflag )
-
-/* Find intersections and add to points list */
-
-Long np, *nip;
-Enum *edgeflag;
-Point *pt;
-#endif
 
 {
    Long register i, j, m, n, npts = np;
@@ -233,18 +212,7 @@ Point *pt;
 
 /****************************************************** GRAsort ********/
 
-#ifdef PROTO
 void GRAsort ( Long np, Point *pt, Int *po )
-#else
-void GRAsort ( np, pt, po )
-
-/*   Sorts points in array pt, returns sorted points in index array px
-     using a 'shell' sort technique  */
-
-Long np;
-Int *po;
-Point *pt;
-#endif
 {
    register Long i, k, t, incr;
    register Int *px = po;

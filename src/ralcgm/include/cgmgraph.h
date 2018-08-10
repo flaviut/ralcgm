@@ -28,7 +28,6 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 
 /* Check if lines intersect and find intersection */
    Extern Logical GRAcross( Point *a, Point *b, Point *c, Point *d,
@@ -40,11 +39,6 @@
 /* Sort points list */
    Extern void    GRAsort( Long np, Point *x, Int *px );
 
-#else
-   Extern Logical GRAcross(),   /* Work out cross product */
-                  GRAinsect();  /* Find line intersection */
-   Extern void    GRAsort();    /* Sort a Points list */
-#endif
 
 #undef Extern
 #endif /* CGMGRAPH_H */

@@ -60,11 +60,7 @@ static char *func = "CGMbez";
       |
      */
 
-#ifdef PROTO
 static void BezOpen( void )
-#else
-static void BezOpen()
-#endif
 
 {
     int i, n, ibc, nread;
@@ -144,17 +140,8 @@ static void BezOpen()
       |
       */
 
-#ifdef PROTO
 void BEZtext( Textitem *txtit, struct textatt *txtatt, Point txtp,
               void (*linedraw)(int, Point *, Tmatrix, int) )
-#else
-void BEZtext(txtit, txtatt, txtp, linedraw)
-
-Textitem *txtit;
-struct textatt *txtatt;
-Point txtp;
-void (*linedraw)();
-#endif
 
 {
     int ichar,              /*  ascii number of character  */
@@ -237,13 +224,7 @@ void (*linedraw)();
       |
       */
 
-#ifdef PROTO
 static int BezLoad( Index font )
-#else
-static int BezLoad(font)
-
-Index font;
-#endif
 
 {
     FILE *binfile;
@@ -384,13 +365,7 @@ Index font;
      |
      */
 
-#ifdef PROTO
 void BEZgetfd( Textitem *txtit )
-#else
-void BEZgetfd(txtit)
-
-Textitem *txtit;
-#endif
 
 {
   int stat,                /*  return status from function call  */
@@ -450,18 +425,7 @@ Textitem *txtit;
 |
 */
 
-#ifdef PROTO
 static void BezArc( int ncurve, int ncontrol, BezDef *bez, Point *pbx)
-#else
-static void BezArc(ncurve, ncontrol, bez, pbx)
-
-int         ncontrol,        /*  number of Bezier control points  */
-            ncurve;          /*  number of Bezier curve points  */
-
-Point       *pbx;            /*  Bezier - expanded definition  */
-
-BezDef      *bez;            /*  control points  */
-#endif
 
 {
     int j;
@@ -515,17 +479,8 @@ BezDef      *bez;            /*  control points  */
 
      */
 
-#ifdef PROTO
 static void BezDraw(int ichar, Tmatrix xmat,struct textatt *txtatt,
                    void (*linedraw)(int, Point *, Tmatrix, int))
-#else
-static void BezDraw(ichar, xmat, txtatt, linedraw)
-
-int ichar;               /*  number of character to draw  */
-struct textatt *txtatt;  /*  current text attributes  */
-void (*linedraw)();      /*  device routine to do drawing  */
-Tmatrix xmat;            /*  transformation matrix  */
-#endif
 {
     Point *pbx,          /*  pointer into target array  */
           bex[MaxExp];   /*  target array  */
@@ -654,15 +609,7 @@ Tmatrix xmat;            /*  transformation matrix  */
 
      */
 
-#ifdef PROTO
 static double BezNest( int ncontrol, BezDef *bez, struct textatt *txtatt )
-#else
-static double BezNest(ncontrol, bez, txtatt)
-
-int ncontrol;            /*  number of control points  */
-BezDef *bez;             /*  Bezier control points  */
-struct textatt *txtatt;
-#endif
 
 {
     int i;

@@ -85,12 +85,7 @@
 /* String for Error Messages */
 static char *func = "CGMpoly";
 
-#ifdef PROTO
 static Logical goes_over( Point *end1, Point *end2, Point *test );
-#else
-static Logical goes_over();
-#endif
-#ifdef PROTO
 /* Routines handling crossings of
    polygon(set) boundary over clipping rectangle boundary */
 static void
@@ -117,32 +112,11 @@ static Xcursor
     /* Get the first crossings of a polygon on the clipping boundary */
    * xing_start( Int, Index *, Index *, Int *, Xcursor *);
 
-#else
-static void
-   xing_addclin(), xing_count(), xing_edge(), xing_free(), xing_sort();
-
-static Xcursor
-   *xing_next(), *xing_start();
-#endif
 
 /************************************************** POLget ***********/
 
-#ifdef PROTO
 void POLget( Long np, Long *pi, Float *pr, Logical set,
                     Logical cont, Polygonset *pset )
-#else
-void POLget( np, pi, pr, set, cont, pset)
- /*
-    Get data for a polygon set structure from arguments.
- */
-
-Long np;      /* Number of Points (got from *(pi-1)) */
-Long *pi;     /* Integer Data */
-Float *pr;    /* Real Data */
-Logical set;  /* True, if polygon set */
-Logical cont; /* True, if this set of points is a continuation */
-Polygonset *pset;   /* Ponter to a polygon set structure */
-#endif
 
 {
    static Long start;               /* Starting place */
@@ -188,28 +162,10 @@ Polygonset *pset;   /* Ponter to a polygon set structure */
 }
 /************************************************** POLhandle ********/
 
-#ifdef PROTO
 
 Polygonset * POLhandle( Polygonset *pset,
                         Rect *clip, Logical overlap,
                         Polygonset *space)
-#else
-
-Polygonset * POLhandle( pset, clip, overlap, space )
-
-/*
-Clip the given polygon or polygon set and/or adjust the polygonset
-to prevent any two polygons from overlapping.
-Edge visibility is ignored and edges may be all invisible in output.
-*/
-
-Polygonset *pset; /* The Input polygon Set */
-Rect *clip;       /* Clipping rectangle or NULL if not clipping */
-Logical overlap;  /* True, if output polygons may overlap */
-Polygonset *space; /* Space for output polygonset, used if big enough */
-
-/* WARNING: (overlap == FALSE) is UNTESTED */
-#endif
 
 /*
 NOTE (1) If the device can not handle overlapping polygons,
@@ -329,17 +285,7 @@ NOTE (1) If the device can not handle overlapping polygons,
 }
 /***************************************************** POLedge ********/
 
-#ifdef PROTO
 void POLedge (Polygonset *pset, Rect *clip, void(*linefunc)(Long, Point*) )
-#else
-void POLedge ( pset, clip, linefunc )
-
-/*  Draws and clips (if required) the edges of a Polygon Set  */
-
-Polygonset *pset;    /* Polygon Set */
-Rect *clip;          /* Clipping Rectangle or NULL if not clipping */
-void (*linefunc)();  /* Polyline drawing function */
-#endif
 
 {
    Int i;             /* Loop index, not used within loop */
@@ -487,21 +433,7 @@ void (*linefunc)();  /* Polyline drawing function */
 }
 /***************************************************** POLend *********/
 
-#ifdef PROTO
 void POLend ( Long np, Enum *fl, Index xmp, Index *start, Index *end)
-#else
-void POLend ( np, fl, xmp, start, end )
-
-/*  Outputs the indices of the start and end of a polygon in a
-    polygon set */
-
-Long np;    /* Number of vertices in polygon set */
-Enum *fl;   /* Edge-out flags of polygon set (or NULL if one polygon) */
-Index xmp;  /* Index of Example vertex */
-Index *start;   /* Start Vertex of Polygon with Example Vertex */
-Index *end;     /* End Vertex of Polygon with Example Vertex */
-
-#endif
 
 /* NB: if either the start or end index pointers is set to NULL,
        the relevent data will not be sought */
@@ -549,18 +481,7 @@ Index *end;     /* End Vertex of Polygon with Example Vertex */
    return;
 }
 /************************************************** POLin **********/
-#ifdef PROTO
 Logical POLin ( Polygonset *pset, Point *test )
-#else
-Logical POLin ( pset, test )
-
-/*
-Returns whether the given test point is inside the given polygon set.
-*/
-
-Polygonset *pset; /* Polygon Set */
-Point *test;      /* The point being tested */
-#endif
 
 /* ALGORITHM
   For each edge of the polygon set, works out whether it goes over the
@@ -603,16 +524,7 @@ Point *test;      /* The point being tested */
 }
 /************************************************** POLnumber *******/
 
-#ifdef PROTO
 Int POLnumber ( Long np, Enum *fl )
-#else
-Int POLnumber ( np, fl )
-
-/* Returns the number of polygons in a polygon set (or 0 if invalid) */
-
-Long np;   /* number of Vertices */
-Enum *fl;  /* polygon set edge out flags */
-#endif
 
 /* ALGORITHM
 
@@ -664,18 +576,7 @@ Enum *fl;  /* polygon set edge out flags */
 }
 /****************************************************** POLselfx *******/
 
-#ifdef PROTO
 Long POLselfx ( Long np, Point *pt, Long limit )
-#else
-Long POLselfx ( np, pt, limit)
- /*
-    Count the self intersections of a polygon
- */
-
-Long np;      /* Number of Vertices */
-Point *pt;    /* The vertices */
-Long limit;   /* Limit of count (if positive) */
-#endif
 
 {
    Long count=0L;       /* The count of self intersections */
@@ -737,19 +638,7 @@ Long limit;   /* Limit of count (if positive) */
    return count;
 }
 /************************************************** goes_over *********/
-#ifdef PROTO
 static Logical goes_over ( Point *end1, Point *end2, Point *test )
-#else
-static Logical goes_over ( end1, end2, test )
-
-/*
-Returns whether the given edge goes over (y-wise) a given point.
-*/
-
-Point *end1; /* 1st end of edge */
-Point *end2; /* 2nd end of edge */
-Point *test; /* The point being tested */
-#endif
 
 /* NOTE: The function is called by both POLin and POLinpoly_sl */
 
@@ -793,20 +682,8 @@ Point *test; /* The point being tested */
    return over;
 }
 /************************************************** xing_addclin ********/
-#ifdef PROTO
 static void xing_addclin( Enum *cls, Float *xy, Rect *cl, Int index,
                           Point *freept)
-#else
-static void xing_addclin( cls, xy, cl, index, freept )
-
-/* Add a clip induced vertex */
-
-Enum *cls;     /* clip statii */
-Float *xy;     /* significant x or y coordinates */
-Rect *cl;      /* Clipping rectangle */
-Int index;     /* Array index of crossing */
-Point *freept; /* Clip induced vertex */
-#endif
 {
 
    switch( *(cls + index))
@@ -835,26 +712,8 @@ Point *freept; /* Clip induced vertex */
   }
 
 /************************************************** POLaddcnrs ******/
-#ifdef PROTO
 Point * POLaddcnrs ( Enum side1, Enum side2, Logical clockwise,
                             Rect *clip, Point *freept )
-#else
-Point * POLaddcnrs ( side1, side2, clockwise, clip, freept)
-
-/* Adds corners of the cliping  rectangle 'clip' to a list of points
-   starting at 'freept' and returns the next vacant point.
-
-   The corners added run from 'side1' to 'side2' of the rectangle.
-   If 'side1' is equal to 'side2' all four corners are added in the
-   appropriate order.
-*/
-
-Enum side1;          /* Side of first end */
-Enum side2;          /* Side of other end */
-Logical clockwise;   /* True, if corners to be added clockwise */
-Rect *clip;          /* Clipping rectangle */
-Point *freept;       /* Place to start putting corners */
-#endif
 {
    Point *start;     /* Start of points added */
 
@@ -949,20 +808,8 @@ Point *freept;       /* Place to start putting corners */
 }
 /************************************************** xing_count *******/
 
-#ifdef PROTO
 static void xing_count ( Polygonset *pset, Rect *cl,
                          Int *ncross, Int *nsect)
-#else
-static void xing_count (pset, cl, ncross, nsect)
-
-/* Determine the number of sections needed to clip a polygonset
-   and the number of times it crosses the clipping rectangle boundary */
-
-Polygonset *pset;  /* Polygon Set */
-Rect *cl;          /* clipping rectangle */
-Int *ncross;    /* Number of crossings polygon and clipping rectangle */
-Int *nsect;       /* Number of sections */
-#endif
 {
    Index i;               /* Current edge index */
    Point *end1, *end2;    /* Ends of current edge */
@@ -1068,24 +915,8 @@ Int *nsect;       /* Number of sections */
    return;
 }
 /************************************************** xing_edge  *******/
-#ifdef PROTO
 static void xing_edge ( Polygonset *pset, Rect *cl,
                         Index *in, Index *out, Int *poly, Enum *cls )
-#else
-static void xing_edge ( pset, cl, in, out, poly, cls )
-
-/*
-Get the ends of the edges, that cross the clipping rectangle boundary
-and the clip status of the outer end of each such edge.
-Also indentify the polygon of each crossing.
-*/
-Polygonset *pset; /* Polygonset */
-Rect *cl;         /* The clipping rectangle */
-Index *in;        /* Inner ends of the crossing edges */
-Index *out;       /* Outer ends of the crossing edges */
-Int   *poly;      /* The polygon of the crossing */
-Enum  *cls;       /* The clip stati of the crossings */
-#endif
 {
    Index index;               /* Current edge index */
    Point *end1, *end2;        /* Ends of current edge */
@@ -1176,16 +1007,7 @@ Enum  *cls;       /* The clip stati of the crossings */
    return;
 }
 /************************************************** xing_free *******/
-#ifdef PROTO
 static void xing_free (Clipcross *cr)
-#else
-static void xing_free ( cr )
-
-/* Free the space allocated to crossings data */
-
-Clipcross *cr;
-
-#endif
 
 {
    if(cr->in != NULL) FREE(cr->in);
@@ -1200,22 +1022,8 @@ Clipcross *cr;
    return;
 }
 /************************************************** xing_next ******/
-#ifdef PROTO
 static Xcursor * xing_next( Index *in, Index *out,
                             Int *inoth, Int *outoth, Xcursor *xc )
-#else
-static Xcursor * xing_next( in, out, inoth, outoth, xc )
-
-/*
-Move an Xcursor to the next pair of crossings on a clipped polygon.
-*/
-
-Index *in;      /* Inward ends of crossing edges */
-Index *out;     /* Outward ends of crossing edges */
-Int *inoth;     /* Crossings at other end of inside section */
-Int *outoth;    /* Crossings at other end of clip induced section */
-Xcursor *xc;    /* The Xcursor to move */
-#endif
 
 /* Note the Xcursor supplied is assumed to be validly on the
    crossings data supplied
@@ -1269,22 +1077,8 @@ Xcursor *xc;    /* The Xcursor to move */
    return xc;
 }
 /************************************************** xing_start ******/
-#ifdef PROTO
 static Xcursor * xing_start( Int ncross, Index *in, Index *out,
                              Int *inoth, Xcursor *xc )
-#else
-static Xcursor * xing_start( ncross, in, out, inoth, xc )
-
-/*
-Return a cursor on the crossings data for a new clipped polygon.
-*/
-
-Int ncross;     /* Number of crossings */
-Index *in;      /* Inward ends of crossing edges */
-Index *out;     /* Outward ends of crossing edges */
-Int *inoth;     /* Crossings at other end of inside section */
-Xcursor *xc;    /* Pointer to Xcursor to return */
-#endif
 {
    Index ediff;  /* Difference in end indices */
    Int icross;   /* Current crossing */
@@ -1327,20 +1121,7 @@ Xcursor *xc;    /* Pointer to Xcursor to return */
    return NULL;
 }
 /************************************************** xing_sort *******/
-#ifdef PROTO
 static void xing_sort ( Int ncross, Enum *cls, Float *xy, Int *ord)
-#else
-static void xing_sort ( ncross, cls, xy, ord )
-
-/*
-Determine the order of the crossings around the clip rectangle
-boundary, anticlockwise from upper right corner.
-*/
-Int ncross;    /* Number of crossings */
-Enum  *cls;    /* Clip stati of crossings */
-Float *xy;     /* Significant Coordinates of crossings */
-Int *ord;      /* The indices of the crossings sorted in order */
-#endif
 
 /* ALGORITHM
 
@@ -1402,19 +1183,7 @@ crossing (which is assumed sorted).
    return;
 }
 /************************************************** POLbbox_sl *******/
-#ifdef PROTO
 void POLbbox_sl ( Sectlist *ps, Long np, Scursor a, Rect *box)
-#else
-void POLbbox_sl ( ps, np, a, box)
-
-/* Generate the bounding box for a polygon in section list form,
-   specified by a scursor
-*/
-Sectlist *ps;    /* The section list */
-Long     np;     /* Number of vertices in polygon */
-Scursor   a;     /* Scursor on the polygon */
-Rect    *box;    /* The bounding box */
-#endif
 {
    Index ip;  /* Loop index not used inside loop */
 
@@ -1432,21 +1201,8 @@ Rect    *box;    /* The bounding box */
 }
 /************************************************** POLclip_sl *******/
 
-#ifdef PROTO
 
 Sectlist * POLclip_sl( Polygonset *pset, Rect *cl)
-#else
-
-Sectlist * POLclip_sl( pset, cl)
-
-/*
-Return a clipped polygon section list for an unclipped polygon
-*/
-
-Polygonset *pset;       /* Polygon Set */
-Rect *cl;               /* Clipping rectangle */
-
-#endif
 
 {
    Int ncross = 0;      /* Number crossings of polygon and clip rect */
@@ -2094,15 +1850,7 @@ the clipping rectange as shown below.
    return ps;
 }
 /************************************************** POLcontig_sl *****/
-#ifdef PROTO
 void POLcontig_sl ( Sectlist *ps )
-#else
-void POLcontig_sl ( ps )
-
-/* Make the sections in a section list contiguous */
-
-Sectlist *ps;  /* The sectionlist */
-#endif
 
 /* WARNING
 
@@ -2163,21 +1911,7 @@ No additional space is allocated during the execution of this function.
    return;
 }
 /************************************************** POLcount_sl ******/
-#ifdef PROTO
 void POLcount_sl ( Sectlist *ps, Int poly, Int *ns, Long *np)
-#else
-void POLcount_sl ( ps, poly, ns, np )
-
-/* Count the number of sections and/or vertices in the polygon
-   as requested.
-*/
-
-Sectlist *ps;   /* The section list */
-Int poly;       /* The polygon */
-Int *ns;        /* Number of sections (NULL, if not requested) */
-Long *np;       /* Number of vertices (NULL, if not requested) */
-
-#endif
 {
    Int i;              /* Loop variable - not used inside loop */
    Section *cursec;    /* Curent section */
@@ -2236,16 +1970,7 @@ Long *np;       /* Number of vertices (NULL, if not requested) */
    return;
 }
 /*************************************************** POLfree_sl *******/
-#ifdef PROTO
 void POLfree_sl (Sectlist *ps)
-#else
-void POLfree_sl ( ps )
-
-/* Free the space allocated to a sectionlist */
-
-Sectlist *ps;   /* The section list */
-
-#endif
 
 {
    if(ps->first != NULL) FREE(ps->first);
@@ -2254,23 +1979,7 @@ Sectlist *ps;   /* The section list */
    FREE(ps);
 }
 /************************************************** POLgrow_sl *******/
-#ifdef PROTO
 Sectlist * POLgrow_sl ( Sectlist *ps, Int npoly, Int nsect, Int npts )
-#else
-Sectlist * POLgrow_sl ( ps, npoly, nsect, npts )
-
-/* Enables a section list to hold a specified number of
-   polygons, sections or points
-   Reallocating memory when necessary
-
-   If no section list is supplied, one is created.
-*/
-
-Sectlist *ps;  /* The section list */
-Int npoly;     /* Number of polygons needed */
-Int nsect;     /* Number of sections needed */
-Int npts;      /* Number of new points needed */
-#endif
 
 /* WARNING
 
@@ -2397,19 +2106,7 @@ Int npts;      /* Number of new points needed */
    return ps;
 }
 /************************************************** POLinfind_sl ******/
-#ifdef PROTO
 void POLinfind_sl (Sectlist *ps, Int *inpoly, Int *outpoly)
-#else
-void POLinfind_sl ( ps, inpoly, outpoly)
-
-/* Find a pair of polygons, where one is entirely inside the other,
-   the polygons are in section list form
-   and no two polygon boundaries cross each other.
-*/
-Sectlist *ps;        /* The section list */
-Int *inpoly;         /* The inside polygon (-1 if not found) */
-Int *outpoly;        /* The outside polygon */
-#endif
 {
    Int poly1,poly2;        /* The two candidate polygons */
    Logical found=FALSE;    /* Pair of polygons found */
@@ -2443,29 +2140,8 @@ Int *outpoly;        /* The outside polygon */
    return;
 }
 /************************************************** POLinjoin_sl ******/
-#ifdef PROTO
 void POLinjoin_sl ( Sectlist *ps,
                  Long nin, Int inpoly, Long nout, Int outpoly)
-#else
-void POLinjoin_sl ( ps, nin, inpoly, nout, outpoly)
-
-/* Join two polygons together, one which is inside the other
-   along a pair of coincident edges.
-*/
-Sectlist *ps;     /* The section list */
-Long nin;         /* Number of vertices on the inside polygon */
-Int inpoly;       /* The inside polygon */
-Long nout;         /* Number of vertices on the outside polygon */
-Int outpoly;      /* The outside polygon */
-
-/* This function appends the joined polygon onto the end of the
-    section list and assumes there is enough space for it.
-   It deletes the unjoined pair by putting NULL pointer in
-   the start section of each and removing them from the polygon list.
-
-   POLcontig_sl can be used to make the section list contiguous.
-*/
-#endif
 
 /* ALGORITHM
 
@@ -2519,26 +2195,7 @@ Int outpoly;      /* The outside polygon */
    return;
 }
 /************************************************** POLinpoly_sl ******/
-#ifdef PROTO
 Logical POLinpoly_sl ( Sectlist *ps, Int inpoly, Int outpoly)
-#else
-Logical POLinpoly_sl ( ps, inpoly, outpoly)
-
-/* Determine whether a specified polygon is inside another
-   specified polygon,
-   where the polygons are in section list form
-   and neither polygon boundary crosses the other.
-*/
-
-Sectlist *ps;     /* The section list */
-Int inpoly;       /* The polygon that may be inside */
-Int outpoly;      /* The polygon that may surround */
-
-/* ALGORITHM
-The first vertex of 'inpoly' is tested to see if
-it is inside 'outpoly'. The result is then returned.
-*/
-#endif
 {
    Point *test;         /* Point to be tested for insideness */
    Scursor a;           /* Scursor for polygon that may surround */
@@ -2569,26 +2226,7 @@ it is inside 'outpoly'. The result is then returned.
    return oddcross;
 }
 /************************************************** POLjoin_sl ********/
-#ifdef PROTO
 void POLjoin_sl(Sectlist *ps, Scursor *sc1, Scursor *sc2, Point *join)
-#else
-void POLjoin_sl ( ps, sc1, sc2, join)
-
-/* Join two polygons insert a joining point, if provided */
-
-Sectlist *ps;        /* The section list with the two polygons in it */
-Scursor *sc1, *sc2;  /* Scursors at were the join will take place */
-Point *join;         /* The joining point, if inserted else NULL */
-
-/* This function appends the joined polygon onto the end of the
-    section list and assumes there is enough space for it.
-   It deletes the unjoined pair by putting NULL pointer in
-   the start section of each and removing them from the polygon list.
-
-   POLcontig_sl can be used to make the section list contiguous.
-*/
-
-#endif
 {
     Scursor a;             /* Scursor to run through unjoined polygons */
     Int ipoly;             /* Polygon in old polygon list */
@@ -2694,23 +2332,7 @@ Point *join;         /* The joining point, if inserted else NULL */
 }
 
 /************************************************** POLnext_sl ********/
-#ifdef PROTO
 void POLnext_sl( Sectlist *ps, Scursor *sc )
-#else
-void POLnext_sl( ps, sc)
-
-/* Move the scursor supplied to the start of the next section */
-
-Sectlist *ps;  /* The sectionlist */
-Scursor *sc;   /* The scursor */
-
-/* This function is called by the MOVE_SCURSOR macro, when the scursor
-   is at the end of a section.
-
-   It is assumed that the sursor is validly on the sectionlist.
-   ie, there is no error checking.
-*/
-#endif
 {
 
     /* Determine next section in polygon */
@@ -2730,19 +2352,7 @@ Scursor *sc;   /* The scursor */
 
 }
 /************************************************** POLnoverlap_sl ****/
-#ifdef PROTO
 Sectlist * POLnoverlap_sl ( Sectlist *ps, Logical possin )
-#else
-Sectlist * POLnoverlap_sl ( ps, possin )
-
-Sectlist *ps;      /* The section list */
-Logical possin;    /* True, if one polygon may be inside another */
-
-/* Joins up overlapping polygons in a polygon set to eliminate overlaps.
-   Both the input and returned polygon sets are expressed as
-   section lists.
-*/
-#endif
 
 /* ALGORITHM
 
@@ -2897,22 +2507,8 @@ Logical possin;    /* True, if one polygon may be inside another */
 }
 /************************************************** POLpoly_sl ********/
 
-#ifdef PROTO
 
 Sectlist * POLpoly_sl( Polygonset *pset, Int nsect )
-#else
-
-Sectlist * POLpoly_sl( pset, nsect )
-
-/*
-Return a polygon section list for a polygon set
-with one section per polygon.
-*/
-
-Polygonset *pset;  /* Polygon Set */
-Int nsect;         /* Number of sections needed */
-
-#endif
 
 {
     Section **firsec;  /* First section of polygon */
@@ -2985,19 +2581,7 @@ Int nsect;         /* Number of sections needed */
     return ps;
 }
 /************************************************** POLpts_sl *********/
-#ifdef PROTO
 Polygonset *POLpts_sl( Sectlist *ps, Polygonset *space)
-#else
-Polygonset *POLpts_sl ( ps, space)
-
-/* Convert a polygon set from section list form
-   to the standard polygon set form.
-*/
-Sectlist   *ps;      /* The polygon set in sectionlist form */
-Polygonset *space;   /* Space for output, used if sufficient */
-
-/* The sectionlist need not be contiguous */
-#endif
 {
    Scursor a;        /* Scursor for sectionlist */
    Int ipoly;        /* Current polygon */
@@ -3091,21 +2675,7 @@ Polygonset *space;   /* Space for output, used if sufficient */
    return &pset;
 }
 /************************************************** POLscursor_sl *****/
-#ifdef PROTO
 void POLscursor_sl (Sectlist *ps, Int ipoly, Scursor *sc)
-#else
-void POLscursor_sl ( ps, ipoly, sc)
-
-/* Put the scursor on the 1st vertex of a polygon pointing to the 2nd
-   vertex in a polygon set expressed as a section list.
-
-   The scursor is a stucture that can be easily moved along the edges
-   of polygons in the form of a section list.
-*/
-Sectlist *ps;     /* The polygon set as a section list */
-Int ipoly;        /* The polygon identifier */
-Scursor  *sc;     /* The scursor */
-#endif
 
 /* If error the scursor pointers are set to NULL */
 

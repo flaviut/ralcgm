@@ -23,7 +23,6 @@
 
 #include "cgmin.h"
 
-#ifdef PROTO
 
 /*  CGM Utilities in File  */
 
@@ -33,26 +32,10 @@
 /* External functions */
 
    void CGMocode ( Code );
-#else
-   void CGMprofile();
-   static void PROindcol();
-
-/* External functions */
-
-   void CGMocode ();
-#endif
 
 /**************************************************** CGMprofile *******/
 
-#ifdef PROTO
 void CGMprofile( Code c )
-#else
-void CGMprofile( c )
-
-/*  Set default values for CGM structures */
-
-Code c;
-#endif
 {
    switch (cgmprof)
    {
@@ -74,13 +57,7 @@ Code c;
 
 /**************************************************** PROindcol ********/
 
-#ifdef PROTO
 static void PROindcol ( Code c )
-#else
-static void PROindcol ( c )
-
-Code c;
-#endif
 {
    static Logical dircol = FALSE;
 

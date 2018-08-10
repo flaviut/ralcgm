@@ -56,7 +56,6 @@ static FILE *cgmob;
 
 /* declare internal functions */
 
-#ifdef PROTO
 void CGMObin( FILE *stream, Code c, Long *pi, Float *pr, char *str);
 static void MOBopcode( Code, Long ),
             MOBint( Long, Prec, Enum ),
@@ -69,20 +68,6 @@ static void MOBopcode( Code, Long ),
             MOBstring( char* ),
             MOBout( Posint, Prec ),
             MOBcharci( Code, Int*, Int* );
-#else
-void CGMObin();             /* Main Output Routine */
-static void MOBopcode(),    /* Output an Op code */
-            MOBint(),       /* Output an Integer */
-            MOBreal(),      /* Output a real number */
-            MOBcolour(),    /* Output a colour */
-            MOBvdc(),       /* Output a number of VDCs */
-            MOBpointlist(), /* Output a Points List */
-            MOBclist(),     /* Output a colour list */
-            MOBbits(),      /* Output a value to a bit stream */
-            MOBstring(),    /* Output a string */
-            MOBout(),       /* Output values to the output buffer */
-            MOBcharci();    /* Convert Op code value to Class and Id */
-#endif
 
 /*  Local Parameters */
 
@@ -143,16 +128,7 @@ static char *func="CGMobin", mess[40];
 
 /********************************************************* CGMObin *****/
 
-#ifdef PROTO
 void CGMObin( FILE *stream, Code c, Long *pi, Float *pr, char *str)
-#else
-void CGMObin(stream, c, pi, pr, str)
-FILE *stream;
-Code c;
-Long *pi;
-Float *pr;
-char *str;
-#endif
 {
    register Long j, n, num;
    Code major;
@@ -1284,13 +1260,7 @@ char *str;
 
 /******************************************************** MOBopcode ****/
 
-#ifdef PROTO
 static void MOBopcode( Code c, Long len )
-#else
-static void MOBopcode( c, len )
-Code c;
-Long len;
-#endif
 {
    Int class, id;
    unsigned Long oneword, plen, remainder;
@@ -1348,16 +1318,7 @@ Long len;
 
 /******************************************************** MOBcharci ****/
 
-#ifdef PROTO
 static void MOBcharci( Code c, Int *class, Int *id )
-#else
-static void MOBcharci( c, class, id )
-
-/*  Converts Code c to class and Id  */
-
-Code c;
-Int *class, *id;
-#endif
 
 {
    Code major = c>>8, minor = c & 0xff;
@@ -1461,14 +1422,7 @@ Int *class, *id;
 
 /******************************************************** MOBint *******/
 
-#ifdef PROTO
 static void MOBint( Long n, Prec prec, Enum sign )
-#else
-static void MOBint( n, prec, sign )
-Long n;
-Prec prec;
-Enum sign;
-#endif
 
 {
 
@@ -1486,14 +1440,7 @@ Enum sign;
 
 /******************************************************** MOBcolour ****/
 
-#ifdef PROTO
 static void MOBcolour( struct colour *col, Enum type )
-#else
-static void MOBcolour( col, type )
-
-struct colour *col;
-Enum type;
-#endif
 {
 
 #ifdef DEBUG
@@ -1518,14 +1465,7 @@ Enum type;
 
 /******************************************************** MOBvdc *******/
 
-#ifdef PROTO
 static void MOBvdc( Int n, Long *pi, Float *pr)
-#else
-static void MOBvdc( n, pi, pr )
-Int n;
-Long *pi;
-Float *pr;
-#endif
 {
    Int i;
 
@@ -1550,14 +1490,7 @@ Float *pr;
 
 /******************************************************** MOBpointlist */
 
-#ifdef PROTO
 static void MOBpointlist( Long n, Long *pi, Float *pr, Enum set )
-#else
-static void MOBpointlist( n, pi, pr, set )
-Long n, *pi;
-Float *pr;
-Enum set;
-#endif
 {
    Int i;
 
@@ -1585,13 +1518,7 @@ Enum set;
 
 /******************************************************** MOBreal ******/
 
-#ifdef PROTO
 static void MOBreal( Double x, Enum real_type, Enum real_or_vdc )
-#else
-static void MOBreal(x, real_type, real_or_vdc )
-Double x;
-Enum real_type, real_or_vdc;
-#endif
 {
    Posint whole, exponent, neg;
    Posint64 fract;
@@ -1700,15 +1627,7 @@ Enum real_type, real_or_vdc;
 
 /******************************************************** MOBstring ****/
 
-#ifdef PROTO
 static void MOBstring( char *s )
-#else
-static void MOBstring( s )
-
-/*  Output a text string if CMS translate from EBCDIC to ASCII  */
-
-char *s;
-#endif
 {
    register Int i, len, slen = strlen(s);
    register char chr;
@@ -1743,18 +1662,8 @@ char *s;
 
 /******************************************************** MOBclist *****/
 
-#ifdef PROTO
 static void MOBclist( register Long num, register Long *col,
                       Prec mode, Enum type, Prec prec )
-#else
-static void MOBclist( num, col, mode, type, prec )
-
-/*  Output a colour list */
-
-register Long num, *col;
-Prec mode, prec;
-Enum type;
-#endif
 
 {
    register Long j, k, n;
@@ -1858,19 +1767,7 @@ Enum type;
 
 /******************************************************** MOBbits ******/
 
-#ifdef PROTO
 static void MOBbits ( Posint value, Prec prec, Long *bit )
-#else
-static void MOBbits ( value, prec, bit )
-
-/*  Output 'value' as 'prec' bits
-    using 'word' to hold current value
-    returns number of bits left in 'bits'  */
-
-Posint value;
-Prec prec;
-Long *bit;
-#endif
 {
    static Posint oneword = 0;
    Posint mask = (Posint)0xffffffff;
@@ -1910,17 +1807,7 @@ Long *bit;
 
 /******************************************************** MOBout *******/
 
-#ifdef PROTO
 static void MOBout( Posint hex, Prec bytes )
-#else
-static void MOBout( hex, bytes )
-
-/*  Output 'hex' as 'bytes' bytes to output file 'cgmob'
-    which is either the file or MF defaults buffer */
-
-Posint hex;
-Prec bytes;
-#endif
 {
    register Int i;
 

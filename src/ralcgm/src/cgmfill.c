@@ -69,7 +69,6 @@
 #define YTOL    0.0
 
 #ifndef SIMPLEFILL
-#ifdef PROTO
 
 /* Fill a Horizontally Convex Polygon  */
    static void FILmonotone( Long, Point*, Enum,
@@ -82,11 +81,6 @@
 /* Convert trapeziums into polygons */
    static void FILtrap( Int, Trapezoid* );
 
-#else
-   static void FILmonotone();
-   static void FILcomplex();
-   static void FILtrap();
-#endif  /* ANSI */
 
 /* Number of points allocated for fill area processing */
    static Long cgmmaxpts = MAXPTS;
@@ -103,23 +97,9 @@ static char *func="FILarea", mess[40];
 
 /**************************************************** FILarea **********/
 
-#ifdef PROTO
 void FILarea ( Long np, Long *pi, Float *pr, Enum set, Logical cont,
                void (*fill_convex)( Long, Point* ),
                void (*draw_edge)( Long, Point*, Enum* ) )
-#else
-void FILarea ( np, pi, pr, set, cont, fill_convex, draw_edge )
-
-/*   breaks down polygon into convex areas
-     for polygon of n points starting at *pi/*pr  */
-
-Long np, *pi;
-Float *pr;
-Enum set;
-Logical cont;
-void (*fill_convex)();
-void (*draw_edge)();
-#endif
 {
    register Long j, k;
    Logical newedge, nomem = FALSE, localpoint = FALSE;
@@ -371,16 +351,7 @@ void (*draw_edge)();
 
 /****************************************************** FILpolycheck ***/
 
-#ifdef PROTO
 Enum FILpolycheck ( Long np, Point *pt )
-#else
-Enum FILpolycheck ( np, pt )
-
-/*  Checks type of polygon - returns type value  */
-
-Long np;
-Point *pt;
-#endif
 
 {
    register Long i, j;
@@ -489,21 +460,8 @@ Point *pt;
 #ifdef HORIZFILL
 /**************************************************** FILmonotone ******/
 
-#ifdef PROTO
 static void FILmonotone ( Long np, Point *pt, Enum type,
                           void (*fill_convex)( Long p, Point *pt ) )
-#else
-static void FILmonotone ( np, pt, type, fill_convex )
-
-/*   Fills a horizontally Convex closed polygon of
-     'np' points in Point Array '*pt' including close point,
-     'type' is either Horiz or Vert Convex  */
-
-Long np;
-Point *pt;
-Enum type;
-void (*fill_convex)();
-#endif
 {
    Logical first = TRUE, close;
    register Long i;
@@ -961,21 +919,8 @@ void (*fill_convex)();
 #ifdef COMPLEXFILL
 /**************************************************** FILcomplex *******/
 
-#ifdef PROTO
 static void FILcomplex ( Long np, Point *pt, Long *edgeflag,
                          void (*fill_convex)( Long, Point* ) )
-#else
-static void FILcomplex ( np, pt, edgeflag, fill_convex)
-
-/*   Fills a Complex closed polygon of
-     'np' points in Point Array '*pt' including close point
-     'edgeflag' is an array of edge closure flags  */
-
-Long np;
-Point *pt;
-Long *edgeflag;
-void (*fill_convex)();
-#endif
 {
    register Int *ip;
    register i, j, k, el;
@@ -1951,15 +1896,7 @@ giveup:
 
 #ifdef TRAPFILL
 /***************************************************** FILtrap ***************/
-#ifdef PROTO
 static void FILtrap ( Int nt, Trapezoid *trap )
-#else
-static void FILtrap ( nt, trap )
-
-/*  Fills nt Trapezoids *pt using device dependent Convex fill routine */
-Int nt;
-Trapezoid *trap;
-#endif
 
 {
    int i;

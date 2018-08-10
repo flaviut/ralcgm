@@ -40,7 +40,6 @@
 #include "cgmxxx.h"
 
 
-#ifdef PROTO       /* Standard C use function prototyping */
 void CGMOxxx( Code, Long*, Float*, char* ),
      XXXinit( void ),
      XXXclose( void ),
@@ -67,29 +66,6 @@ extern void GDPcentre( Point *cen, Float *rad, Float *ang,
                         Float rat, Long *np, LPOINT(pt), Enum cl );
 
 extern void CGMfill( Long n, Long *pi, Float *pr, LPOINT(pl), Enum set );
-#else
-void CGMOxxx(),     /* Main driver routine */
-     XXXinit(),      /* Initialise Graphics */
-     XXXclose(),     /* Close down Graphics  */
-     XXXnewpic(),    /* Start a new frame  */
-     XXXmenu(),      /* Select Options */
-     XXXattrib(),    /* Set Iris Attributes */
-     XXXline(),      /* Draw a polyline from Data Area */
-     XXXmarker(),    /* draw polymarkers */
-     XXXtext(),      /* output text */
-     XXXcells(),     /* Draw cell arrays */
-     XXXgdp(),       /* draw GDPs */
-     XXXfill(),      /* polygon fill */
-     XXXedge();/* Edge drawing */
-
-                               /*  CGM Utilities    */
-
-extern void GDPcentre(),     /* find circle centre */
-            GDParc(),        /* Generate points on arc */
-            GDPcircle(),     /* Generate points on circle */
-            GDPellipse();    /* Generate points for ellipse and arc */
-extern void FILfill();       /* General Fill routine */
-#endif
 
 /*   Direct colour calculation */
 
@@ -115,18 +91,7 @@ static Enum Text_method[] = {
          (Enum) 0 };
 
 /**************************************************** CGMOxxx **********/
-#ifdef PROTO
 void CGMOxxx ( Code c, Long *pi, Float *pr, char *str )
-#else
-void CGMOxxx ( c, pi, pr, str )
-
-/*  Output Driver for device XXX  */
-
-Code c;
-Long *pi;
-Float *pr;
-char *str;
-#endif
 {
    static Logical first = TRUE;
    register Long n, i, j, num;
@@ -526,15 +491,7 @@ char *str;
 
 /***************************************************** XXXattrib *******/
 
-#ifdef PROTO
 void XXXattrib ( Code type )
-#else
-void XXXattrib (type)
-
-/*  Converts CGM Attribute 'type' to local Attribute  */
-
-Code type;
-#endif
 
 {
     static Logical last_prim = NONOP;
@@ -623,11 +580,7 @@ Code type;
 
 /***************************************************** XXXinit *********/
 
-#ifdef PROTO
 void XXXinit( void )
-#else
-void XXXinit()
-#endif
 
 /*  Initialise Variables and colour map */
 
@@ -637,11 +590,7 @@ void XXXinit()
 
 /***************************************************** XXXnewpic *******/
 
-#ifdef PROTO
 void XXXnewpic( char *pic_name )
-#else
-void XXXnewpic( pic_name )
-#endif
 
 /*   New Frame processing started at first drawing element  */
 
@@ -652,11 +601,7 @@ char *pic_name;
 
 /***************************************************** XXXmenu *********/
 
-#ifdef PROTO
 void XXXmenu( void )
-#else
-void XXXmenu()
-#endif
 
 /*  End of frame processing to select options */
 
@@ -666,11 +611,7 @@ void XXXmenu()
 
 /***************************************************** XXXclose ********/
 
-#ifdef PROTO
 void XXXclose( void )
-#else
-void XXXclose()
-#endif
 
 /*  Close down the Graphics  */
 
@@ -681,50 +622,21 @@ void XXXclose()
 
 /***************************************************** XXXline *********/
 
-#ifdef PROTO
 void XXXline ( Int n, Long *pi, Float *pr, Enum set )
-#else
-void XXXline ( n, pi, pr, set )
-
-/*   draws n point polyline starting at pi/pr  */
-
-Int n;
-Long *pi;
-Float *pr;
-Enum set;
-#endif
 {
    return;
 }
 
 /***************************************************** XXXmarker *******/
 
-#ifdef PROTO
 void XXXmarker ( Int n, Long *pi, Float *pr)
-#else
-void XXXmarker ( n, pi, pr)
-
-/*   draws n markers starting at pi/pr  */
-
-Int n;
-Long *pi;
-Float *pr;
-#endif
 {
    return;
 }
 
 /***************************************************** XXXtext *********/
 
-#ifdef PROTO
 void XXXtext ( Textitem *txt )
-#else
-void XXXtext ( txt )
-
-/*  draws TEXT string 's' according to current settings */
-
-Textitem *txt;
-#endif
 {
    Textitem curtxt = txt;
    Point txtpos; /* Current text position */
@@ -761,35 +673,14 @@ Textitem *txt;
 
 /***************************************************** XXXcells ********/
 
-#ifdef PROTO
 void XXXcells ( Int num, Long *pi )
-#else
-void XXXcells ( num, pi )
-
-/*  Draws a Cell array of n values 'pi' */
-
-Int num;
-Long *pi;
-#endif
 {
    return;
 }
 
 /***************************************************** XXXgdp **********/
 
-#ifdef PROTO
 void XXXgdp ( Code type, Long *pi, Float *pr, Enum close )
-#else
-void XXXgdp ( type, pi, pr, close )
-
-/*  draws GDP 'type' with points starting at pi/pr
-    for convenience CGM primitives are handled as GDPs  */
-
-Code type;
-Long *pi;
-Float *pr;
-Enum close;
-#endif
 {
    Long j, np;
    Logical fill, edge, GKSgdp, isarc, centreknown = FALSE;
@@ -1026,16 +917,7 @@ Enum close;
 
 /***************************************************** XXXfill *********/
 
-#ifdef PROTO
 void XXXfill ( Int np, Lpoint *pt )
-#else
-void XXXfill ( np, pt )
-
-/*  Fills convex polygon of np points in *pt  */
-
-Int np;
-Lpoint *pt;
-#endif
 
 {
    return;
@@ -1043,17 +925,7 @@ Lpoint *pt;
 
 /***************************************************** XXXedge *********/
 
-#ifdef PROTO
 void XXXedge ( Int np, Long *pt, Enum *edgeflag )
-#else
-void XXXedge ( np, pt, edgeflag )
-
-/*  Draws edge for convex polygon of np points in pt[]  */
-
-Int np;
-Lpoint *pt;
-Enum *edgeflag;
-#endif
 
 {
    return;

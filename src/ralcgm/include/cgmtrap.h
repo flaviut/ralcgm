@@ -34,16 +34,12 @@ typedef struct {
    float top_left, top_right, top, base_left, base_right, base;
 } Trapezoid;
 
-#ifdef PROTO
                           /* Trapezoid Decomposition utilities */
 
    Extern void
       /* Fill Polygon(set) by trapezoid decomposition */
       TRPfill(Polygonset *, Int ,Float, void (*) ( Int, Trapezoid *) );
 
-#else
-   Extern void TRPfill();
-#endif
 
 
 

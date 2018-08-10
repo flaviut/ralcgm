@@ -78,33 +78,19 @@
 
 /*  Reallocation of Variable buffer space */
 
-#ifdef PROTO
   Extern long  *CGMialloc( long*, long );
   Extern float *CGMralloc( float*, long );
   Extern char  *CGMsalloc( char*, long );
-#else
-  Extern long  *CGMialloc( );
-  Extern float *CGMralloc( );
-  Extern char  *CGMsalloc( );
-#endif
 
 /*  Random Access Function  */
 
 #ifndef CGMLIB
-#ifdef PROTO
   extern Code CGMframe( Code );
 #ifdef VMS
   extern void CGMvaxst();
 #endif
-#else
-  extern Code CGMframe();
-#ifdef VMS
-  extern void CGMvaxst();
-#endif
-#endif
 #endif /* Not for CGMLIB */
 
-#ifdef PROTO
 /*  Function to set Current ASF values for all encodings */
 
   Extern void CGMsetasf( long * );
@@ -115,12 +101,6 @@
 
   extern FILE *CGMfopen( char*, char, Enum);
 
-#else
-
-  Extern void CGMsetasf();
-  Extern void CGMdefaults();
-  extern FILE *CGMfopen();
-#endif
 
   extern long *null;
 
@@ -139,13 +119,8 @@
 
 /*  Font storing routine */
 
-#ifdef PROTO
   extern void FNTflist ( long *, long *, char *, struct cgmfont *);
   extern void FNTclist ( long *, long *, char *, struct cgmcset *);
-#else
-  extern void FNTflist ( );
-  extern void FNTclist ( );
-#endif
 #endif
 
 #undef Extern

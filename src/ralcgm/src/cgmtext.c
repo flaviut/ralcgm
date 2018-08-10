@@ -100,30 +100,14 @@ typedef struct res_text {
    Logical    minimum;
 } Restxt_item;
 
-#ifdef PROTO
    static Logical scale_spc_exp( Textitem*, double, double, Logical );
    static Textitem *clip_text( Textitem*, double, double, int );
    static void font_load( Textitem* );
    static double calc_scale( Restxt_item*, int, double, double );
    static int size_check( Textitem*, double*, double*, double, double, float *);
-#else
-   static Logical scale_spc_exp();
-   static Textitem *clip_text();
-   static void font_load();
-   static double calc_scale();
-   static int size_check();
-#endif
 
-#ifdef PROTO
 Textitem *TXTaccinf( long num, char *str, struct textatt *ta,
                      Enum *prefmethods )
-#else
-Textitem *TXTaccinf( num, str, ta, prefmethods )
-long num;
-char *str;
-struct textatt *ta;
-Enum *prefmethods;
-#endif
 /*
  *    TXTaccinf(): Function to store a string, reserve a structure
  *                 for it and fill-in all the necessary attributes
@@ -255,11 +239,6 @@ Enum *prefmethods;
 #endif
    switch (new->text_method)
    {
-#ifdef XW
-      case HDW:
-        Xw_getfd(new);
-      break;
-#endif
 #ifdef HERSHEY
       case HER:
          HERgetfd(new);
@@ -297,14 +276,7 @@ Enum *prefmethods;
    return head;
 }
 
-#ifdef PROTO
 void TXTalign ( Textitem *txtlist, Point txtp, double horext, double vertext )
-#else
-void TXTalign ( txtlist, txtp, horext, vertext )
-Textitem *txtlist;
-Point txtp;
-double horext, vertext;
-#endif
 /*
  *    TXTalign(): function to process the text list and insert
  *                the information on origin coordinates (in untransformed
@@ -729,12 +701,7 @@ double horext, vertext;
    return;
 }
 
-#ifdef PROTO
 void  TXTfree( Textitem *txtlist )
-#else
-void  TXTfree( txtlist )
-Textitem *txtlist;
-#endif
 /*
  *    TXTfree(): Function which frees the memory allocated while
  *               processing text.
@@ -784,12 +751,7 @@ Textitem *txtlist;
    return;
 }
 
-#ifdef PROTO
 double TXTgwidth( Textitem *txtlist )
-#else
-double TXTgwidth( txtlist )
-Textitem *txtlist;
-#endif
 /*
  *   TXTgwidth(): Function to calculate the untransformed horizontal text
  *                 extent of each substring and the entire text.
@@ -866,12 +828,7 @@ Textitem *txtlist;
    return width;
 }
 
-#ifdef PROTO
 double TXTgheight ( Textitem *txtlist )
-#else
-double TXTgheight ( txtlist )
-Textitem *txtlist;
-#endif
 /*
  *   TXTgheight(): Function to calculate the untransformed vertical text
  *                 extent of each substring and the entire text.
@@ -942,13 +899,7 @@ Textitem *txtlist;
    return height ;
 }
 
-#ifdef PROTO
 void TXTxform( Point txtp, Tmatrix matrix )
-#else
-void TXTxform( txtp, matrix )
-Point txtp;
-Tmatrix matrix;
-#endif
 /*
  *    TXTxform(): Function to calculate the character orientation transform.
  *
@@ -1126,14 +1077,7 @@ Tmatrix matrix;
  *
  */
 
-#ifdef PROTO
 Textitem *TXTrestrict( Textitem *txtlist, double rwidth, double rheight, struct textatt *ta)
-#else
-Textitem *TXTrestrict( txtlist, rwidth, rheight, ta)
-Textitem *txtlist;
-double rwidth, rheight;
-struct textatt *ta;
-#endif
 
 {  int curr_item, pass, items, guilty, font;
    double twidth, theight;
@@ -1364,12 +1308,7 @@ struct textatt *ta;
  * func
  */
 
-#ifdef PROTO
 Textitem *TXTcopy( Textitem *txtlist )
-#else
-Textitem *TXTcopy( txtlist )
-Textitem *txtlist;
-#endif
 
 {
    Textitem *head, *tail;
@@ -1437,14 +1376,7 @@ Textitem *txtlist;
       *-----------------------------------------------------------------*/
 
 
-#ifdef PROTO
 static Logical scale_spc_exp( Textitem *txtlist, double tsize, double rsize, Logical isvertical)
-#else
-static Logical scale_spc_exp( txtlist, tsize, rsize, isvertical)
-Textitem *txtlist;
-double tsize, rsize;
-Logical isvertical;
-#endif
 
 {
    Textitem *tptr;
@@ -1527,14 +1459,7 @@ Logical isvertical;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static Textitem *clip_text( Textitem *txtlist, double rwidth, double rheight, int guilty)
-#else
-static Textitem *clip_text( txtlist, rwidth, rheight, guilty)
-Textitem *txtlist;
-double rwidth, rheight;
-int guilty;
-#endif
 
 
 {
@@ -1643,22 +1568,11 @@ int guilty;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void font_load( Textitem *txtlist)
-#else
-static void font_load( txtlist )
-Textitem *txtlist;
-
-#endif
 
 {
    switch (txtlist->text_method)
    {
-#ifdef XW
-      case HDW:
-        Xw_getfd(txtlist);
-      break;
-#endif
 #ifdef HERSHEY
       case HER:
          HERgetfd(txtlist);
@@ -1706,15 +1620,8 @@ Textitem *txtlist;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static int size_check( Textitem *txtlist, double *width, double *height, double rwidth, double rheight,
                        float *scale)
-#else
-static int size_check( txtlist, width, height, rwidth, rheight, scale)
-Textitem *txtlist;
-double *width, *height, rwidth, rheight;
-float *scale;
-#endif
 
 {   double scale1,scale2;
     *width=TXTgwidth(txtlist);
@@ -1747,14 +1654,7 @@ float *scale;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static double calc_scale( Restxt_item *item, int items, double rwidth, double rheight)
-#else
-static double calc_scale( item, items, rwidth, rheight)
-Restxt_item *item;
-double rwidth, rheight;
-int items;
-#endif
 
 {  double scale1,scale2;
    Textitem *txtlist;

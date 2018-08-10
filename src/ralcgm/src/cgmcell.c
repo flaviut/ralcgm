@@ -30,24 +30,10 @@
 #include "cgmcell.h"
 
 /****************************************************** CELLfill ***/
-#ifdef PROTO
 void CELLfill ( Long ncells, Long *pi, Tmatrix celtrans,
                 Int nx, Int ny, Int *iy,
                 void (*setcolour)(Index, RGBcolour, Code),
                 void (*filldraw)(Int, Point *, Tmatrix, Int))
-#else
-void CELLfill ( ncells, pi, celtrans, nx, ny, iy, setcolour, filldraw )
-
-/*  Draws a Cell array of num values 'pi' by means of filled areas */
-
-Long ncells;           /* Number of Cells to be Coloured */
-Long *pi;              /* Cell Colour Data */
-Tmatrix celtrans;      /* Cell Array transformation */
-Int nx, ny;            /* Cell Array dimensions */
-Int *iy;               /* Cell Array start row (0 unless continuing) */
-void (*setcolour)();   /* Device Colour Setting function */
-void (*filldraw)();    /* Device Fill routine for cells */
-#endif
 
 {
   Point  celb[4];         /* Boundary of Current Cell */
@@ -137,28 +123,9 @@ void (*filldraw)();    /* Device Fill routine for cells */
 }
 /****************************************************** CELLparget *****/
 
-#ifdef PROTO
 void CELLparget ( Long *pi, Float *pr,
                   Point *p, Point *q, Point *r,
                   Int *nx, Int *ny, Int *lp )
-#else
-void CELLparget ( pi, pr, p, q, r, nx, ny, lp )
- /*
-    Get Cell Array Parameters
- */
-
-   /* Input Arguments */
-Long  *pi;  /* Integer Data */
-Float *pr;  /* Real Data */
-
-   /* Output Arguments */
-Point *p;   /* Corner P by First row and First Column */
-Point *q;   /* Corner Q by Last row  and Last Column */
-Point *r;   /* Corner R by First row and Last Column */
-Int  *nx;   /* Number of Rows */
-Int  *ny;   /* Number of Columns */
-Int  *lp;   /* Local precision */
-#endif
 
 {
    if (cur.vdc_type == REAL)
@@ -193,17 +160,7 @@ Int  *lp;   /* Local precision */
    return;
 }
 /****************************************************** CELLtran *******/
-#ifdef PROTO
 void CELLtran ( Point p, Point q, Point r, Int nx, Int ny, Tmatrix tm)
-#else
-void CELLtran ( p, q, r, nx, ny, tm )
-
-/* Gets the Cell array transformation from the cell array parameters */
-
-Point p,q,r;           /* Cell array corners P, Q and R */
-Int   nx,ny;           /* Cell array dimensions */
-Tmatrix  tm;           /* Cell array transformation matrix */
-#endif
 
 {
 

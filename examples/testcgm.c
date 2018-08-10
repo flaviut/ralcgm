@@ -417,11 +417,6 @@ Enum *type;
               strcpy(ext,"bin");
               *type = BINARY;
               break;
-#ifdef IGL
-           case 'I':
-              *type = IGL;
-              break;
-#endif
 #ifdef POSTSCRIPT
            case 'P':
               strcpy(ext,"ps");
@@ -432,11 +427,6 @@ Enum *type;
               strcpy(ext,"txt");
               *type = CLEAR_TEXT;
               break;
-#ifdef XW
-           case 'X':
-              *type = XW;
-              break;
-#endif
            default:
               break;
          }

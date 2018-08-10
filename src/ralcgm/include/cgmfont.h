@@ -33,25 +33,11 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 Extern void FNTinit    ( void );
 Extern void FNTmatch   ( struct textatt *, Enum *, Enum *, Index * );
 Extern void FNTdebug   ( int );
 Extern void FNTdisplay ( void );
 Extern Logical FNTscale ( Enum*, int*, float*, float, float );
-#ifdef XW
-Extern void FNTXlist( int, char ** );
-#endif
-#else
-Extern void FNTinit    ();
-Extern void FNTmatch   ();
-Extern void FNTdebug   ();
-Extern void FNTdisplay ();
-Extern Logical FNTscale ();
-#ifdef XW
-Extern void FNTXlist   ();
-#endif
-#endif  /* PROTO */
 
 #undef Extern
 

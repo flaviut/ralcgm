@@ -156,7 +156,6 @@ struct result
 };
 
 
-#ifdef PROTO
 static void proc_csets( void ),
             proc_typefaces( void ),
             proc_families( void ),
@@ -174,28 +173,8 @@ static Logical strip_font( char*, char* ),
                match_substring( char*, char* ),
                match_attrib( struct request, Enum*, struct result* );
 
-#else
-static void proc_csets(),
-            proc_typefaces(),
-            proc_families(),
-            proc_aliases(),
-            proc_sfonts(),
-            proc_sources(),
-            proc_designs(),
-            proc_reqs(),
-            proc_methods();
-
-static void read_rest();
-static Index check_size();
-
-static Logical match_string(),
-               match_substring(),
-               match_attrib(),
-               strip_font();
-#endif
 
 #ifdef FONTDISPLAY
-#ifdef PROTO
 static void disp_csets( void ),
             disp_fonts( void ),
             disp_isocsets( void ),
@@ -207,19 +186,6 @@ static void disp_csets( void ),
             disp_designs( void ),
             disp_rfonts( void ),
             disp_mfonts( void );
-#else
-static void disp_csets(),
-            disp_fonts(),
-            disp_isocsets(),
-            disp_fudgesets(),
-            disp_families(),
-            disp_aliases(),
-            disp_sfonts(),
-            disp_sources(),
-            disp_designs(),
-            disp_rfonts(),
-            disp_mfonts();
-#endif
 #endif
 
 static struct isocharset **csets;
@@ -314,11 +280,7 @@ static char *fntext = "fnt";
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 void FNTinit( void )
-#else
-void FNTinit()
-#endif
 
 {
    if (started) return;
@@ -347,11 +309,7 @@ void FNTinit()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 void FNTclose( void )
-#else
-void FNTclose()
-#endif
 
 {
 }
@@ -365,15 +323,7 @@ void FNTclose()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 void FNTflist( long *inthead, long *ints, char *string, struct cgmfont *list)
-#else
-void FNTflist(inthead, ints, string, list)
-
-long *inthead, *ints;
-char *string;
-struct cgmfont *list;
-#endif
 {
    int i;
    long l= *ints, *pi;
@@ -421,15 +371,7 @@ struct cgmfont *list;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 void FNTclist( long *inthead, long *ints, char *string, struct cgmcset *list)
-#else
-void FNTclist(inthead, ints, string, list)
-
-long *inthead, *ints;
-char *string;
-struct cgmcset *list;
-#endif
 
 {  int i;
    long  l= *ints, *pi;
@@ -475,469 +417,6 @@ struct cgmcset *list;
 }
 
 
-#ifdef XW
-     /*-----------------------------------------------------------------*
-      |                                                                 |
-      |      FNTXlist()                                                 |
-      |                                                                 |
-      |      Initialize the HDW (hardware) list of implementatione      |
-      |      fonts from the data provided when an X-windows client      |
-      |      requests full font information from its server.            |
-      |                                                                 |
-      *-----------------------------------------------------------------*/
-#ifdef PROTO
-void FNTXlist( int argc, char **argv )
-#else
-void FNTXlist( argc, argv )
-
-int argc;
-char **argv;
-#endif
-
-{  int i;
-   Index xfontid=0;
-   char *func = "FNTXlist";
-   int num_generic, num_total=argc;
-   FNTXnames *pname, *new_pname;  /* for setting list of members of generic */
-   FNTXfont_list *pxflp = NULL,   /* pointer to current generic font */
-                 *pxflh,          /* pointer to head of list of generic fonts */
-                 *pxflt,          /* pointer to tail of list of generic fonts */
-                 *pxfls;          /* pointer for searching generic list */
-
-    struct isofont *isofontp;
-    struct isofont **pp;
-
-     /*   We are passed an array of string, identical in structure to the
-      |   fcount,flist arrangement used into C programs.  Each string is of
-      |   the format:
-      |
-      |   -foundry-family-weight-style-width-styleid-pixelsize-pointsize...
-      |   -xresolution-yresolution-spacing-avwidth-encoding
-      |
-      |   where the fine detail of the way in which this is recorded is
-      |   detailed below.
-      */
-
-     /*  Process each string in turn, accumulating the results in the HDW
-      |  (hardware) slot in the available fonts part of the font system.
-      */
-
-   if (!started) FNTinit();
-
-   for (i=0; i<argc; i++)
-
-   {  char *fontstring = argv[i], *string, **pstart, *start[14], *gen_name;
-      int j, minuscount= 0, n;
-      char *source,
-           *family,
-           *weight,
-           *style,
-           *width,
-           *styleid,
-           *pixelsize,
-           *pointsize,
-           *xresolution,
-           *yresolution,
-           *spacing,
-           *avwidth,
-           *encoding;
-      int  zpixelsize = 0,
-           zpointsize = 0,
-           zxresolution = 0,
-           zyresolution = 0,
-           zavwidth = 0;
-      char zstyle = 'R',
-           zspacing = 'P';
-      int lstr,isrc,ifam;
-      struct isofont *pisof;
-
-      string = (char*) MALLOC (1, strlen(fontstring)+1 );
-      if (string == (char *) NULL)
-      {  (void) CGMerror(func,ERR_NOFNTSPACE,ERROR,"X font list (string)");
-         break;
-      }
-
-      strcpy(string,fontstring);
-      lstr = strlen(string);
-
-      for (j=minuscount=0,pstart=start; j<lstr; j++)
-         if (string[j] =='-')
-         {  minuscount++;
-            if (minuscount > 13) break;
-            string[j] = '\0';
-            *pstart++ = string+j+1;
-         }
-
-      if (minuscount < 13)
-      {  (void) CGMerror(func,ERR_XFONTLIST,ERROR,fontstring);
-         continue;
-      }
-
-      source =      start[0];
-      family =      start[1];
-      weight =      start[2];
-      style =       start[3];
-      width =       start[4];
-      styleid =     start[5];
-      pixelsize =   start[6];
-      pointsize =   start[7];
-      xresolution = start[8];
-      yresolution = start[9];
-      spacing =     start[10];
-      avwidth =     start[11];
-      encoding =    start[12];
-
-#ifdef DEBUG
-      DMESS "X font (%s) %s\n",source,family);
-      DMESS ".. weight %s style %s width %s style id %s\n",
-             weight,style,width,styleid);
-      DMESS ".. pixel size %s point size %s resolutions %s,%s\n",
-             pixelsize, pointsize, xresolution, yresolution);
-      DMESS ".. spacing %s average width %s encoding %s\n",
-             spacing, avwidth, encoding);
-#endif
-
-      n = sscanf(pixelsize,"%d",&zpixelsize);
-      n += sscanf(pointsize,"%d",&zpointsize);
-      n += sscanf(xresolution,"%d",&zxresolution);
-      n += sscanf(yresolution,"%d",&zyresolution);
-      n += sscanf(avwidth,"%d",&zavwidth);
-
-      if (n != 5)
-      {  (void) CGMerror(func,ERR_XFONTLIST,ERROR,string);
-         num_total--;
-         continue;
-      }
-
-      n = 0;
-      if (strlen(style) == 1)
-         zstyle = toupper(style[0]);
-      else
-         n++;
-
-      if (strlen(spacing) == 1)
-         zspacing = toupper(spacing[0]);
-      else
-         n++;
-
-      if (zstyle != 'R' &&
-          zstyle != 'I' &&
-          zstyle != 'O') n++;
-
-      if (zspacing != 'M' &&
-          zspacing != 'P' &&
-          zspacing != 'C') n++;
-
-/*
- store the derived info in an isofont structure
-*/
-      pisof = (struct isofont *)MALLOC( 1, sizeof(struct isofont) );
-      if (pisof == (struct isofont *) NULL)
-      {  (void) CGMerror(func,ERR_NOFNTSPACE,FATAL," (isofont structure)");
-         exit(0);
-      }
-      pisof->fontid=xfontid++;
-      pisof->fontname=family;
-      pisof->dsnsource = (struct source *) NULL;
-/* #ifdef SRCNAMES */
-      for (isrc=0; isrc<nsources; isrc++)
-      {  struct source *psrc = sources[isrc];
-#ifdef DEBUG
-         DMESS "Trying to matching source %s with %s\n",
-                    source, psrc->name);
-#endif
-         if (match_string(source,psrc->name))
-         {  pisof->dsnsource = psrc;
-            break;
-         }
-      }
-/* #endif */
-      pisof->fontfamily = family;
-      pisof->familyid=0;
-      for (ifam=0; ifam<nfamilies;ifam++)
-      {  struct family *pfam = families[ifam];
-#ifdef DEBUG
-         DMESS "Trying to match family %s to %s\n",
-                  family, pfam->name);
-#endif
-         if (match_string(family,pfam->name))
-         {  pisof->familyid = pfam->number;
-            break;
-         }
-      }
-      pisof->variant.posture= (zstyle == 'R' ? 1 :
-                              zstyle == 'I' ? 4 :
-                              zstyle == 'O' ? 2 : 0);
-      pisof->variant.weight = (match_string(weight,"book") ? 4 :
-                              match_string(weight,"demi") ? 6 :
-                              match_string(weight,"medium") ? 5 :
-                              match_string(weight,"bold") ? 7 :
-                              match_string(weight,"light") ? 3 : 5);
-      pisof->variant.propwidth = (match_string(width,"normal") ? 5 :
-                                 match_string(width,"wide") ? 7 :
-                                 match_string(width,"double wide") ? 9 :
-                                 match_string(width,"narrow") ? 3 : 5);
-      pisof->variant.structure = 1;
-      pisof->dsngroup.class = 2;
-      pisof->dsngroup.subclass = 4;
-      pisof->dsngroup.group = 1;
-      pisof->dsnsize = zpixelsize;
-      pisof->minsize = zpixelsize;
-      pisof->maxsize = zpixelsize;
-      pisof->cset = 1;
-
-/*
-  determine generic name of font for use in temporary font list
-*/
-      gen_name = (char *) MALLOC (1, strlen(family)+5 );
-      if(sprintf(gen_name,"%s%c%c%c%c",family,toupper(weight[0]),zstyle,
-                toupper(width[0]),toupper(width[1])) ==0) n++;
-#ifdef DEBUG
-      DMESS "gen_name:%s\n",gen_name);
-#endif
-
-      if (n > 0)
-      {  (void) CGMerror(func,ERR_XFONTLIST,ERROR,string);
-         continue;
-      }
-
-
-/*
-first font ??
-*/
-      if (pxflp == NULL)
-      {  pxflp = (FNTXfont_list *)MALLOC( 1, sizeof(FNTXfont_list) );
-/*
-Exit if insufficient memory
-*/
-         if (pxflp==NULL)
-         {  (void) CGMerror(func,ERR_NOFNTSPACE,FATAL,"(font_list structure)");
-            exit(0);
-         }
-/*
-set up first list entry
-*/
-         pxflp->pnext=NULL;
-         pxflp->gen_name=gen_name;
-         pxflp->num_siz=1;
-         pname=(FNTXnames *)MALLOC( 1, sizeof(FNTXnames) );
-/*
-Exit if insufficient memory
-*/
-         if (pname==NULL)
-         {  (void) CGMerror(func,ERR_NOFNTSPACE,FATAL,"names structure)");
-             exit(0);
-         }
-         pxflp->names=pname;
-         pname->next=NULL;
-         pname->prev=NULL;
-         pname->isobits= pisof;
-         num_generic=1;
-         pxflh=pxflt=pxflp;
-      }
-      else
-/*
- same generic name as last time
-*/
-      if (!(strcmp(gen_name,pxflp->gen_name)))
-      {  new_pname=(FNTXnames *)MALLOC( 1, sizeof(FNTXnames) );
-/*
-  Exit if insufficient memory
-*/
-         if (new_pname==NULL)
-         {  (void) CGMerror(func,ERR_NOFNTSPACE,FATAL,"(names structure)");
-            exit(0);
-         }
-         pname->next=new_pname;
-         new_pname->prev=pname;
-         pname=new_pname;
-         pname->next=new_pname=NULL;
-         pname->isobits= pisof;
-         pxflp->num_siz++;
-      }
-      else
-/*
- different generic name from last time
-*/
-      {  if(num_generic==1)
-            pxfls=NULL;
-         else
-/*
- try matching generic name againts those already stored
-*/
-            for(pxfls=pxflh; pxfls!= NULL; pxfls=pxfls->pnext)
-            {  if(!strcmp(gen_name,pxfls->gen_name))
-/*
- found a match
-*/
-               {  pxflp=pxfls;
-                  new_pname=(FNTXnames *)MALLOC(1,sizeof(FNTXnames));
-/*
-  Exit if insufficient memory
-*/
-                  if (new_pname==NULL)
-                  {
-                    (void) CGMerror(func,ERR_NOFNTSPACE,FATAL,
-                                    "(names structure)");
-                    exit(0);
-                  }
-                  for(pname=pxflp->names; pname->next != NULL;
-                                          pname=pname->next);
-                  pname->next=new_pname;
-                  new_pname->prev=pname;
-                  pname=new_pname;
-                  pname->next=new_pname=NULL;
-                  pname->isobits= pisof;
-                  pxflp->num_siz++;
-                  break;
-               }
-            }
-            if(pxfls==NULL)
-/*
-  no match found so it is a new generic name
-*/
-            {  pxfls = (FNTXfont_list *)MALLOC(1,sizeof(FNTXfont_list));
-/*
- Exit if insufficient memory
-*/
-               if (pxfls==NULL)
-               {
-                 (void) CGMerror(func,ERR_NOFNTSPACE,FATAL,
-                                      "(font_list structure)");
-                  exit(0);
-               }
-/*
-  set up list entries
-*/
-               pxflp=pxflt;
-               pxflp->pnext=pxfls;
-               pxflp=pxfls;
-               pxflp->pnext=NULL;
-               pxflp->gen_name=gen_name;
-               pxflp->num_siz=1;
-               pname=(FNTXnames *)MALLOC(1,sizeof(FNTXnames));
-/*
-  Exit if insufficient memory
-*/
-               if (pname==NULL)
-               {
-                  (void) CGMerror(func,ERR_NOFNTSPACE,FATAL,
-                                 "(font_name structure)");
-                  exit(0);
-               }
-               pxflp->names=pname;
-               pname->next=NULL;
-               pname->prev=NULL;
-               pname->isobits= pisof;
-               pxflt=pxflp;
-               num_generic++;
-            }
-      }
-   }              /* for loop end */
-
-#ifdef DEBUG
-   DMESS "number of generic fonts is %d\n",num_generic);
-#endif
-
-/*
-  sort sizes by bubble sort as it's a once off thing
-*/
-
-    for(pxflp=pxflh; pxflp!= NULL; pxflp=pxflp->pnext)
-    {  FNTXnames  *pname1, *pname2, *pname_tmp;
-       int ii,j,swapped;
-
-       for(ii=0; ii<(pxflp->num_siz-1); ii++)
-       {  pname1=pxflp->names;
-          pname2=pname1->next;
-          swapped=FALSE;
-          for(j=1; j<(pxflp->num_siz-ii); j++)
-          {  if(pname1->isobits->dsnsize > pname2->isobits->dsnsize)
-/*
- throw all the pointers in the air and hope they land in the correct places!
- I mean swap two adjacent positions.
-*/
-             {  pname_tmp=pname1->prev;
-                if(pname_tmp != NULL)
-                  pname_tmp->next=pname2;
-                else
-                  pxflp->names=pname2;
-                pname2->prev=pname_tmp;
-                pname1->next = pname2->next;
-                pname_tmp=pname2->next;
-                if(pname_tmp != NULL)
-                  pname_tmp->prev= pname1;
-                pname2->next= pname1;
-                pname1->prev= pname2;
-                swapped=TRUE;
-             }
-             else
-               pname1=pname1->next;
-
-             if(pname1->next !=NULL )
-               pname2=pname1->next;
-          }
-          if(!swapped) break;
-       }
-    }
-
-/* print out the list */
-#ifdef DEBUG
-    for(pxflp=pxflh; pxflp!= NULL; pxflp=pxflp->pnext)
-    {  DMESS "Generic name is :%s\n",pxflp->gen_name);
-       DMESS "number in generic class is : %d\n",pxflp->num_siz);
-       for(pname=pxflp->names; pname!=NULL; pname=pname->next)
-       {  DMESS "font size is:%f\n",pname->isobits->dsnsize);
-          DMESS "font name is:%s\n",pname->isobits->fontname);
-       }
-    }
-#endif
-
-     /*----------------------------------------------------------------------*
-      |   From the list that has now been constructed, make up the list      |
-      |   in the form in which FNTmatch will search it, attaching it to      |
-      |   the HARDWARE slot in the list of available methods.                |
-      *----------------------------------------------------------------------*/
-
-    mname[RAS] = "X-windows";
-    nmfonts[RAS] = num_total;
-    mfonts[RAS] = pp = (struct isofont **)
-                       MALLOC(nmfonts[RAS], sizeof(isofontp));
-    if (pp == (struct isofont **) NULL)
-    {  (void) CGMerror(func,ERR_NOFNTSPACE,FATAL,"X-font (list)");
-       exit(0);
-    }
-
-    for(pxflp=pxflh; pxflp!= NULL; pxflp=pxflp->pnext)
-    {
-       for(pname=pxflp->names; pname!=NULL; pname=pname->next)
-       {  FNTXnames *pfn;
-
-          pfn=pname->prev;
-          if (pfn != NULL)
-            pname->isobits->minsize=pname->isobits->dsnsize;
-          else
-            pname->isobits->minsize=0;
-          pfn=pname->next;
-          if (pfn != NULL)
-            pname->isobits->maxsize=pfn->isobits->dsnsize-1;
-          else
-            pname->isobits->maxsize=0;
-
-          *pp++ = pname->isobits;
-       }            /* end of loop over specific name  */
-    }               /* end of loop over generic names  */
-
-
-/*
- Free off some space
-*/
-
-    for(pxflp=pxflh; pxflp!= NULL; pxflp=pxflp->pnext)
-       FREE(pxflp->gen_name);
-
-}                   /* end of FNTXlist */
-#endif
 
 
      /*-----------------------------------------------------------------*
@@ -950,16 +429,8 @@ Exit if insufficient memory
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 void FNTmatch(struct textatt *txtatt,
               Enum *available, Enum *methods, Index *fonts)
-#else
-void FNTmatch(txtatt, available, methods, fonts)
-
-struct textatt *txtatt;
-Enum *available, *methods;
-Index *fonts;
-#endif
 
 /*  The overall scheme is as follows.  It assumes that the character set
     is irrelevant at present, but does check that the character sets
@@ -1714,11 +1185,7 @@ Index *fonts;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 void FNTdisplay( void )
-#else
-void FNTdisplay()
-#endif
 
 {
    disp_csets();
@@ -1734,11 +1201,7 @@ void FNTdisplay()
    disp_mfonts();
 }
 
-#ifdef PROTO
 static void disp_csets( void )
-#else
-static void disp_csets()
-#endif
 
 {  int i;
 
@@ -1756,11 +1219,7 @@ static void disp_csets()
                 i+1,i,cgmcsets.types[i],cgmcsets.names[i]);
 }
 
-#ifdef PROTO
 static void disp_fonts( void )
-#else
-static void disp_fonts()
-#endif
 
 {  int i;
 
@@ -1777,11 +1236,7 @@ static void disp_fonts()
       DMESS "  font %3d (index %3d) is `%s'\n",i+1,i,cgmfonts.names[i]);
 }
 
-#ifdef PROTO
 static void disp_isocsets( void )
-#else
-static void disp_isocsets()
-#endif
 
 {  int i;
 
@@ -1808,11 +1263,7 @@ static void disp_isocsets()
    }
 }
 
-#ifdef PROTO
 static void disp_fudgesets( void )
-#else
-static void disp_fudgesets()
-#endif
 
 {  int i;
 
@@ -1834,11 +1285,7 @@ static void disp_fudgesets()
    }
 }
 
-#ifdef PROTO
 static void disp_families( void )
-#else
-static void disp_families()
-#endif
 
 {  int i;
 
@@ -1863,11 +1310,7 @@ static void disp_families()
    }
 }
 
-#ifdef PROTO
 static void disp_aliases( void )
-#else
-static void disp_aliases()
-#endif
 
 {  int i;
 
@@ -1889,11 +1332,7 @@ static void disp_aliases()
    }
 }
 
-#ifdef PROTO
 static void disp_sfonts( void )
-#else
-static void disp_sfonts()
-#endif
 
 {  int i;
 
@@ -1924,11 +1363,7 @@ static void disp_sfonts()
    }
 }
 
-#ifdef PROTO
 static void disp_sources( void )
-#else
-static void disp_sources()
-#endif
 
 {  int i;
 
@@ -1950,11 +1385,7 @@ static void disp_sources()
    }
 }
 
-#ifdef PROTO
 static void disp_designs( void )
-#else
-static void disp_designs()
-#endif
 
 {  int i;
 
@@ -1980,11 +1411,7 @@ static void disp_designs()
    }
 }
 
-#ifdef PROTO
 static void disp_rfonts( void )
-#else
-static void disp_rfonts()
-#endif
 
 {  int i;
 
@@ -2016,11 +1443,7 @@ design %2d.%2d.%2d %2d\n                 %s\n",
    }
 }
 
-#ifdef PROTO
 static void disp_mfonts( void )
-#else
-static void disp_mfonts()
-#endif
 
 {  int i;
 
@@ -2066,11 +1489,7 @@ static void disp_mfonts()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_csets( void )
-#else
-static void proc_csets()
-#endif
 
      /*  This is a fairly simple routine that reads everything in
          from a single file to a structure large enough to hold pointers
@@ -2265,11 +1684,7 @@ static void proc_csets()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_typefaces( void )
-#else
-static void proc_typefaces()
-#endif
 
 {
      /*  This routine has rather more to do as it has to read in four
@@ -2306,11 +1721,7 @@ static void proc_typefaces()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_families( void )
-#else
-static void proc_families()
-#endif
 
 {  FILE *fileid;
    char *filename;
@@ -2410,11 +1821,7 @@ static void proc_families()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_aliases( void )
-#else
-static void proc_aliases()
-#endif
 
 {  FILE *fileid;
    char *filename;
@@ -2546,11 +1953,7 @@ static void proc_aliases()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_sfonts( void )
-#else
-static void proc_sfonts()
-#endif
 
 {  FILE *fileid;
    char *filename;
@@ -2677,11 +2080,7 @@ name,
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_sources( void )
-#else
-static void proc_sources()
-#endif
 
 {  FILE *fileid;
    char *filename;
@@ -2770,11 +2169,7 @@ static void proc_sources()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_designs( void )
-#else
-static void proc_designs()
-#endif
 
 {  FILE *fileid;
    char *filename, *classname, *subclassname;
@@ -2895,11 +2290,7 @@ static void proc_designs()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_reqs( void )
-#else
-static void proc_reqs()
-#endif
 
 {  FILE *fileid, *rfile;
    char *filename;
@@ -3087,11 +2478,7 @@ static void proc_reqs()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void proc_methods( void )
-#else
-static void proc_methods()
-#endif
 
 {  FILE *fileid, *mfile;
    char *filename, msg[80];
@@ -3380,16 +2767,8 @@ static void proc_methods()
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static Index check_size( struct textatt *txtatt, Enum method,
                          struct isofont **fm)
-#else
-static Index check_size( txtatt, method, fm)
-
-struct textatt *txtatt;
-Enum method;
-struct isofont **fm ;
-#endif
 {
    long height;
    struct isofont *pf = *fm;
@@ -3420,15 +2799,7 @@ struct isofont **fm ;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static void read_rest( FILE *fileid, char *loc, int len)
-#else
-static void read_rest( fileid, loc, len )
-
-FILE *fileid;
-char *loc;
-int len;
-#endif
 
 {  char *nm, c;
    int i;
@@ -3456,13 +2827,7 @@ int len;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static Logical strip_font( char *font, char *string)
-#else
-static Logical strip_font( font, string )
-
-char *font, *string;
-#endif
 
 {  int i, l = strlen(font) - strlen(string) + 1;
 
@@ -3500,13 +2865,7 @@ char *font, *string;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static Logical match_string( char *a, char *b)
-#else
-static Logical match_string( a, b )
-
-char *a, *b;
-#endif
 
 {  int i, l, la=strlen(a), lb= strlen(b);
    char *pa, *pb;
@@ -3540,13 +2899,7 @@ char *a, *b;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static Logical match_substring( char *a, char *b)
-#else
-static Logical match_substring( a, b )
-
-char *a, *b;
-#endif
 
 {  int i, l = strlen(a);
    char *pa, *pb;
@@ -3569,16 +2922,8 @@ char *a, *b;
       |                                                                 |
       *-----------------------------------------------------------------*/
 
-#ifdef PROTO
 static Logical match_attrib(struct request req,
                             Enum *available, struct result *res)
-#else
-static Logical match_attrib( req, available, res )
-
-struct request  req;
-Enum           *available;
-struct result  *res;
-#endif
 
      /*   Congratulations on reading this far.  If you have been
       |   concentrating, you will know that this routine is the
@@ -3746,14 +3091,7 @@ fam %d var %d %d %d %d  dsn %d.%d.%d ht %d cset %d\n",
       return FALSE;
 }                        /*  routine  */
 
-#ifdef PROTO
 Logical FNTscale ( Enum *method, int *fontid, float *cheight, float scale, float gran)
-#else
-Logical FNTscale ( method, fontid, cheight, scale, gran)
-Enum *method;
-int *fontid;
-float *cheight, scale, gran;
-#endif
 
 
 {   float nheight = *cheight*scale;

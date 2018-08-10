@@ -29,7 +29,6 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 
      /*  The following routines are the only ones that are callable
       |  by the CGM system, so needs to obey the BEZxxx convention.
@@ -39,12 +38,6 @@ Extern void BEZtext( Textitem *, struct textatt *, Point ,
                      void (*)(int, Point *, Tmatrix, int) ),
             BEZgetfd( Textitem *);
 
-#else
-
-Extern void BEZtext(),               /*  Output the text  */
-            BEZgetfd();              /*  Text details query routine  */
-
-#endif
 
 #undef Extern
 

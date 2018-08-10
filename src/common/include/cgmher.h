@@ -33,18 +33,11 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 
 Extern void HERtext( Textitem *, Point ,
                      void (*)( int, Point*, Tmatrix, int ) ),
             HERgetfd( Textitem *txtit);
 
-#else
-
-Extern void HERtext(),             /*  Output the text  */
-            HERgetfd();            /*  Text details query routine  */
-
-#endif
 
 #undef Extern
 

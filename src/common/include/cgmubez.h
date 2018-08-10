@@ -123,7 +123,6 @@ static BezFlist  *B_fontlist=NULL;         /*  list of fonts in memory  */
       |  their names modified to the BEZxxx notation.
       */
 
-#ifdef PROTO
 
 static void BezOpen( void ),
             BezArc( int, int, BezDef *, Point* ),
@@ -134,16 +133,5 @@ static int BezLoad( Index );
 
 static double BezNest( int, BezDef*, struct textatt* );
 
-#else
-
-static void BezOpen(),        /*  Open up the system, load first font  */
-            BezArc(),         /*  Derive a Bezier curve from control points  */
-            BezDraw();          /*  Expand a component to curves  */
-
-static int BezLoad();         /*  Load a new font  */
-
-static double BezNest();      /*  Calculate nominal point allowance  */
-
-#endif
 
 #endif

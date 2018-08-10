@@ -97,7 +97,6 @@ typedef struct sectlist
    Logical contig;        /* True, if sections are contiguous */
 } Sectlist;  /* Polygon Section List */
 
-#ifdef PROTO
                           /* PolygonSet utilities */
 
    Extern void
@@ -132,17 +131,8 @@ typedef struct sectlist
 
 
 
-#else
-   Extern void POLget(), POLedge(), POLend();
-   Extern Polygonset * POLhandle();
-   Extern Int  POLnumber();
-   Extern Long POLselfx();
-   Extern Logical POLin();
-   Extern Point *POLaddcnrs();
-#endif
 
 
-#ifdef PROTO
                           /*  Polygon Sectionlist Utilities */
 
    Extern void
@@ -196,15 +186,6 @@ typedef struct sectlist
       POLinpoly_sl ( Sectlist *, Int, Int );
 
 
-#else
-   Extern void POLbbox_sl(), POLcontig_sl(), POLcount_sl(),
-               POLfree_sl(), POLinfind_sl(), POLinjoin_sl(),
-               POLjoin_sl(), POLnext_sl(), POLscursor_sl();
-   Extern Polygonset *POLpts_sl();
-   Extern Sectlist *POLclip_sl(), *POLgrow_sl(), *POLnoverlap_sl(),
-                   *POLpoly_sl();
-   Extern Logical POLinpoly_sl();
-#endif
 
 #undef Extern
 #endif /* CGMPOLY_H */

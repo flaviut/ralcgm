@@ -67,7 +67,6 @@ static FILE *cgmoc;
 
 /*  declare void internal functions  */
 
-#ifdef PROTO
 void CGMOchar( FILE*, Code, Long*, Float*, char* );
 static void MOCchkatt( Code type ),
             MOCcint( Code, Int, Long*, Long* ),
@@ -85,25 +84,6 @@ static void MOCchkatt( Code type ),
             MOCdircol( Posint r, Posint g, Posint b, Prec prec ),
             MOCcoldef( void ),
             MOCout( Code );
-#else
-void CGMOchar();           /* Main Output driver */
-static void MOCchkatt(),   /* Check Attributes */
-            MOCcint(),     /* Conditional output of integer */
-            MOCcenum(),    /* Conditional output of Enumerated types */
-            MOCcreal(),    /* Conditional output of a real */
-            MOCccol(),     /* Conditional output of a colour */
-            MOCrectc(),    /* Conditional output of a rectangle */
-            MOCvdc(),      /* Output n VDCs */
-            MOCpoints(),   /* Output a points list */
-            MOCattrib(),   /* Output an attribute */
-            MOCreal(),     /* Output a real */
-            MOCinteger(),  /* Output an Integer */
-            MOCcells(),    /* Output a colour list */
-            MOCstring(),   /* Output a text string */
-            MOCdircol(),   /* Output a direct colour */
-            MOCcoldef(),   /* Check if default colour prec & value are used */
-            MOCout();      /* Output a character to the buffer */
-#endif
 
 /*  Local Variables */
 
@@ -131,19 +111,7 @@ static char *func="CGMochar", mess[40];
 
 /***************************************************** CGMOchar ********/
 
-#ifdef PROTO
 void CGMOchar ( FILE *stream, Code c, Long *pi, Float *pr, char *pc)
-#else
-void CGMOchar ( stream, c, pi, pr, pc )
-
-/*   Character encoding Output. stream is output channel
-                                c is MF element code  */
-FILE *stream;
-Code c;
-Long *pi;
-Float *pr;
-char *pc;
-#endif
 {
    static Logical first = TRUE, first_pic = TRUE;
    static Prec loc_prec;
@@ -974,15 +942,7 @@ char *pc;
 
 /****************************************************** MOCchkatt ******/
 
-#ifdef PROTO
 static void MOCchkatt ( Code type )
-#else
-static void MOCchkatt ( type )
-
-/*   Check 'type' Attributes and send to Output if changed  */
-
-Code type;
-#endif
 
 {
     Logical bundled, indiv;
@@ -1395,15 +1355,7 @@ Code type;
 
 /****************************************************** MOCattrib ******/
 
-#ifdef PROTO
 static void MOCattrib ( Code code )
-#else
-static void MOCattrib ( code )
-
-/*  Outputs attribute code 'code'  */
-
-Code code;
-#endif
 
 {
    MOCout( code );
@@ -1625,18 +1577,7 @@ Code code;
 
 /****************************************************** MOCcint ********/
 
-#ifdef PROTO
 static void MOCcint ( Code code, Int n, Long *var1, Long *var2)
-#else
-static void MOCcint ( code, n, var1, var2 )
-
-/*  Conditionally outputs 'code' and 'n' integers starting at *var2
-    only if at least one is different      */
-
-Code code;
-Int n;
-Long *var1, *var2;
-#endif
 
 {
     register Long i;
@@ -1658,18 +1599,7 @@ Long *var1, *var2;
 
 /****************************************************** MOCcenum *******/
 
-#ifdef PROTO
 static void MOCcenum ( Code code, int n, Enum *var1, Enum *var2)
-#else
-static void MOCcenum ( code, n, var1, var2 )
-
-/*  Conditionally outputs 'code' and 'n' short integers starting at *var2
-    only if at least one is different      */
-
-Code code;
-int n;
-Enum *var1, *var2;
-#endif
 
 {
     register Long i;
@@ -1691,18 +1621,7 @@ Enum *var1, *var2;
 
 /****************************************************** MOCcreal *******/
 
-#ifdef PROTO
 static void MOCcreal ( Code code, Float *var1, Float *var2, Enum r)
-#else
-static void MOCcreal ( code, var1, var2, r )
-
-/*  Conditionally outputs 'code' and real *var2 if different from *var1
-    using precision specified by r      */
-
-Code code;
-Float *var1, *var2;
-Enum  r;
-#endif
 
 {
     if ( FABS(*var1-*var2) > (r == REAL ? cur.realmin : cur.vdcmin) )
@@ -1716,17 +1635,7 @@ Enum  r;
 
 /****************************************************** MOCrectc *******/
 
-#ifdef PROTO
 static void MOCrectc( Code code, struct rect *var1, struct rect *var2)
-#else
-static void MOCrectc( code, var1, var2 )
-
-/*  Conditionally outputs 'code' and 4 VDCs indicated by *var2
-    if different from *var1 using vdc precision   */
-
-Code code;
-struct rect *var1, *var2;
-#endif
 
 {
    if (cur.vdc_type == INTEGER)
@@ -1770,19 +1679,8 @@ struct rect *var1, *var2;
 
 /****************************************************** MOCccol ********/
 
-#ifdef PROTO
 static void MOCccol ( Code code, int n, struct colour *var1,
                                         struct colour *var2 )
-#else
-static void MOCccol (code, n, var1, var2)
-
-/*  Conditional output 'code' and colour indicated by *var2
-    if different from colour *var1  */
-
-Code code;
-int n;
-struct colour *var1, *var2;
-#endif
 
 {
     register int i, j;
@@ -1812,17 +1710,7 @@ struct colour *var1, *var2;
 
 /****************************************************** MOCvdc *********/
 
-#ifdef PROTO
 static void MOCvdc ( int n, Long *pi, Float *pr)
-#else
-static void MOCvdc ( n, pi, pr )
-
-/*  Outputs n VDCs starting at pi/pr  */
-
-int n;
-Long *pi;
-Float *pr;
-#endif
 {
    register Long j;
 
@@ -1838,18 +1726,7 @@ Float *pr;
 
 /****************************************************** MOCpoints ******/
 
-#ifdef PROTO
 static void MOCpoints( Long n, Long *pi, Float *pr, Enum set)
-#else
-static void MOCpoints( n, pi, pr, set )
-
-/*  Outputs n points starting at pi/pr
-    'set' indicates if this is a Polygon set */
-
-Long n, *pi;
-Float *pr;
-Enum set;
-#endif
 {
    static Logical first = TRUE;
    static Long ix, iy;
@@ -1897,18 +1774,7 @@ Enum set;
 
 /****************************************************** MOCreal ********/
 
-#ifdef PROTO
 static void MOCreal ( Double x, Enum type, Prec *ptlist )
-#else
-static void MOCreal ( x, type, ptlist )
-
-/*  Outputs real value 'x', using type 'type'
-    pointlist indicates if this is part of a pointslist  */
-
-Double x;
-Enum type;
-Prec *ptlist;
-#endif
 
 {
    register Long def_exp, mantissa, expnt;
@@ -1995,17 +1861,7 @@ Prec *ptlist;
 
 /****************************************************** MOCinteger *****/
 
-#ifdef PROTO
 static void MOCinteger ( Long intval, Logical present, Logical allowed)
-#else
-static void MOCinteger (intval, present, allowed)
-
-/*  Output an integer 'intval', 'present' indicates if exponent present
-    and 'allowed' if allowed */
-
-Long  intval;
-Logical present, allowed;
-#endif
 
 {
    register Long ival;
@@ -2040,16 +1896,7 @@ Logical present, allowed;
 
 /****************************************************** MOCstring ******/
 
-#ifdef PROTO
 static void MOCstring ( register char *s )
-#else
-static void MOCstring (s)
-
-/*  Output a text string 'string'
-    if CMS translate from EBCDIC to ASCII  */
-
-register char *s;
-#endif
 
 {
    register short c;
@@ -2070,20 +1917,8 @@ register char *s;
 
 /****************************************************** MOCcells *******/
 
-#ifdef PROTO
 static void MOCcells ( register Long n, register Long *pi,
                        Enum mode, Prec prec)
-#else
-static void MOCcells (n, pi, mode, prec)
-
-/*  Output a Colour list of 'n' cells, starting at pi
-    using local precision 'prec' (if zero use current precision)
-    and colour mode 'mode'  */
-
-register Long n, *pi;
-Enum mode;
-Prec prec;
-#endif
 
 {
    register Long i, j, k, num;
@@ -2353,16 +2188,7 @@ Prec prec;
 }
 
 /****************************************************** MOCdircol ******/
-#ifdef PROTO
 static void MOCdircol ( Posint r, Posint g, Posint b, Prec prec)
-#else
-static void MOCdircol ( r, g, b, prec )
-
-/*  Output a direct colour (r, g, b) using precision 'prec'  */
-
-Posint r, g, b;
-Prec prec;
-#endif
 {
    register Long i;
    register Code c;
@@ -2395,11 +2221,7 @@ Prec prec;
 
 /****************************************************** MOCcoldef ******/
 
-#ifdef PROTO
 static void MOCcoldef ( void )
-#else
-static void MOCcoldef ()
-#endif
 
 /*  Check if colour precision or Value extent are not set use defaults */
 
@@ -2434,15 +2256,7 @@ static void MOCcoldef ()
 
 /****************************************************** MOCout *********/
 
-#ifdef PROTO
 static void MOCout ( Code hex )
-#else
-static void MOCout ( hex )
-
-/*   Add character to buffer and Output if buffer is full */
-
-Code hex;
-#endif
 {
    register Int bits, j;
    register unsigned char c;

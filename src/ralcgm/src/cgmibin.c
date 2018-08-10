@@ -116,7 +116,6 @@ extern FILE *cgmi;
 
 /*  Routines in this Module */
 
-#ifdef PROTO
    void CGMIbin( void );
    static Code MIBmfdesc( Code ),
                MIBpdesc( Code c, Logical single ),
@@ -134,35 +133,11 @@ extern FILE *cgmi;
                MIBbits ( Prec, Prec* ),
                MIBpointlist( Long *pi, Float *pr, Logical set );
    static Code MIBnextbyte( void );
-#else
-   void CGMIbin();             /* Main driver routine */
-   static Code MIBmfdesc(),    /* Metafile Descriptor elements */
-               MIBpdesc(),     /* Picture Descriptor elements */
-               MIBpbody();     /* Picture Body Elements */
-   static void MIBtext(),      /* Text Elements */
-               MIBexternal(),  /* External Elements */
-               MIBstring(),    /* Get a string */
-               MIBvdc(),       /* Get a VDC */
-               MIBclist(),     /* Get a colour list */
-               MIBcolour();    /* Get a colour value */
-   static Code MIBopcode(),    /* Get an opcode */
-               MIBcichar();    /* Opcode conversion to character code */
-   static Double MIBreal();    /* Get a real */
-   static Long MIBint(),       /* Get an integer */
-               MIBbits (),     /* Get a number of bits */
-               MIBpointlist(); /* Get a list of points */
-   static Code MIBnextbyte();  /* Get a byte */
-#endif
 
 /*  External Routines */
 
-#ifdef PROTO
 extern Code CGMframe ( Code ),
             CGMoutput ( Code );
-#else
-extern Code CGMframe(),
-            CGMoutput();
-#endif
 
 /* Internal Encoding variables */
 
@@ -174,11 +149,7 @@ static char *func="CGMibin", mess[40];
 
 /******************************************************* CGMIbin *****/
 
-#ifdef PROTO
 void CGMIbin( void )
-#else
-void CGMIbin()
-#endif
 {
    Code c = NONOP;
 
@@ -214,12 +185,7 @@ void CGMIbin()
 
 /******************************************************* MIBmfdesc ***/
 
-#ifdef PROTO
 static Code MIBmfdesc( Code code )
-#else
-static Code MIBmfdesc( code )
-Code code;
-#endif
 
 /* Metafile Descriptor elements */
 
@@ -406,13 +372,7 @@ Code code;
 
 /******************************************************* MIBpdesc ****/
 
-#ifdef PROTO
 static Code MIBpdesc( Code code, Logical single)
-#else
-static Code MIBpdesc( code, single )
-Code code;
-Logical single;
-#endif
 
 /* Picture Descriptor elements */
 
@@ -509,13 +469,7 @@ Logical single;
 
 /******************************************************* MIBpbody ****/
 
-#ifdef PROTO
 static Code MIBpbody( Code code, Logical single)
-#else
-static Code MIBpbody( code, single )
-Code code;
-Logical single;
-#endif
 
 /* Picture Body elements */
 
@@ -971,12 +925,7 @@ Logical single;
 
 /******************************************************* MIBtext *******/
 
-#ifdef PROTO
 static void MIBtext( Code code )
-#else
-static void MIBtext( code )
-Code code;
-#endif
 {
    switch (code)
    {
@@ -1058,12 +1007,7 @@ Code code;
 
 /******************************************************* MIBexternal ***/
 
-#ifdef PROTO
 static void MIBexternal( Code code )
-#else
-static void MIBexternal( code )
-Code code;
-#endif
 {
    switch (code)
    {
@@ -1128,14 +1072,7 @@ Code code;
 
 /******************************************************* MIBclist ****/
 
-#ifdef PROTO
 static void MIBclist( Long *pi, Long nx, Prec prec, Enum type )
-#else
-static void MIBclist( pi, nx, prec, type )
-Long *pi, nx;
-Prec prec;
-Enum type;
-#endif
 
 /* Get a row of a cell array */
 
@@ -1197,15 +1134,7 @@ Enum type;
 
 /******************************************************* MIBbits *****/
 
-#ifdef PROTO
 static Long MIBbits ( Prec prec, Prec *bit )
-#else
-static Long MIBbits ( prec, bit )
-
-/* Get next 'prec' bits from input */
-
-Prec prec, *bit;
-#endif
 
 {
    static Posint oneword, wordmask;
@@ -1244,12 +1173,7 @@ Prec prec, *bit;
 
 /******************************************************* MIBstring ***/
 
-#ifdef PROTO
 static void MIBstring( char *s1 )
-#else
-static void MIBstring(s1)
-char *s1;
-#endif
 
 /* Get a string */
 
@@ -1294,14 +1218,7 @@ char *s1;
 
 /******************************************************* MIBpointlist */
 
-#ifdef PROTO
 static Long MIBpointlist( Long *pi, Float *pr, Logical set )
-#else
-static Long MIBpointlist( pi, pr, set )
-Long *pi;
-Float *pr;
-Logical set;
-#endif
 
 /* Get a list of points */
 
@@ -1363,14 +1280,7 @@ Logical set;
 
 /******************************************************* MIBvdc ******/
 
-#ifdef PROTO
 static void MIBvdc( Int n, Long *pi, Float *pr )
-#else
-static void MIBvdc(n, pi, pr )
-Int n;
-Long *pi;
-Float *pr;
-#endif
 
 /* Get n VDC values starting at array index i */
 
@@ -1388,13 +1298,7 @@ Float *pr;
 
 /******************************************************* MIBcolour ***/
 
-#ifdef PROTO
 static void MIBcolour( struct colour *c, Enum colour_mode )
-#else
-static void MIBcolour( c, colour_mode )
-struct colour *c;
-Enum colour_mode;
-#endif
 
 /* Get a colour value */
 
@@ -1413,11 +1317,7 @@ Enum colour_mode;
 
 /******************************************************* MIBopcode ***/
 
-#ifdef PROTO
 static Code MIBopcode( void )
-#else
-static Code MIBopcode()
-#endif
 
 /* Get an opcode */
 
@@ -1469,12 +1369,7 @@ static Code MIBopcode()
 
 /******************************************************* MIBcichar ***/
 
-#ifdef PROTO
 static Code MIBcichar( Code class, Code id )
-#else
-static Code MIBcichar( class, id )
-Code class, id;
-#endif
 
 /* Convert Binary opcode to Character opcode */
 
@@ -1531,13 +1426,7 @@ Code class, id;
 
 /******************************************************* MIBreal *****/
 
-#ifdef PROTO
 static Double MIBreal( Enum real_type, Prec real_prec )
-#else
-static Double MIBreal(real_type,real_prec)
-Enum real_type; /* Fixed or Floating point */
-Prec real_prec; /* From cur.(real/vdc)_bits, ie half the TOTAL number of bits */
-#endif
 
 /* Get a real value */
 
@@ -1667,13 +1556,7 @@ Prec real_prec; /* From cur.(real/vdc)_bits, ie half the TOTAL number of bits */
 
 /******************************************************* MIBint ******/
 
-#ifdef PROTO
 static Long MIBint( Prec int_prec, Enum int_type )
-#else
-static Long MIBint( int_prec, int_type )
-Prec int_prec;
-Enum int_type;
-#endif
 
 /* Get an integer value */
 
@@ -1715,11 +1598,7 @@ Enum int_type;
 
 /******************************************************* MIBnextbyte */
 
-#ifdef PROTO
 static Code MIBnextbyte( void )
-#else
-static Code MIBnextbyte()
-#endif
 
 /* Get a byte from the input file */
 

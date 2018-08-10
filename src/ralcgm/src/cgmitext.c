@@ -67,7 +67,6 @@
 
 extern FILE *cgmi;
 
-#ifdef PROTO
 
 /*  Output Drivers  */
 
@@ -92,31 +91,6 @@ extern Code CGMframe ( Code );
    static Enum MITenum( char* );
    static Long MITint( void );
    static double MITreal( void );
-#else
-/*  Output Drivers  */
-
-   extern Code CGMframe( );
-
-   /*  Routines in this Module  */
-
-   void CGMItext();           /*  Main interpreter */
-   static void MITexternal(), /*  External elements */
-               MITgettoken(), /*  Get next token */
-               MITstring(),   /*  Get a string */
-               MITvdc(),      /*  Get n VDC values */
-               MITcol();      /*  Get a colour  */
-   static Code MITmfdesc(),   /*  Metafile Descriptor elements */
-               MITpdesc(),    /*  Picture Descriptor elements */
-               MITpbody(),    /*  Picture Body elements */
-               MITtext(),     /*  Text elements */
-               MITcode(),     /*  Get a CGM element code */
-               MITdecode();   /*  Decode MF element to character value */
-   static Long MITcells(),    /*  Get a cell array */
-               MITpoints();   /*  Get a Points list */
-   static Enum MITenum();     /*  Decode an enumerated type */
-   static Long MITint();      /*  Get an Integer */
-   static double MITreal();   /*  Get a real */
-#endif
 
 /*  Local constants   */
 
@@ -144,11 +118,7 @@ static char *func = "CGMitext", mess[80];
 
 /**************************************************** CGMItext *********/
 
-#ifdef PROTO
 void CGMItext ( void )
-#else
-void CGMItext ( )
-#endif
 
 {
    Code c = ZERO;
@@ -191,13 +161,7 @@ void CGMItext ( )
 
 /**************************************************** MITmfdesc ********/
 
-#ifdef PROTO
 static Code MITmfdesc ( Code code )
-#else
-static Code MITmfdesc ( code )
-
-Code code;
-#endif
 
    /*   Metafile Descriptor elements  */
 
@@ -430,14 +394,7 @@ Code code;
 
 /**************************************************** MITpdesc *********/
 
-#ifdef PROTO
 static Code MITpdesc ( Code code, Logical single)
-#else
-static Code MITpdesc ( code, single )
-
-Code code;
-Logical single;
-#endif
 
 /*    Picture Descriptor Elements   */
 
@@ -535,14 +492,7 @@ Logical single;
 
 /**************************************************** MITpbody *********/
 
-#ifdef PROTO
 static Code MITpbody ( Code code, Logical single)
-#else
-static Code MITpbody ( code, single )
-
-Code code;
-Logical single;
-#endif
 
 {
    Code c, cf;
@@ -938,15 +888,7 @@ Logical single;
 
 /**************************************************** MITtext **********/
 
-#ifdef PROTO
 static Code MITtext ( Code code )
-#else
-static Code MITtext ( code )
-
-/*  Check for Text elements restricted if in State TEXT */
-
-Code code;
-#endif
 {
    switch (code)
    {
@@ -1028,13 +970,7 @@ Code code;
 
 /**************************************************** MITexternal ******/
 
-#ifdef PROTO
 static void MITexternal ( Code code )
-#else
-static void MITexternal ( code )
-
-Code code;
-#endif
 
 {
    switch (code)   /*  All other External Elements */
@@ -1089,11 +1025,7 @@ Code code;
 
 /**************************************************** MITcode **********/
 
-#ifdef PROTO
 static Code MITcode ( void )
-#else
-static Code MITcode ()
-#endif
 
 /*  get next token and return Element code  */
 
@@ -1121,15 +1053,7 @@ static Code MITcode ()
 
 /**************************************************** MITdecode ********/
 
-#ifdef PROTO
 static Code MITdecode( char *s )
-#else
-static Code MITdecode(s)
-
-/*  Decode a string as an Element code */
-
-char *s;
-#endif
 
 {
    register Int i, k, h, len, hit;
@@ -1216,15 +1140,7 @@ char *s;
 
 /**************************************************** MITgettoken ******/
 
-#ifdef PROTO
 static void MITgettoken( char *s )
-#else
-static void MITgettoken(s)
-
-/*  read characters until Separator is found and return in string 's' */
-
-char *s;
-#endif
 
 {
    static Logical intext = FALSE, quote = FALSE, comma = FALSE;
@@ -1398,11 +1314,7 @@ char *s;
 
 /**************************************************** MITint ***********/
 
-#ifdef PROTO
 static Long MITint( void )
-#else
-static Long MITint()
-#endif
 
 /*  Reads token and converts to integer  */
 
@@ -1444,11 +1356,7 @@ static Long MITint()
 
 /**************************************************** MITreal **********/
 
-#ifdef PROTO
 static Double MITreal( void )
-#else
-static Double MITreal()
-#endif
 
 /*  Convert next token to Real number  */
 
@@ -1462,15 +1370,7 @@ static Double MITreal()
 
 /**************************************************** MITenum **********/
 
-#ifdef PROTO
 static Enum MITenum( char *s )
-#else
-static Enum MITenum(s)
-
-/*  Return position of next enumerated type in string 's'  */
-
-char *s;
-#endif
 
 {
    char s1[STRING_MAX], s2[STRING_MAX];
@@ -1513,16 +1413,7 @@ char *s;
 
 /**************************************************** MITcol ***********/
 
-#ifdef PROTO
 static void MITcol( struct colour *col, Enum type )
-#else
-static void MITcol( col, type )
-
-/*  Read colour value and return in structure 'col' */
-
-struct colour *col;
-Enum type;
-#endif
 
 {
    if ( type == DIRECT )
@@ -1541,17 +1432,7 @@ Enum type;
 
 /**************************************************** MITvdc ***********/
 
-#ifdef PROTO
 static void MITvdc( Int n, Long *pi, Float *pr )
-#else
-static void MITvdc( n, pi, pr )
-
-/*  get 'n' VDC values starting at pint[k]/preal[k]  */
-
-Int n;
-Long *pi;
-Float *pr;
-#endif
 
 {
    register Long i;
@@ -1582,15 +1463,7 @@ Float *pr;
 
 /**************************************************** MITstring ********/
 
-#ifdef PROTO
 static void MITstring( char *s )
-#else
-static void MITstring(s)
-
-/*  Get a text string which must be delimited by QUOTES  */
-
-char *s;
-#endif
 {
 
 /* ignore until first QUOTE or TERMinator  */
@@ -1608,18 +1481,7 @@ char *s;
 
 /**************************************************** MITpoints ********/
 
-#ifdef PROTO
 static Long MITpoints( Long *pi, Float *pr, Enum set )
-#else
-static Long MITpoints( pi, pr, set )
-
-/*  Get a Points list starting at *pint/preal[0]
-    terminated by TERM or QUOTE  */
-
-Long *pi;
-Float *pr;
-Enum set;
-#endif
 {
    register Long i, *pmax;
    register Float *pmaxreal;
@@ -1693,17 +1555,7 @@ Enum set;
 
 /**************************************************** MITcells *********/
 
-#ifdef PROTO
 static Long MITcells( Long *pi, Long nx, Enum mode )
-#else
-static Long MITcells( pi, nx, mode )
-
-/*  get a list of Colours Terminated by <TERM>
-    returns number of cells  */
-
-Long *pi, nx;
-Enum mode;
-#endif
 
 {
    Long *pmax, ncol;

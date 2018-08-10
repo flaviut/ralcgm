@@ -93,7 +93,6 @@ extern struct attributes curatt;
 #define Extern extern
 #endif
 
-#ifdef PROTO    /* ANSI profiling */
 
 Extern Textitem *TXTaccinf(long, char *, struct textatt *, Enum *);
 Extern Textitem *TXTrestrict(Textitem*, double, double, struct textatt*);
@@ -112,34 +111,7 @@ Extern void BEZgetfd(Textitem *);
 #ifdef HERSHEY
 Extern void HERgetfd(Textitem *);
 #endif
-#ifdef XW
-Extern void Xw_getfd(Textitem *);
-#endif
 
-#else          /* Non-ANSI profiling */
-
-Extern Textitem *TXTaccinf();
-Extern Textitem *TXTrestrict();
-Extern void TXTalign ();
-Extern void TXTfree();
-Extern double TXTgwidth();
-Extern double TXTgheight();
-Extern void TXTxform();
-
-#ifdef POSTSCRIPT   /* Conditionally declare font details functions */
-Extern void PSgetfd();
-#endif
-#ifdef BEZIER
-Extern void BEZgetfd();
-#endif
-#ifdef HERSHEY
-Extern void HERgetfd();
-#endif
-#ifdef XW
-Extern void Xw_getfd();
-#endif
-
-#endif
 
 #undef Extern
 

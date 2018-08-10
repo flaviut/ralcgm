@@ -165,7 +165,6 @@ struct edgebundle {
 
 typedef struct edgebundle Edgebundle;
 
-#ifdef PROTO
 Extern void ATTline(int, struct linebundle *,
                     int, struct lineatt *);
 Extern void ATTmarker(int, struct markerbundle *,
@@ -176,13 +175,6 @@ Extern void ATTfill(int, struct fillbundle *,
                     int, struct fillatt *);
 Extern void ATTedge(int, struct edgebundle *,
                     int, struct edgeatt *);
-#else
-Extern void ATTline();
-Extern void ATTmarker();
-Extern void ATTtext();
-Extern void ATTfill();
-Extern void ATTedge();
-#endif         /*  ANSI block  */
 
 #undef Extern
 

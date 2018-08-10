@@ -47,15 +47,9 @@
 #endif
 
 
-#ifdef PROTO
    Extern void cgminit ( Enum, char* );  /*  Initialise CGM output */
    Extern void CGMout  ( Code, long*, float*, char* );
    Extern int CGMerror ( char *, int, Enum, char * );
-#else
-   Extern void cgminit ();
-   Extern void CGMout  ();
-   Extern int CGMerror ();
-#endif
 
 /*  Define functions as 6 character names for portability */
 
@@ -156,7 +150,6 @@
 
 /*  Metafile Delimiter elements */
 
-#ifdef PROTO
 Extern void  m_begmf ( char* );
 Extern void  m_endmf ( void );
 Extern void  m_begpic ( char* );
@@ -269,55 +262,6 @@ Extern void  m_escape ( int, char* );
 Extern void  m_message ( Enum, char* );
 Extern void  m_appldata ( int, char* );
 
-#else   /* Non-ANSI C - no prototyping */
-
-Extern void m_begmf(), m_endmf(), m_begpic(), m_begpicbody(), m_endpic();
-
-/*  Metafile Descriptor Elements */
-
-Extern void m_mfversion (), m_mfdesc(), m_vdctype(), m_integerprec (),
-            m_realprec(), m_indexprec(), m_colrprec(), m_colrindexprec(),
-            m_maxcolrindex(), m_colrvalueext(), m_mfelemlist(),
-            m_begmfdefaults(), m_endmfdefaults(),
-            m_fontlist(), m_charsetlist(), m_charcoding();
-
-/*  Picture Descriptor elements */
-
-Extern void m_scalemode(), m_colrmode(), m_linewidthmode(),
-            m_markersizemode(), m_edgewidthmode(), m_vdcext(), m_backcolr();
-
-/*  Control elements  */
-
-Extern void m_vdcintegerprec(), m_vdcrealprec(), m_auxcolr(),
-            m_transparency(), m_cliprect(), m_clip();
-
-/*  Graphical Primitives */
-
-Extern void m_line(), m_disjtline(), m_marker(), m_text(),
-            m_restrtext(), m_apndtext(), m_polygon(), m_polygonset(),
-            m_cellarray(), m_gdp(), m_rect(),
-            m_circle(), m_arc3pt(), m_arc3ptclose(), m_arcctr(),
-            m_arcctrclose(), m_ellipse(), m_elliparc(), m_elliparcclose();
-
-/*  Attributes */
-
-Extern void m_lineindex(), m_linetype(), m_linewidth(), m_linecolr(),
-            m_markerindex(), m_markertype(), m_markersize(), m_markercolr(),
-            m_textindex(), m_textfontindex(), m_textprec(),
-            m_charexpan(), m_charspace(), m_textcolr(), m_charheight(),
-            m_charori(), m_textpath(), m_textalign(),
-            m_charsetindex(), m_altcharsetindex(),
-            m_fillindex(), m_intstyle(), m_fillcolr(),
-            m_hatchindex(), m_patindex(),
-            m_edgeindex(), m_edgetype(), m_edgewidth(), m_edgecolr(),
-            m_edgevis(), m_fillrefpt(),
-            m_pattable(), m_patsize(), m_colrtable(), m_asf();
-
-/*  Escape and External elements */
-
-Extern void m_escape(), m_message(), m_appldata();
-
-#endif
 
 #undef Extern
 

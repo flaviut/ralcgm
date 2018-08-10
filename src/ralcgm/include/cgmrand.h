@@ -28,20 +28,12 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 
 /*  CGM Utilities in File  */
 
    Extern Code CGMframe( Code );
    Extern void CGMstframe( void );
 
-#else
-
-/*  CGM Utilities in File  */
-
-   Extern Code CGMframe();    /* Random Access end of frame processimg */
-   Extern void CGMstframe();  /* Random frame access initialisation */
-#endif
 
 #undef Extern
 #endif /* CGMRAND_H */

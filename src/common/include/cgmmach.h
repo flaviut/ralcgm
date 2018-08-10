@@ -105,31 +105,17 @@
 
 /*  Define if font system needed */
 
-#ifdef XW
-#define FONTSYSTEM
-#else
 #ifdef POSTSCRIPT
 #define FONTSYSTEM
 #else
-#ifdef IGL
-#define FONTSYSTEM
-#endif
-#endif
 #endif
 
 #ifndef MALLOCH    /*  prototype 'malloc' calls if no 'malloc.h' */
 #define MALLOCH
-#ifdef PROTO
 extern void *malloc (size_t);
 extern void *calloc (size_t, size_t);
 extern void *realloc (void *, size_t);
 extern void free(void *);
-#else
-extern char *malloc ();
-extern char *calloc ();
-extern char *realloc ();
-extern void free();
-#endif
 #endif  /*  MALLOCH */
 
 #ifndef FIXED_BUFFER  /* Use variable communications Area by default */

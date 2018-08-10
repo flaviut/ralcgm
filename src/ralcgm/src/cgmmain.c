@@ -146,7 +146,6 @@
 
 #include "cgminit.h"
 
-#ifdef PROTO
 
 /*  Functions in this module  */
 
@@ -178,81 +177,10 @@
    extern void CGMOps(FILE *, Code, long *, float *, char *);
    extern void PSoptions ( char * );
 #endif
-#ifdef IGL
-   extern void CGMOigl( Code, long *, float *, char * );
-   extern void IGLoptions ( char * );
-#endif
-#ifdef XW
-   extern void CGMOXw( Code, long *, float *, char * );
-   extern void Xw_options ( char * );
-#endif
-#ifdef HPGL
-   extern void CGMOhpgl( FILE *, Code, long *, float *, char * );
-   extern void HPGLoptions ( char * );
-#endif
-#ifdef TEK4200
-   extern void CGMOtek( FILE*, Code, long *, float *, char * );
-   extern void TEKoptions ( char * );
-#endif
-#ifdef WIN
-    extern void CGMOwin ( Code, long*, float*, char* );
-    extern void WINoptions( char*);
-#endif
 
    extern FILE *CGMfopen ( char*, char, Enum );
 
-#else /* non ANSI */
-   void CGMoutput();          /* Output function with profiling */
-   void CGMocode();           /* Output a single code */
 
-   static Logical CGMgetarg();
-   static Logical CGMmatch();
-   static void CGMgetenv();
-
-   extern int CGMerror ();
-
-   extern void CGMIchar();    /*   Character encoding  */
-   extern void CGMItext();    /*   Clear text encoding */
-   extern void CGMIbin();     /*   Binary encoding     */
-
-   extern void CGMOtext();    /*   Clear text encoding */
-   extern void CGMOchar();    /*   Character encoding  */
-   extern void CGMObin();     /*   Binary encoding     */
-
-#ifdef POSTSCRIPT
-   extern void CGMOps();      /*   Postscript Output */
-   extern void PSoptions();   /*   PostScript options */
-#endif
-#ifdef IGL
-   extern void CGMOigl();     /*   Iris Graphics Library  */
-   extern void IGLoptions();  /*   Iris options */
-#endif
-#ifdef XW
-   extern void CGMOXw();      /*   Xwindows Graphics  */
-#endif
-#ifdef HPGL
-   extern void CGMOhpgl();    /*   HPGL */
-   extern void HPGLoptions(); /*   HPGL options */
-#endif
-#ifdef TEK4200
-   extern void CGMOtek();     /*   Tektronix 4200 */
-   extern void TEKoptions();
-#endif
-#ifdef WIN
-   extern void CGMOwin();    /* Windows MetaFile and Graphics Device Interface */
-   extern void WINoptions();     /* Set WIN Options */
-#endif
-
-   extern FILE *CGMfopen ();  /*   File open routine */
-   extern void CGMstframe();  /*   Initiate random frame access */
-#endif /* ANSI */
-
-#ifdef XW
-   extern char terminal[];    /*   Display variable */
-#endif
-#ifdef WIN
-   extern HDC hdcOut;   /* Device Context Handle for MS Windows Driver */
-#endif
 
 /*  Input and Output files */
 
@@ -271,9 +199,6 @@ int dbfile;
 unsigned long malloc_size, malloc_ptr1, malloc_ptr2;
 #endif
 
-#ifdef WIN
-Logical errfileopen = FALSE;
-#endif
 
 /*  Define standard message format */
 
@@ -281,13 +206,7 @@ Logical errfileopen = FALSE;
 
 /******************************************************** main *********/
 int
-#ifdef PROTO
 main ( int argc, char **argv)
-#else
-main (argc, argv)
-int argc;
-char **argv;
-#endif
 
 {
    char *func = "CGMmain", s[80];
@@ -458,25 +377,6 @@ char **argv;
                      cgmdriver = POSTSCRIPT;
                      break;
 #endif
-#ifdef IGL
-                  case 'I':
-                     cgmdriver = IGL;
-                     break;
-#endif
-#ifdef XW
-                  case 'X':
-                     cgmdriver = XW;
-                     break;
-
-/* Kept for compatability */
-                  case 'A':   /*  look for terminal address   */
-                     if( CGMgetarg( pa, len, argv, terminal, FALSE) )
-                     {
-                       n++; argv++;
-                     }
-                     len = 0;
-                     break;
-#endif
                   case 'O':   /* Driver dependent options */
                      if( CGMgetarg( pa, len, argv, s, FALSE) )
                      {
@@ -597,29 +497,7 @@ char **argv;
 
 /* Now check driver dependent options */
 
-#ifdef IGL
-   if ( cgmdriver == IGL )
-   {
-      char *env;
 
-      env = (char *)getenv( "CGMIGLOPT" );
-      if( env != NULL ) strcpy(dev_options,env);
-      if ( Options ) strcat ( dev_options, user_options );
-      IGLoptions( dev_options );
-   }
-#endif /* IGL */
-
-#ifdef XW
-   if ( cgmdriver == XW )
-   {
-      char *env;
-
-      env = (char *)getenv( "CGMXWOPT" );
-      if( env != NULL ) strcpy(dev_options,env);
-      if ( Options ) strcat ( dev_options, user_options );
-      Xw_options( dev_options );
-   }
-#endif /* XW */
 
 #ifdef POSTSCRIPT
   if ( cgmdriver == POSTSCRIPT )
@@ -633,53 +511,9 @@ char **argv;
   }
 #endif  /* POSTSCRIPT */
 
-#ifdef HPGL
-  if ( cgmdriver == HPGL )
-  {
-     char *env;
 
-     env = (char *)getenv( "CGMHPGLOPT" );
-     if( env != NULL ) strcpy(dev_options,env);
-     if ( Options ) strcat ( dev_options, user_options );
-     HPGLoptions( dev_options );
-  }
-#endif /* IGL */
 
-#ifdef TEK4200
-  if ( cgmdriver == TEK4200 )
-  {
-     char *env;
 
-     env = (char *)getenv( "CGMTEKOPT" );
-     if( env != NULL ) strcpy(dev_options,env);
-     if ( Options ) strcat ( dev_options, user_options );
-     TEKoptions( dev_options );
-  }
-#endif  /* TEK4200 */
-
-#ifdef VGA
-  if ( cgmdriver == VGA )
-  {
-     char *env;
-
-     env = (char *)getenv( "CGMVGAOPT" );
-     if( env != NULL ) strcpy(dev_options,env);
-     if ( Options ) strcat ( dev_options, user_options );
-     VGAoptions( dev_options );
-  }
-#endif  /* VGA */
-
-#ifdef WIN
-  if ( cgmdriver == WIN )
-  {
-     char *env;
-
-     env = (char *)getenv( "CGMWINOPT" );
-     if( env != NULL ) strcpy(dev_options,env);
-     if ( Options ) strcat ( dev_options, user_options );
-     WINoptions( dev_options );
-  }
-#endif  /* WIN */
 
 /*  stdin, stdout and/or stderr are used unset filename */
 
@@ -799,9 +633,6 @@ char **argv;
             (void) sprintf( mess, "(Error file: %s)", cgmefile);
             exit ( CGMerror(func, ERR_OPENFILE, FATAL, mess) );
          }
-#ifdef WIN
-         errfileopen = TRUE;
-#endif
       }
 /* Announce CGM Version */
 
@@ -877,35 +708,9 @@ char **argv;
             }
             break;
 
-#ifdef IGL
-        case IGL: /* Iris Graphics Library */
-            break;
-#endif
-#ifdef XW
-        case XW:   /* Xwindows*/
-            break;
-#endif
 
-#ifdef TEK4200
-        case TEK4200:   /*  Tektronix 42xx */
-            if ( !outsuffix && outfilename )
-            {
-               strcpy(cgmofile, cgmroot);
-               strcat(cgmofile, FILESEP);
-               strcat(cgmofile, "tek");
-            }
-            break;
-#endif
 
-#ifdef VGA
-        case VGA:   /*  VGA Output  */
-            break;
-#endif
 
-#ifdef IBM8514
-        case IBM8514:   /*  8514 Output  */
-            break;
-#endif
 
 #ifdef POSTSCRIPT
         case POSTSCRIPT:   /*  Postscript Output  */
@@ -923,27 +728,7 @@ char **argv;
             break;
 #endif
 
-#ifdef HPGL
-        case HPGL:   /*  HPGL Output  */
-            if ( !outsuffix && outfilename )
-            {
-               strcpy(cgmofile, cgmroot);
-               strcat(cgmofile, FILESEP);
-               strcat(cgmofile, "hpgl");
-            }
-            break;
-#endif
 
-#ifdef WIN
-        case WIN:   /*  WIN Output  */
-            if ( !outsuffix && outfilename )
-            {
-               strcpy(cgmofile, cgmroot);
-               strcat(cgmofile, FILESEP);
-               strcat(cgmofile, "wmf");
-            }
-            break;
-#endif
 
         case CLEAR_TEXT:   /*  Clear Text Output  */
 #ifdef NOSTDOUT
@@ -972,18 +757,6 @@ char **argv;
             cgmo = CGMfopen(cgmofile, F_WRITE, BINARY);
             break;
 
-#ifdef TEK4200
-         case TEK4200:
-            cgmo = CGMfopen(cgmofile, F_WRITE, BINARY);
-            break;
-#endif
-#ifdef WIN
-          case WIN:
-            hdcOut = CreateMetaFile(cgmofile);
-            if(hdcOut != NULL) cgmo =(FILE*) NULL+1;
-            else cgmo = NULL;
-            break;
-#endif
 
          case CHARACTER:
             cgmo = CGMfopen(cgmofile, F_WRITE, CHARACTER);
@@ -1022,37 +795,6 @@ char **argv;
             break;
 #endif
 
-#ifdef IGL
-         case IGL:
-            OUTMESS "Iris screen" );
-            break;
-#endif
-#ifdef TEK4200
-         case TEK4200:
-            OUTMESS "Tektronics screen" );
-            break;
-#endif
-#ifdef HPGL
-         case HPGL:
-            OUTMESS "HPGL file" );
-            break;
-#endif
-#ifdef VGA
-         case VGA:
-            OUTMESS "VGA Screen" );
-            break;
-#endif
-#ifdef IBM8514
-         case IBM8514:
-            OUTMESS "8514 Screen" );
-            break;
-#endif
-#ifdef WIN
-         case WIN:
-            if(outfilename) OUTMESS "Windows MetaFile");
-            else OUTMESS "Windows Graphics Device Interface");
-            break;
-#endif
          case CLEAR_TEXT:
          default:
             OUTMESS "Clear Text Encoding" );
@@ -1138,11 +880,7 @@ char **argv;
 }
 
 /********************************************************* CGMgetenv ***/
-#ifdef PROTO
 static void CGMgetenv( void )
-#else
-static void CGMgetenv()
-#endif
 
 {
    char *env;
@@ -1179,15 +917,8 @@ static void CGMgetenv()
 }
 /********************************************************* CGMgetarg ***/
 
-#ifdef PROTO
 static Logical CGMgetarg ( char *pa, int len,
                            char **argv, char *s, Logical upcase )
-#else
-static Logical CGMgetarg ( pa, len, argv, s, upcase )
-char *pa, **argv, s[];
-int len;
-Logical upcase;
-#endif
 
 {
   register int i;
@@ -1219,13 +950,7 @@ Logical upcase;
 }
 
 /********************************************************* CGMmatch ****/
-#ifdef PROTO
 static Logical CGMmatch( char *str1, char *str2, int n )
-#else
-static Logical CGMmatch( str1, str2, n )
-char *str1, *str2;
-int n;
-#endif
 {
    if ( strlen(str1) < n || strlen(str1) > strlen(str2) ) return FALSE;
 
@@ -1240,13 +965,7 @@ int n;
 }
 
 
-#ifdef PROTO
 void CGMoutput ( Code c )
-#else
-void CGMoutput ( c )
-
-Code c;
-#endif
 
 {
    struct defaults saveset;
@@ -1268,13 +987,7 @@ Code c;
 
 /********************************************************* CGMocode ****/
 
-#ifdef PROTO
 void CGMocode ( Code c )
-#else
-void CGMocode ( c )
-
-Code c;
-#endif
 
 {
    switch ( cgmdriver )
@@ -1300,41 +1013,6 @@ Code c;
          break;
 #endif
 
-#ifdef IGL
-      case IGL:
-         CGMOigl(c, pint, preal, str );
-         break;
-#endif
-#ifdef XW
-      case XW:
-         CGMOXw( c, pint, preal, str );
-         break;
-#endif
-#ifdef VGA
-      case VGA:
-         CGMOvga(c, pint, preal, str );
-         break;
-#endif
-#ifdef IBM8514
-      case IBM8514:
-         CGMO8514(c, pint, preal, str );
-         break;
-#endif
-#ifdef HPGL
-      case HPGL:
-         CGMOhpgl(cgmo, c, pint, preal, str );
-         break;
-#endif
-#ifdef TEK4200
-      case TEK4200:
-         CGMOtek(cgmo, c, pint, preal, str );
-         break;
-#endif
-#ifdef WIN
-       case WIN:
-      CGMOwin (c, pint, preal, str);
-      break;
-#endif
       default:
          exit ( CGMerror("CGMoutput", ERR_NOCODE, FATAL, NULLSTR) );
    }

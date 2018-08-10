@@ -74,22 +74,10 @@
            (Float)(cur.max_rgb.col-cur.min_rgb.col) + cur.min_rgb.col ) )
 
 /* Internal static routine */
-#ifdef PROTO
    static void set_shared(int, Sharedatt *);
-#else
-   static void set_shared();
-#endif
 
 /***************************************************** ATTline *********/
-#ifdef PROTO
 void ATTline( int nb, Linebundle *lb, int nc, Lineatt *la)
-#else
-void ATTline( nb, lb, nc, la )
-
-int nb, nc;
-Linebundle *lb;
-Lineatt *la;
-#endif
 
 {
    Index index = SAFEB(curatt.line_ind);
@@ -135,15 +123,7 @@ Lineatt *la;
 }
 
 /***************************************************** ATTmarker *******/
-#ifdef PROTO
 void ATTmarker( int nb, Markerbundle *mb, int nc, Markeratt *ma)
-#else
-void ATTmarker( nb, mb, nc, ma )
-
-int nb, nc;
-Markerbundle *mb;
-Markeratt *ma;
-#endif
 
 {
    Index index = SAFEB(curatt.mark_ind);
@@ -189,15 +169,7 @@ Markeratt *ma;
 }
 
 /***************************************************** ATTtext *********/
-#ifdef PROTO
 void ATTtext( int nb, Textbundle *tb, int nc, Textatt *ta)
-#else
-void ATTtext( nb, tb, nc, ta )
-
-int nb, nc;
-Textbundle *tb;
-Textatt *ta;
-#endif
 
 {
    Index index = SAFEB(curatt.text_ind);
@@ -271,15 +243,7 @@ Textatt *ta;
 }
 
 /***************************************************** ATTfill *********/
-#ifdef PROTO
 void ATTfill( int nb, Fillbundle *fb, int nc, Fillatt *fa )
-#else
-void ATTfill( nb, fb, nc, fa )
-
-int nb, nc;
-Fillbundle *fb;
-Fillatt *fa;
-#endif
 
 {
    Index index = SAFEB(curatt.fill_ind);
@@ -324,20 +288,7 @@ Fillatt *fa;
 }
 
 /***************************************************** ATTedge *********/
-#ifdef PROTO
 void ATTedge( int nb, Edgebundle *eb, int nc, Edgeatt *ea)
-#else
-void ATTedge( nb, eb, nc, ea )
-
-/**********************
-*   AMR - Should vdc type be checked before setting edge width when
-*         width individual ??????
-**********************/
-
-int nb, nc;
-Edgebundle *eb;
-Edgeatt *ea;
-#endif
 
 {
    Index index = SAFEB(curatt.edge_ind);
@@ -383,14 +334,7 @@ Edgeatt *ea;
 }
 
 /***************************************************** set_shared ******/
-#ifdef PROTO
 static void set_shared( int nc, Sharedatt *ps )
-#else
-static void set_shared( nc, ps )
-
-int nc;
-Sharedatt *ps;
-#endif
 
 {
    if (cur.color_mode == INDEXED)

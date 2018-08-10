@@ -108,7 +108,6 @@ static Edge *etab;    /* Pointer to edge table */
 static Long n_et;     /* Upper bound to number of edges in edge table */
 static Hipeak hipk;   /* Highest peak in edge table */
 
-#ifdef PROTO
 static void
 
   /* Truncate the highest peak */
@@ -145,14 +144,6 @@ static Logical
   /* Extract highest trapezoid from edge table */
   trap_extract( Float, Trapezoid *);
 
-#else
-static Logical edge_remove(), peak_truncate(), touching_peak();
-static Edge *edge_table();
-static Hipeak *hi_peak();
-static Logical edge_cross(),  edge_swap(),
-               et_validate(), horiz_edge_rm(),
-               trap_extract();
-#endif
 
 #ifdef DEBUG
 static void et_diagnose();
@@ -161,19 +152,8 @@ static void et_diagnose();
 
 /***************************************************** TRPfill ********/
 
-#ifdef PROTO
 void TRPfill (Polygonset *pset, Int numtz, Float ytol,
               void (*trpdraw) (Int, Trapezoid *) )
-#else
-void TRPfill ( pset, numtz, ytol, trpdraw )
-
-/*  Fills a polygon(set) using trapezoid decomposition  */
-
-Polygonset *pset;    /* Polygon Set */
-Int numtz;           /* Maximum number of trapezoids to be stored */
-Float ytol;          /* Y-tolerance for trapezoids */
-void (*trpdraw)();   /* Device Trapezoid Filling routine */
-#endif
 
 {
    Trapezoid *trap;       /* Trapezoid array */
@@ -367,18 +347,7 @@ void (*trpdraw)();   /* Device Trapezoid Filling routine */
 }
 
 /******************************************************* edge_cross ***/
-#ifdef PROTO
 static Logical edge_cross ( Edge *le, Edge *re )
-#else
-static Logical edge_cross ( le, re )
-
-/* Determines if an edge from the left crosses one from the right
- * when the top end of one edge is on the other edge
- * and returns answer.
- */
-Edge *le;      /* The edge from left */
-Edge *re;      /* The edge from right */
-#endif
 
 /* ALGORITHM
  * The slopes of the two edges are compared, taking into account
@@ -427,17 +396,7 @@ Edge *re;      /* The edge from right */
 }
 
 /**************************************************** edge_remove *****/
-#ifdef PROTO
 static Logical edge_remove( Edge *rem )
-#else
-static Logical edge_remove ( rem )
-/*
- *  Remove an edge truncated to zero length from the edge table
- *  while preserving the attached implicit peak edge
- *  Returns whether the edge is a trough
- */
-Edge *rem;  /* Edge to be removed */
-#endif
 
 /* ALGORITHM
    Find the edge below the one to be removed
@@ -500,18 +459,7 @@ Edge *rem;  /* Edge to be removed */
 }
 
 /******************************************************* edge_swap ****/
-#ifdef PROTO
 static Logical edge_swap ( Edge *le, Edge *re )
-#else
-static Logical edge_swap ( le, re )
-
-/* Swap two edges with tops at same level, if necessary,
- * to ensure that the left edge goes down left of the right edge
- * and return TRUE if the edges were swapped.
- */
-Edge *le;      /* The left edge */
-Edge *re;      /* The right edge */
-#endif
 
 /* ALGORITHM
  * The top ends of the edges are assumed to be level
@@ -558,18 +506,7 @@ Edge *re;      /* The right edge */
 
 /***************************************************** edge_table ******/
 
-#ifdef PROTO
 static Edge * edge_table( Polygonset *pset )
-#else
-static Edge * edge_table( pset )
-
-/* Makes a sorted edge table for trapezoid decomposition
-   of a polygon(set)
-   and return its first (highest edge) */
-
-Polygonset *pset;     /* The polygon(set) */
-
-#endif
 /*     ALGORITHM
  *     Constructs a sorted Edge Table from the supplied polygon set.
  *     Each in the table edge consists of
@@ -718,18 +655,7 @@ Polygonset *pset;     /* The polygon(set) */
 }
 
 /***************************************************** et_validate *****/
-#ifdef PROTO
 static Logical et_validate ()
-#else
-static Logical et_validate ()
-
-/* Manipulate the edge table to ensure that the
-   edges forming peaks are next to each other.
-   Then the implicit peak edges do not overlap, thereby preventing
-   trapezoids from overlapping.
-   Return TRUE, if corrupt edge table is detected.
-*/
-#endif
 
 /* ALGORITHM
  *
@@ -883,14 +809,7 @@ static Logical et_validate ()
 }
 
 /***************************************************** hi_peak *********/
-#ifdef PROTO
 static Hipeak * hi_peak()
-#else
-static Hipeak * hi_peak ()
-
-/* Return the highest peak in the edge table */
-
-#endif
 
 /* ALGORITHM
  */
@@ -997,16 +916,7 @@ static Hipeak * hi_peak ()
 }
 
 /***************************************************** horiz_edge_rm ***/
-#ifdef PROTO
 static Logical horiz_edge_rm ( Int *rm )
-#else
-static Logical horiz_edge_rm ( rm )
-
-/* Remove any horizontal edges from the top of the edge table */
-/* Return ( at least one pair of sloping edges found ) */
-
-Int *rm;      /* Number of horizontal edges removed */
-#endif
 {
    Edge *pk0, *pk1, *pk2;     /* Possible Peak */
    Edge *side;                /* current side of peak */
@@ -1139,16 +1049,7 @@ etab->next->hiye->y);
 }
 
 /***************************************************** peak_truncate ***/
-#ifdef PROTO
 static void peak_truncate( Trapezoid *tz )
-#else
-static void peak_truncate ( tz )
-/*
- * Truncate the highest peak down to the base of
- * the trapezoid being extracted
- */
-Trapezoid *tz;  /* Trapezoid being extracted */
-#endif
 
 /* ALGORITHM
  */
@@ -1206,17 +1107,7 @@ Trapezoid *tz;  /* Trapezoid being extracted */
 }
 
 /*********************************************** touching_peak *********/
-#ifdef PROTO
 static void touching_peak ( Peakedge *lp, Peakedge *rp, Enum *pass)
-#else
-static void touching_peak ( lp, rp, pass )
-
-/* Deal with touching peak edges and return TRUE if error */
-
-Peakedge *lp;  /* The left touching peak edge */
-Peakedge *rp;  /* The right touching peak edge */
-Enum  *pass;   /* Pass status */
-#endif
 
 /* ALGORITHM
  *  Either joins the two implicit peak edges together
@@ -1289,17 +1180,7 @@ Enum  *pass;   /* Pass status */
 }
 
 /***************************************************** trap_extract ****/
-#ifdef PROTO
 static Logical trap_extract( Float ymin, Trapezoid *tz )
-#else
-static Logical trap_extract( ymin, tz )
-
-Float ymin;    /* Base of clipping rectangle or VDC extent (minimum Y) */
-Trapezoid *tz; /* Place for the trapezoid */
-
-/* ALGORITHM
- */
-#endif
 {
    Hipeak * hpeak;             /* The highest peak */
    Long n_old, n_new;          /* Number of edges in old & new table */

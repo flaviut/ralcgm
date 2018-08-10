@@ -30,7 +30,6 @@
 #endif
 
 
-#ifdef PROTO
                                /*  GDP Utilities    */
 
    Extern void
@@ -53,10 +52,6 @@
         GDPellipse( Point *cen, Point *cdp1, Point *cdp2,
                     Point *a, Point *b,
                     Double rat, long *np, LPOINT(pt), Enum close );
-#else
-   Extern void GDPcentre(), GDPcircle(), GDPellipse(), GDParc(),
-               GDPcgm();
-#endif
 
 #undef Extern
 #endif /* CGMGDP_H */

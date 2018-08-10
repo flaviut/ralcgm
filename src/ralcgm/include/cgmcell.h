@@ -30,7 +30,6 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 Extern void
 /* Get cell array parameters from driver argument list */
       CELLparget( Long *, Float *, Point *, Point *, Point *,
@@ -44,9 +43,6 @@ Extern void
                  void (*)(Index, RGBcolour, Code),      /* Set colour */
                  void (*)(Int, Point*, Tmatrix, Int) ); /* linedraw */
 
-#else
-Extern void CELLparget(), CELLtran(), CELLfill();
-#endif
 
 #undef Extern
 #endif /* CGMCELL_H */

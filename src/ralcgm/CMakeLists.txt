@@ -7,9 +7,6 @@ add_executable(ralcgm
     src/cgmotext.c
     src/cgmobin.c
     src/cgmops.c
-    src/cgmoxw.c
-    src/cgmohpgl.c
-    src/cgmotek.c
     src/cgmrand.c
     src/cgmprof.c
     src/cgminput.c
@@ -29,13 +26,11 @@ add_executable(ralcgm
     $<TARGET_OBJECTS:ralcgm_common>
 )
 
-find_package(X11)
-
 target_include_directories(ralcgm PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     $<TARGET_PROPERTY:ralcgm_common,INCLUDE_DIRECTORIES>
 )
-target_link_libraries(ralcgm X11 m)
+target_link_libraries(ralcgm m)
 
 install(TARGETS ralcgm DESTINATION bin)

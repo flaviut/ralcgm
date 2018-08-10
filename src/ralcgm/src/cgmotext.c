@@ -60,7 +60,6 @@ static FILE *cgmot;
 
 /*  Functions in this Module  */
 
-#ifdef PROTO
    void CGMOtext( FILE*, Code, Long*, float*, char* );
    static void MOTpoints( Long, Long *, float *, Enum ),
                MOTvdc( int, Long*, float* ),
@@ -68,15 +67,6 @@ static FILE *cgmot;
                MOTstring( char* ),
                MOTenum( char *s, Enum type ),
                MOTprcode( Code );
-#else
-   void CGMOtext();     /* Main Output */
-   static void MOTpoints(),    /* Output a points list */
-               MOTvdc(),       /* Output n VDCs */
-               MOTcol(),       /* Output a colour */
-               MOTstring(),    /* Output a text string  */
-               MOTenum(),      /* Output an enumerated type */
-               MOTprcode();    /* Output a metafile element code */
-#endif
 
 /*  Local macro */
 
@@ -97,19 +87,7 @@ static char *func = "CGMotext", mess[40];
 
 /****************************************************** CGMOtext *******/
 
-#ifdef PROTO
 void CGMOtext (FILE *stream, Code c, Long *pi, Float *pr, char *str)
-#else
-void CGMOtext (stream, c, pi, pr, str)
-
-/*  Outputs Clear Text for MF element 'c' on Output stream 'stream'  */
-
-Code c;
-Long *pi;
-float *pr;
-char *str;
-FILE *stream;
-#endif
 {
    static Logical first = TRUE, first_pic = TRUE;
    static Prec loc_prec;
@@ -1006,18 +984,7 @@ edgetype/edgewidth/edgecolr", (Enum) *pi++);
 
 /******************************************************* MOTpoints *****/
 
-#ifdef PROTO
 static void MOTpoints ( Long n, Long *pi, Float *pr, Enum set)
-#else
-static void MOTpoints (n, pi, pr, set)
-
-/*  Output 'n' points starting at pi/pr
-    'set' indicates if this is a POLYGONSET   */
-
-Long n, *pi;
-float *pr;
-Enum set;
-#endif
 
 {
     register Long i, k, no;
@@ -1066,17 +1033,7 @@ Enum set;
 
 /******************************************************* MOTvdc ********/
 
-#ifdef PROTO
 static void MOTvdc ( int n, Long *pi, Float *pr)
-#else
-static void MOTvdc (n, pi, pr)
-
-/*  Output 'n' VDCs strating at pi/pr  */
-
-int n;
-Long *pi;
-Float *pr;
-#endif
 
 {
     register Long j, k, no;
@@ -1110,16 +1067,7 @@ Float *pr;
 
 /******************************************************* MOTcol ********/
 
-#ifdef PROTO
 static void MOTcol ( struct colour *c, Enum type )
-#else
-static void MOTcol (c, type)
-
-/*  Output colour 'c' depending on Color_mode 'type'  */
-
-struct colour *c;
-Enum type;
-#endif
 {
     if (type == DIRECT)
        TEXTOUT " %ld %ld %ld",  c->red, c->green, c->blue);
@@ -1131,16 +1079,7 @@ Enum type;
 
 /******************************************************* MOTstring *****/
 
-#ifdef PROTO
 static void MOTstring( char *s )
-#else
-static void MOTstring( s )
-
-/*  Output text string 's'
-    if ' then output ''   */
-
-char *s;
-#endif
 {
    register Long i;
 
@@ -1156,17 +1095,7 @@ char *s;
 
 /******************************************************* MOTenum *******/
 
-#ifdef PROTO
 static void MOTenum ( char *s, Enum k )
-#else
-static void MOTenum ( s, k )
-
-/*   Output enumerated type 'k' using string 's'
-     enumerated values are seperated by '/'    */
-
-char *s;
-Enum k;
-#endif
 
 {
    register Long i = ZERO, j = ZERO, n = k;
@@ -1204,15 +1133,7 @@ Enum k;
 
 /******************************************************* MOTprcode *****/
 
-#ifdef PROTO
 static void MOTprcode ( Code code )
-#else
-static void MOTprcode ( code )
-
-/*   Output Metafile element name 'code ' */
-
-Code code;
-#endif
 
 {
    register int i, group, index, upcase = FALSE;

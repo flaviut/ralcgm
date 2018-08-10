@@ -37,16 +37,7 @@ extern struct bin_defaults curbin;
 
 /**************************************************** CGMdefaults ******/
 
-#ifdef PROTO
 void CGMdefaults( Code c, Enum type )
-#else
-void CGMdefaults( c, type )
-
-/*  Set default values for CGM structures */
-
-Code c;
-Enum type;
-#endif
 {
 
    switch (c)
@@ -302,12 +293,7 @@ Enum type;
 
 /****************************************************** CGMsetasf ******/
 
-#ifdef PROTO
 void CGMsetasf( long *pi )
-#else
-void CGMsetasf( pi )
-long *pi;
-#endif
 {
    long n, num;
    Int type, value, k, l;
@@ -365,13 +351,7 @@ long *pi;
 #ifdef VAR_BUFFER
 /****************************************************** CGMialloc ******/
 
-#ifdef PROTO
 long *CGMialloc( long *pi, long size)
-#else
-long *CGMialloc( pi, size )
-long *pi;
-long size;
-#endif
 {
    long pt = pi - pint;
    long buffsize;
@@ -395,13 +375,7 @@ long size;
 }
 /****************************************************** CGMialloc ******/
 
-#ifdef PROTO
 float *CGMralloc( float *pr, long size)
-#else
-float *CGMralloc( pr, size )
-float *pr;
-long size;
-#endif
 {
    long pt = pr - preal, buffsize;
    char mess[80];
@@ -424,13 +398,7 @@ long size;
 }
 /****************************************************** CGMsalloc ******/
 
-#ifdef PROTO
 char *CGMsalloc( char *ps, long size )
-#else
-char *CGMsalloc( ps, size)
-char *ps;
-long size;
-#endif
 {
    long pt = ps - str, buffsize;
    char mess[80];

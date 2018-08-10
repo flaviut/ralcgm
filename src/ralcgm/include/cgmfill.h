@@ -28,7 +28,6 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 
 /* Main Fill Area routine  */
    Extern void FILarea( Long,  Long*, Float*, Enum, Logical,
@@ -38,10 +37,6 @@
 /* Classify polygon type */
    Extern Enum FILpolycheck( Long, Point* );
 
-#else
-   Extern void FILarea();
-   Extern Enum FILpolycheck();
-#endif  /* ANSI */
 
 #undef Extern
 #endif /* CGMFILLH */

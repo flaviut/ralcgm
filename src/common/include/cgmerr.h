@@ -45,18 +45,10 @@
 #endif
 
 /*  Error function call */
-#ifdef PROTO
    Extern int CGMerror ( char*, int, Enum, char*);
-#else
-   Extern int CGMerror ();
-#endif
 
 /* Get Error Count */
-#ifdef PROTO
    Extern int CGMcounterr ( void );
-#else
-  Extern int CGMcounterr();
-#endif
 
 /*  Macro to make life a little simpler  */
 

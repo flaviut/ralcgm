@@ -40,37 +40,9 @@
 
 /* Give values to other Output drivers */
 
-#ifdef XW
-#undef XW
-#define  XW         (Enum) 11
-#endif
 #ifdef POSTSCRIPT
 #undef POSTSCRIPT
 #define  POSTSCRIPT (Enum) 21
-#endif
-#ifdef IGL
-#undef IGL
-#define  IGL        (Enum) 31
-#endif
-#ifdef HPGL
-#undef HPGL
-#define  HPGL       (Enum) 41
-#endif
-#ifdef TEK4200
-#undef TEK4200
-#define  TEK4200    (Enum) 51
-#endif
-#ifdef VGA
-#undef VGA
-#define  VGA        (Enum) 61
-#endif
-#ifdef IBM8514
-#undef IBM8514
-#define  IBM8514    (Enum) 71
-#endif
-#ifdef WIN
-#undef WIN
-#define  WIN    (Enum) 81
 #endif
 
 /*  CGM profiles allowed  */

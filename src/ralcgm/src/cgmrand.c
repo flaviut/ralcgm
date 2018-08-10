@@ -49,7 +49,6 @@
 #include "cgmin.h"
 #include "cgmrand.h"
 
-#ifdef PROTO
 
 /*  Internal routines */
 
@@ -61,24 +60,6 @@ static void CGMfrsave( Code ),
 
    extern void CGMoutput( Code c );
 
-#else
-
-/*  CGM Utilities in File  */
-
-   Code CGMframe();    /* Random Access end of frame processimg */
-   void CGMstframe();  /* Store disk position of start of first metafile */
-
-   static void CGMfrsave(),  /* Random Access save frame pointer */
-               CGMmfsave(),  /* Random access save metafile pointer */
-               CGMpoint();   /* Random Access change disk address */
-
-   extern void CGMoutput();
-
-#ifndef HAVE_SETPOS
-   static int fgetpos(), fsetpos(); /* ANSI routines */
-#endif
-
-#endif
 
 /*  External Variables not declared in CGM.H  */
 
@@ -101,13 +82,7 @@ extern Enum cgminput;
 
 /****************************************************** CGMframe *******/
 
-#ifdef PROTO
 Code CGMframe( Code code )
-#else
-Code CGMframe( code )
-
-Code code;
-#endif
 /*  This routine is the main entry point from the input driver
     which checks for random frame access, stores and changes position
     in the input file and calls the output driver
@@ -257,13 +232,7 @@ Code code;
 
 /****************************************************** CGMpoint **/
 
-#ifdef PROTO
 static void CGMpoint( Int frame, Code *rc )
-#else
-static void CGMpoint( frame, rc )
-Int frame;
-Code *rc;
-#endif
 /*  Function to move file to 'frame' */
 {
     struct data_frame *p;
@@ -304,10 +273,6 @@ Code *rc;
 #ifndef HAVE_SETPOS
     DMESS " %4d\n", p->disk_addr );
 #else
-#ifdef C370
-    DMESS " %4d %4d\n", p->disk_addr.__fpos_elem[1],
-                        p->disk_addr.__fpos_elem[41] );
-#endif
 #endif
 #endif
 /* Unset EOF flag if neccessary */
@@ -317,12 +282,7 @@ Code *rc;
 
 /****************************************************** CGMfrsave **/
 
-#ifdef PROTO
 static void CGMfrsave( Code code)
-#else
-static void CGMfrsave( code )
-Code code;
-#endif
 /*  Save frame pointer either in MF descriptor or at ENDPIC
     so that pointer is set to next BEGPICBODY or ENDMF */
 {
@@ -362,9 +322,6 @@ Code code;
 #ifndef HAVE_SETPOS
     DMESS " %4d\n", disk_addr );
 #else
-#ifdef C370
-    DMESS " %4d %4d\n", disk_addr.__fpos_elem[1], disk_addr.__fpos_elem[4] );
-#endif
 #endif
 #endif
 
@@ -396,11 +353,7 @@ Code code;
 
 /****************************************************** CGMmfsave **/
 
-#ifdef PROTO
 static void CGMmfsave( void )
-#else
-static void CGMmfsave()
-#endif
 /*  Save metafile pointer at ENDMF */
 {
    struct data_frame *pm;
@@ -444,11 +397,7 @@ static void CGMmfsave()
 
 /****************************************************** CGMstframe *****/
 
-#ifdef PROTO
 void CGMstframe( void )
-#else
-void CGMstframe( )
-#endif
 /* Initialise Metafile data_frame at start of file */
 {
    fpos_t start_pos;
@@ -474,9 +423,6 @@ void CGMstframe( )
 #ifndef HAVE_SETPOS
     DMESS " %4d\n", start_pos );
 #else
-#ifdef C370
-    DMESS " %4d %4d\n", start_pos.__fpos_elem[1], start_pos.__fpos_elem[4] );
-#endif
 #endif
 #endif
 

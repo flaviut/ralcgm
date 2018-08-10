@@ -48,12 +48,7 @@
 
 /********************************************************* CGMpath ***/
 
-#ifdef PROTO
 char *CGMpath ( char *filename, char *extension )
-#else
-char *CGMpath ( filename, extension )
-char *filename, *extension;
-#endif
 
 /*
  *    CGMpath(): Function to build up a  full pathname in a (hopefully)
@@ -117,13 +112,7 @@ char *filename, *extension;
 }
 /********************************************************* CGMfopen ****/
 
-#ifdef PROTO
 FILE *CGMfopen ( char *filename, char mode, Enum type )
-#else
-FILE *CGMfopen ( filename, mode, type )
-char *filename, mode;
-Enum type;
-#endif
 
 /*
  *    CGMfopen(): Function to open a file in a system independent way.
@@ -160,16 +149,6 @@ Enum type;
    if ( type == BINARY || type == CHARACTER )
 #ifdef IBMC
       strcat(fmode, "b");
-#endif
-#ifdef C370
-   {
-      strcat(fmode, "b");
-      if ( mode == F_WRITE )
-         strcat( fmode, ", recfm=f, lrecl=80" );
-   }
-   else
-      if ( mode == F_WRITE )
-         strcat( fmode, ", recfm=v, lrecl=132" );
 #endif
 #ifdef WATC
    {
@@ -251,12 +230,7 @@ Enum type;
 * Bugs           :
 *     Doesn't check that the resulting filename is valid!
 ************************************************************************/
-#ifdef PROTO
 void CGMmodfextn( char *fn , char *extn )
-#else
-void CGMmodfextn( fn , extn )
-char *fn, *extn;
-#endif
 {
   char *cp1, *filesep = FILESEP;
 
@@ -381,12 +355,7 @@ return;
 * Bugs          :
 *     Doesn't check that the re-constructed filename is valid.
 ************************************************************************/
-#ifdef PROTO
 void CGMmodfname( char *fn , char *newname )
-#else
-void CGMmodfname( fn , newname )
-char *fn, *newname;
-#endif
 {
   char *cp1, *fn2, *filesep = FILESEP, *func="CGMmodfname";
   char *extnptr;
@@ -475,12 +444,7 @@ return;
 *       to a string, and uses the first character in order to do comparisons.
 *
 ************************************************************************/
-#ifdef PROTO
 unsigned short CGMgetfname( char *fname, char **fnptr)
-#else
-unsigned short CGMgetfname( fname, fnptr )
-char *fname, **fnptr;
-#endif
 {
   char *filesep = FILESEP;
   char *fsptr, *cptr;

@@ -29,7 +29,6 @@
 #define Extern extern
 #endif
 
-#ifdef PROTO
 Extern void
       /* Put colours into CGM colour table */
       COLRput (Long , Long *),
@@ -41,10 +40,6 @@ Extern RGBcolour *
       /* Get entry of CGM colour table */
       COLRtab (Index);
 
-#else
-Extern void COLRput(), COLRfree();
-Extern RGBcolour *COLRtab();
-#endif
 
 #undef Extern
 #endif /* CGMCOLR_H */

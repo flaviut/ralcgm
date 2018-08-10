@@ -166,7 +166,6 @@
 #include "cgmpoly.h"
 #include "cgmtrap.h"
 
-#ifdef PROTO
 
 /* Functions in this Module  */
 
@@ -212,45 +211,6 @@ void         PSTRPdraw( Int, Trapezoid *);
 /*  External routines */
 extern FILE *CGMfopen ( char *, char, Enum  );
 
-#else
-
-static void PSpoints(),
-            PSprprolog(),
-            PSbegpic(),
-            PSattrib(),
-            PSfill(),
-            PSedge(),
-            PScellarray(),
-            PSins_coltab(),
-            PSins_pattab() ,
-            PSellipse(),
-            PSarcctr(),
-            PSelarc(),
-            PSpset(),
-            PSpattable(),
-            PStxtdraw(),
-            PStext(),
-            PSreadafm(),
-            PSskp2dgt(),
-            PSskpdgt(),
-            PSinitpsfile(),
-            PSendpsfile(),
-            PSspecarc(),
-            PStrapfill();
-static Enum PSarcref();
-static int  PScoltab();
-static char *PSalias(),
-            *PSmfname ();
-static Logical PSdodecomp();
-
-void         PSLINEfunc();
-void         PSBEZtext();
-void         PSHERtext();
-void         PSTRPdraw();
-
-extern FILE *CGMfopen (  );
-
-#endif  /* ANSI prototyping */
 
 /* PostScript driver global variables  */
 
@@ -300,16 +260,7 @@ static Int   tzno;                /* Number of trapezoids per line */
 ********************************************************************/
 
 
-#ifdef PROTO
 void CGMOps (FILE *stream, Code c, Long *pi, Float *pr, char *str)
-#else
-void CGMOps (stream, c, pi, pr, str)
-Code c;
-long *pi;
-float *pr;
-char *str;
-FILE *stream;
-#endif
 {
    static Logical cont_list = FALSE;
    static char *func = "CGMops";
@@ -1107,12 +1058,7 @@ FILE *stream;
  * pathname
  */
 
-#ifdef PROTO
 void PSgetfd ( Textitem *thisitem )
-#else
-void PSgetfd (thisitem)
-Textitem  *thisitem ;
-#endif
 {
    int i;
    char lnbuf[80], *parsep, fnamestr[100], *pathname;
@@ -1198,12 +1144,7 @@ Textitem  *thisitem ;
 *
 ************************************************************************/
 
-#ifdef PROTO
 void PSoptions( char *opts )
-#else
-void PSoptions(opts)
-char *opts;
-#endif
 
 {
    int i, len = strlen(opts);
@@ -1299,20 +1240,8 @@ char *opts;
 ********************************************************************/
 
 
-#ifdef PROTO
 static void PSpoints ( long n, Long *pi, Float *pr, Enum set,
                        char *str1, char *str2)
-#else
-static void PSpoints (n, pi, pr, set, str1, str2)
-
-/*  Output 'n' points starting at pi/pr
-    'set' indicates if this is a POLYGONSET   */
-
-long n, *pi;
-float *pr;
-Enum set;
-char *str1, *str2;
-#endif
 
 {
     register long i, k, no;
@@ -1387,12 +1316,7 @@ char *str1, *str2;
 *
 ********************************************************************/
 
-#ifdef PROTO
 static void PSprprolog ( char *str )
-#else
-static void PSprprolog (str)
-char *str ;
-#endif
 {
   char str1[256], *func="PSprprolog", *proname;
 
@@ -1470,11 +1394,7 @@ char *str ;
 *
 *********************************************************************/
 
-#ifdef PROTO
 static void PSbegpic ( void )
-#else
-static void PSbegpic ()
-#endif
 {
   double left, right, top, bot, vdcbb, scale1;
   float r=1.0, g=1.0, b=1.0;
@@ -1622,12 +1542,7 @@ static void PSbegpic ()
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSattrib ( Code prim )
-#else
-static void PSattrib ( prim )
-Code prim;
-#endif
 {
    float red, green, blue, width, size;
    Index type;
@@ -1752,13 +1667,7 @@ Code prim;
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSfill ( Enum rule, Enum edge_vis )
-#else
-static void PSfill (rule, edge_vis)
-Enum rule;       /* Filling  rule */
-Enum edge_vis;   /* Edge visibility */
-#endif
 {
    float r, g, b, width;
    Index int_style, hatch_ind, pat_ind ;
@@ -2083,11 +1992,7 @@ Enum edge_vis;   /* Edge visibility */
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSedge ( void )
-#else
-static void PSedge ( )
-#endif
 {
    float r, g, b, width;
    Index type;
@@ -2141,13 +2046,8 @@ static void PSedge ( )
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSins_pattab( int i, int d1, int d2, int d3, int d4,
                                  int d5, int d6, int d7, int d8 )
-#else
-static void PSins_pattab(i, d1, d2, d3, d4, d5, d6, d7, d8)
-int i, d1, d2, d3, d4, d5, d6, d7, d8;
-#endif
 {
    int k, j, pat[8];
    float *pii, tmp;
@@ -2184,11 +2084,7 @@ int i, d1, d2, d3, d4, d5, d6, d7, d8;
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSins_coltab( void )
-#else
-static void PSins_coltab()
-#endif
 {
    register int i;
    size_t maxind = cur.max_colind+1;
@@ -2236,14 +2132,8 @@ static void PSins_coltab()
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static Enum PSarcref ( PS_arcref *ref, double xa, double ya,
                        double xb, double yb, double xc, double yc)
-#else
-static Enum PSarcref (ref, xa, ya, xb, yb, xc, yc)
-PS_arcref *ref;
-double xa, ya, xb, yb, xc, yc;
-#endif
 {
   double xab, yab, absq, xac, yac, acsq, xbc, ybc, bcsq;
   double xao, yao, xco, yco;
@@ -2386,14 +2276,7 @@ double xa, ya, xb, yb, xc, yc;
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSarcctr( Long *pi, Float *pr, Enum closed )
-#else
-static void PSarcctr(pi,pr,closed)
-Long   *pi;
-Float  *pr;
-Enum closed;  /* 0 : not closed, 1: closed */
-#endif
 {
    double xao, yao, xco, yco;
    PS_arcref arcref;
@@ -2483,13 +2366,7 @@ Enum closed;  /* 0 : not closed, 1: closed */
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSellipse( Long *pi, Float *pr)
-#else
-static void PSellipse(pi,pr)
-Long   *pi;
-Float  *pr;
-#endif
 {
   double modua, modub,sina, cosa, sinb,  cosb, refx, refy, det;
   double save1x, save1y, save2x, save2y;
@@ -2636,14 +2513,7 @@ Float  *pr;
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void PSelarc( Long *pi, Float *pr, Enum closed)
-#else
-static void PSelarc(pi,pr,closed)
-Long *pi;
-Float *pr;
-Enum closed;  /* 0 : not closed, 1: closed */
-#endif
 {
   double cdp1x, cdp1y, cdp2x, cdp2y, refx, refy;
   double stx, sty, enx, eny; /* start x,y and end x,y */
@@ -2827,14 +2697,7 @@ Enum closed;  /* 0 : not closed, 1: closed */
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static void    PScellarray ( Long *pi, Float *pr, Long num, Logical cont_list)
-#else
-static void    PScellarray (pi,pr,num,cont_list)
-Long *pi, num;
-Float *pr;
-Logical cont_list;
-#endif
 {
    int nx, ny , idx, j, k;
    float xa,ya, xb, yb, xd, yd ,r , g, b;
@@ -2942,15 +2805,7 @@ Logical cont_list;
 *********************************************************************/
 
 
-#ifdef PROTO
 static void PSpset ( Long n, Long *pi, Float *pr, Logical cont)
-#else
-static void PSpset (n, pi, pr, cont)
-
-Long n, *pi;
-Float *pr;
-Logical cont;
-#endif
 {
    static Polygonset polset;  /* The polygonset */
    static Long start;         /* Starting place */
@@ -3048,13 +2903,7 @@ Logical cont;
 *********************************************************************/
 
 
-#ifdef PROTO
 static void PSpattable ( Long n, Long *pi, Logical cont )
-#else
-static void PSpattable ( n, pi, cont )
-Long n, *pi;
-Logical cont;
-#endif
 
 {
   int i;
@@ -3124,12 +2973,7 @@ Logical cont;
 *     None.
 *********************************************************************/
 
-#ifdef PROTO
 static int PScoltab( Long *pi, Long num)
-#else
-static int PScoltab(pi,num)
-Long *pi , num;
-#endif
 {
   long i, start;
   start = *(pi++);
@@ -3163,13 +3007,7 @@ Long *pi , num;
 *********************************************************************/
 
 
-#ifdef PROTO
 static void PStxtdraw( Textitem *list, Point txtp)
-#else
-static void PStxtdraw(list, txtp)
-Textitem *list;
-Point txtp;
-#endif
 {
     Textitem *txtlp = list, *txtcp = NULL;
     float red, green, blue;
@@ -3243,13 +3081,7 @@ Point txtp;
 ************************************************************************/
 
 
-#ifdef PROTO
 static void PStext( Textitem *itemp, Point txtp)
-#else
-static void PStext(itemp, txtp)
-Textitem *itemp;
-Point txtp;
-#endif
 {
    float spacew;
    char *cp;
@@ -3343,16 +3175,8 @@ Point txtp;
 *    1 Jul 91 CDS  PSstktext: Changed to use newchar, and improve performance.
 ************************************************************************/
 
-#ifdef PROTO
 static void PSstktext(int n, Point *pt, Tmatrix mat,
                       int methodfg, int newchar)
-#else
-static void PSstktext(n,pt,mat,methodfg,newchar)
-int n, newchar;
-int methodfg;
-Point *pt;
-Tmatrix mat;
-#endif
 {
    register long k;
    register Point *ptend;
@@ -3421,21 +3245,8 @@ Tmatrix mat;
 
 /****************************************************** PStrapfill ****/
 
-#ifdef PROTO
 static void PStrapfill( Long np, Long *pi, Float *pr,
                         Enum set, Logical cont )
-#else
-static void PStrapfill( np, pi, pr, set, cont)
- /*
-    Fill a polygon or polygon set by trapezoid decomposition
- */
-
-Long np;      /* Number of Points (got from *(pi-1)) */
-Long *pi;     /* Integer Data */
-Float *pr;    /* Real Data */
-Enum set;     /* Polygon set flag */
-Logical cont; /* True, if this set of points is a continuation */
-#endif
 
 {
    static Polygonset polset;  /* The polygonset */
@@ -3492,17 +3303,7 @@ Logical cont; /* True, if this set of points is a continuation */
 
 /****************************************************** PSLINEfunc *****/
 
-#ifdef PROTO
 void PSLINEfunc( Long np, Point *pt )
-#else
-void PSLINEfunc( np, pt )
- /*
-    Device line function for utilities such as POLedge
- */
-
-Long np;           /* Number of vertices */
-Point *pt;         /* The vertices */
-#endif
 
 {
    register long i, k, no;
@@ -3529,19 +3330,7 @@ Point *pt;         /* The vertices */
 }
 /****************************************************** PSdodecomp ****/
 
-#ifdef PROTO
 static Logical PSdodecomp ( Long np, Long *pi, Float *pr, Enum set )
-#else
-static Logical PSdodecomp ( np, pi, pr, set)
- /*
-    Determine whether the polygon should be filled by decomposition
- */
-
-Long np;      /* Number of Points (got from *(pi-1)) */
-Long *pi;     /* Integer Data */
-Float *pr;    /* Real Data */
-Enum set;     /* Polygon set flag */
-#endif
 
 {
    Point *vtx;  /* The vertices */
@@ -3567,17 +3356,7 @@ Enum set;     /* Polygon set flag */
 }
 /****************************************************** PSTRPdraw *****/
 
-#ifdef PROTO
 void PSTRPdraw( Int ntz, Trapezoid *tz )
-#else
-void PSTRPdraw( ntz, tz )
- /*
-    Draw a series of trapezoids
- */
-
-Int ntz;          /* Number trapezoid */
-Trapezoid *tz;    /* The trapezoids */
-#endif
 
 {
    register Int i;  /* Loop index */
@@ -3627,15 +3406,7 @@ Trapezoid *tz;    /* The trapezoids */
 *     None.
 ************************************************************************/
 
-#ifdef PROTO
 void PSBEZtext( int n, Point *pt, Tmatrix mat, int newchar)
-#else
-void PSBEZtext(n,pt,mat,newchar)
-int n;
-int newchar;
-Point *pt;
-Tmatrix mat;
-#endif
 {
     PSstktext(n,pt,mat,0,newchar);
 }
@@ -3654,15 +3425,7 @@ Tmatrix mat;
 *     None.
 ************************************************************************/
 
-#ifdef PROTO
 void PSHERtext(int n, Point *pt, Tmatrix mat, int newchar)
-#else
-void PSHERtext(n,pt,mat,newchar)
-int n;
-int newchar;
-Point *pt;
-Tmatrix mat;
-#endif
 {
     PSstktext(n,pt,mat,1,newchar);
 }
@@ -3701,12 +3464,7 @@ Tmatrix mat;
  * str2
  */
 
-#ifdef PROTO
 static char *PSalias( char *longname )
-#else
-static char *PSalias(longname)
-char *longname;
-#endif
 {
    FILE *fpin;
    char str1[256], str2[128], *pathname;
@@ -3803,13 +3561,7 @@ char *longname;
  *
  */
 
-#ifdef PROTO
 static void PSreadafm( char *fontname, Textitem *thisitem)
-#else
-static void PSreadafm(fontname, thisitem)
-char *fontname;
-Textitem  *thisitem ;
-#endif
 {
    FILE *fpin;
    char lnbuf[256], *tmp, *parsep, *pathname, *func="PSreadafm";
@@ -4004,12 +3756,7 @@ Textitem  *thisitem ;
  *
  */
 
-#ifdef PROTO
 static void PSskp2dgt( char **cp )
-#else
-static void PSskp2dgt(cp)
-char **cp;
-#endif
 {
    while(!isdigit(**cp) && **cp!='+' && **cp!='-' && **cp!='.' &&  **cp!='\0')
       (*cp)++;
@@ -4039,12 +3786,7 @@ char **cp;
  *
  */
 
-#ifdef PROTO
 static void PSskpdgt( char **cp )
-#else
-static void PSskpdgt(cp)
-char **cp;
-#endif
 {
    while(isdigit(**cp) || **cp=='+' || **cp=='-' || **cp=='.' ||  **cp=='\0')
       (*cp)++;
@@ -4079,11 +3821,7 @@ char **cp;
 *     fname not freed, but only created once during the execution of RAL-CGM.
 ************************************************************************/
 
-#ifdef PROTO
 static char * PSmfname( void )
-#else
-static char * PSmfname()
-#endif
 {
   static unsigned int maxpsfiles = 0, nextfile = 0;
   static char *fname;
@@ -4188,13 +3926,7 @@ static char * PSmfname()
 *
 ************************************************************************/
 
-#ifdef PROTO
 static void PSspecarc( Enum type , PS_arcref *ref )
-#else
-static void PSspecarc( type , ref )
-Enum type;
-PS_arcref *ref;
-#endif
 {
    double m, c, mx, my;
    double xmin, ymin, xmax, ymax;
@@ -4301,12 +4033,7 @@ PS_arcref *ref;
 *
 ************************************************************************/
 
-#ifdef PROTO
 static void PSinitpsfile(char *str)
-#else
-static void PSinitpsfile(str)
-char *str;
-#endif
 {
   char *pathname, *func="PSinitpsfile";
 
@@ -4356,11 +4083,7 @@ char *str;
 *
 ************************************************************************/
 
-#ifdef PROTO
 static void PSendpsfile(void)
-#else
-static void PSendpsfile()
-#endif
 {
   PSOUT "%s\n","%%Trailer");
   PSOUT "end\n");

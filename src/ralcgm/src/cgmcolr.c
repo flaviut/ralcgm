@@ -40,16 +40,7 @@ static Index ncol_ignore;    /* limit of search done by COLRtab */
 #define INITLEN 64
 /****************************************************** COLRput *****/
 
-#ifdef PROTO
 void COLRput ( Long nc, Long *pi )
-#else
-void COLRput ( nc, pi )
-
-/*   put 'nc' colours starting at 'first' into the CGM colour table */
-
-Long nc;              /* Number of Colours being put in */
-Long *pi;             /* Index of first colour and RGB values */
-#endif
 
 
 {
@@ -162,16 +153,7 @@ Long *pi;             /* Index of first colour and RGB values */
 }
 /****************************************************** COLRtab ****/
 
-#ifdef PROTO
 RGBcolour *COLRtab ( Index index )
-#else
-RGBcolour *COLRtab ( index )
-
-/*   returns pointer to the last 'index' entry of the CGM colour table,
-     if that colour has been defined, else returns NULL  */
-
-Index index;          /* Colour Index */
-#endif
 
 
 {
@@ -190,15 +172,7 @@ Index index;          /* Colour Index */
 }
 /****************************************************** COLRfree *****/
 
-#ifdef PROTO
 void COLRfree( void )
-#else
-void COLRfree()
-
-/*   free space allocated in the CGM colour table
-     no longer needed, because picture or metafile has ended */
-
-#endif
 
 
 {

@@ -37,14 +37,6 @@
 
 #define ERRMESS         (void) fprintf(cgmerr,
 
-#ifdef WIN
-#ifdef PROTO
-extern WINerror ( char*, int, Enum, char*, char*);
-#else
-extern WINerror();
-#endif
-extern Logical errfileopen;
-#endif
 
 extern Int cgmerrcount;
 extern Logical cgmquiet;
@@ -53,15 +45,7 @@ static int errcount=ZERO;
 
 /********************************************************* CGMerror ****/
 
-#ifdef PROTO
 int CGMerror ( char *func, int errnr, Enum errtype, char *mess )
-#else
-int CGMerror ( func, errnr, errtype, mess )
-
-int errnr;
-Enum errtype;
-char *func, *mess;
-#endif
 {
    register struct errmessage *emess=cgmerrs;
 
@@ -74,14 +58,6 @@ char *func, *mess;
       emess++;
    } while ( emess->number != ERR_NOTFOUND );
 
-#ifdef WIN
-   /* Allow Error to be displayed by MS Windows */
-   if(errtype == FATAL || (!errfileopen && !cgmquiet))
-   {
-      WINerror ( func, errnr, errtype, emess->mess, mess );
-      if(!errfileopen) return emess->rc;
-   }
-#endif
    if(cgmquiet)
    {   /* Just count error */
       if(errtype != WARNING) errcount++;
@@ -121,11 +97,7 @@ char *func, *mess;
 }
 /********************************************************* CGMcounterr ****/
 
-#ifdef PROTO
 int CGMcounterr ( void )
-#else
-int CGMcounterr ( void )
-#endif
 /* Return Error Count */
 {
     return errcount;

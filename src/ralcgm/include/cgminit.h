@@ -96,30 +96,6 @@ static const struct cgmdrivers drivers[] = {
     "PS", 1, POSTSCRIPT,
     "POSTSCRIPT", 4, POSTSCRIPT,
 #endif
-#ifdef XW
-    "XWINDOWS", 1, XW,
-    "X11", 3, XW,
-#endif
-#ifdef IGL
-    "IGL", 1, IGL,
-    "IRIS", 2, IGL,
-#endif
-#ifdef TEK4200
-    "TEKTRONIX", 3, TEK4200,
-    "TEK4200", 4, TEK4200,
-#endif
-#ifdef HPGL
-    "HPGL", 1, HPGL,
-#endif
-#ifdef VGA
-    "VGA", 1, VGA,
-#endif
-#ifdef IBM8514
-    "8514", 4, IBM8514,
-#endif
-#ifdef WIN
-     "WINDOWS", 1, WIN,
-#endif
 
     "NONE", 0, NONE
 };

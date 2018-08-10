@@ -12,7 +12,6 @@
 #define POSTSCRIPT
 #define BEZIER
 #define HERSHEY
-#define XW
 
 #define DATADIR "../data/"
 
@@ -23,11 +22,3 @@
 #define MALLOCH
 #include <stdlib.h>
 
-#ifdef CGMOXW_C      /* X-Window specific settings  */
-
-#include <X11/cursorfont.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-
-#endif

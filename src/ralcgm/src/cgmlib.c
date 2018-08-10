@@ -38,15 +38,8 @@
 #define CGMLIB_C
 #include "cgmlib.h"
 
-extern void CGMOhpgl(FILE *, Code, Long*, Float*, char* );
-
-#ifdef TEK4200
-   extern void CGMOtek( FILE*, Code, long *, float *, char * );
-#endif
-
 /* Driver Routines */
 
-#ifdef PROTO
 extern void CGMOchar( FILE*, Code, long*, float*, char* );
 extern void CGMOtext( FILE*, Code, long*, float*, char* );
 extern void CGMObin( FILE*, Code, long*, float*, char* );
@@ -57,36 +50,8 @@ void CGMconvert_points ( int, Point*, long*, float*, Enum* );
 #ifdef POSTSCRIPT
 extern void CGMOps ( FILE*, Code, long*, float*, char* );
 #endif
-#ifdef IGL
-extern void CGMOigl( Code, long*, float*, char* );
-#endif
-#ifdef XW
-extern void CGMOXw( Code, long*, float*, char* );
-#endif
 
-#else /* End ANSI prototypes */
 
-extern void CGMOchar();
-extern void CGMOtext();
-extern void CGMObin();
-
-void cgminit ();
-void CGMconvert_points ();
-
-#ifdef POSTSCRIPT
-extern void CGMOps ();
-#endif
-#ifdef IGL
-extern void CGMOigl();
-#endif
-#ifdef XW
-extern void CGMOXw();
-#endif
-#endif
-
-#ifdef XW
-extern char terminal[];
-#endif
 
 /*  Local Macro */
 
@@ -98,13 +63,7 @@ char *cgmofile;
 
 /*  Initialise CGM output */
 
-#ifdef PROTO
 void cgminit ( Enum type, char *filename )
-#else
-void cgminit ( type, filename )
-Enum type;
-char *filename;
-#endif
 {
 
    cgmerr = stderr;
@@ -141,30 +100,9 @@ char *filename;
       case CLEAR_TEXT:
           cgmdriver = CLEAR_TEXT;
           break;
-#ifdef IGL
-      case IGL:
-          cgmdriver = IGL;
-          return;
-#endif
-#ifdef XW
-      case XW:
-          cgmdriver = XW;
-          strcpy ( cgmofile, terminal );
-          return;
-#endif
 #ifdef POSTSCRIPT
       case POSTSCRIPT:
           cgmdriver = POSTSCRIPT;
-          break;
-#endif
-#ifdef HPGL
-      case HPGL:
-          cgmdriver = HPGL;
-          break;
-#endif
-#ifdef TEK4200
-      case TEK4200:
-          cgmdriver = TEK4200;
           break;
 #endif
       default:
@@ -179,16 +117,7 @@ char *filename;
 
 /********************************************************* CGMout ******/
 
-#ifdef PROTO
 void CGMout ( Code c, long *pi, float *pf, char *pc )
-#else
-void CGMout ( c, pi, pf, pc )
-
-Code c;
-long *pi;
-float *pf;
-char *pc;
-#endif
 
 {
    if ( c == NONOP ) return;
@@ -220,28 +149,8 @@ char *pc;
          break;
 #endif
 
-#ifdef IGL
-      case IGL:
-         CGMOigl( c, pi, pf, pc );
-         break;
-#endif
-#ifdef XW
-      case XW:
-         CGMOXw( c, pi, pf, pc );
-         break;
-#endif
 
-#ifdef HPGL
-      case HPGL:
-         CGMOhpgl( cgmo, c, pi, pf, pc );
-         break;
-#endif
 
-#ifdef TEK4200
-      case TEK4200:
-         CGMOtek( cgmo, c, pi, pf, pc );
-         break;
-#endif
 
       default:
          break;
@@ -251,17 +160,8 @@ char *pc;
 }
 /*********************************************** CGMconvert_points *****/
 
-#ifdef PROTO
 void CGMconvert_points ( int num, Point *points, long *pin,
                          float *pfl, Enum *set )
-#else
-void CGMconvert_points ( num, points, pin, pfl, set )
-int num;
-Point *points;
-long *pin;
-float *pfl;
-Enum *set;
-#endif
 {
    register int i;
    long *pi=pin+1;
@@ -305,12 +205,7 @@ Enum *set;
 
 /**************************************  Metafile Delimiter elements ***/
 
-#ifdef PROTO
 void m_begmf ( char *pc )
-#else
-void m_begmf ( pc )
-char *pc;
-#endif
 {
    if ( cgmstate != MF_CLOSED )
    {
@@ -324,23 +219,14 @@ char *pc;
    return;
 }
 
-#ifdef PROTO
 void m_endmf ( void )
-#else
-void m_endmf ()
-#endif
 {
    cgmstate = MF_CLOSED;
    CGMout ( ENDMF, pint, preal, str );
    return;
 }
 
-#ifdef PROTO
 void m_begpic ( char *pc )
-#else
-void m_begpic ( pc )
-char *pc;
-#endif
 {
    if ( cgmstate != MF_DESC && cgmstate != PIC_CLOSED )
    {
@@ -357,11 +243,7 @@ char *pc;
    return;
 }
 
-#ifdef PROTO
 void m_begpicbody ( void )
-#else
-void m_begpicbody ()
-#endif
 {
    if ( cgmstate != PIC_DESC )
    {
@@ -373,11 +255,7 @@ void m_begpicbody ()
    return;
 }
 
-#ifdef PROTO
 void m_endpic ( void )
-#else
-void m_endpic ()
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != PIC_OPEN )
    {
@@ -391,12 +269,7 @@ void m_endpic ()
 
 /************************************  Metafile Descriptor Elements ****/
 
-#ifdef PROTO
 void m_mfversion ( int verno )
-#else
-void m_mfversion ( verno )
-int verno;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -413,12 +286,7 @@ int verno;
    return;
 }
 
-#ifdef PROTO
 void m_mfdesc ( char *pc )
-#else
-void m_mfdesc ( pc )
-char *pc;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -429,12 +297,7 @@ char *pc;
    return;
 }
 
-#ifdef PROTO
 void m_vdctype ( Enum type )
-#else
-void m_vdctype ( type )
-Enum type;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -446,12 +309,7 @@ Enum type;
    return;
 }
 
-#ifdef PROTO
 void m_integerprec ( int prec )
-#else
-void m_integerprec ( prec )
-int prec;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -463,13 +321,7 @@ int prec;
    return;
 }
 
-#ifdef PROTO
 void m_realprec ( int max, int min, int defexp, Enum expald )
-#else
-void m_realprec ( max, min, defexp, expald )
-int max, min, defexp;
-Enum expald;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -484,12 +336,7 @@ Enum expald;
    return;
 }
 
-#ifdef PROTO
 void m_indexprec ( int prec )
-#else
-void m_indexprec ( prec )
-int prec;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -501,12 +348,7 @@ int prec;
    return;
 }
 
-#ifdef PROTO
 void m_colrprec ( int prec )
-#else
-void m_colrprec ( prec )
-int prec;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -518,12 +360,7 @@ int prec;
    return;
 }
 
-#ifdef PROTO
 void m_colrindexprec ( int prec )
-#else
-void m_colrindexprec ( prec )
-int prec;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -535,12 +372,7 @@ int prec;
    return;
 }
 
-#ifdef PROTO
 void m_maxcolrindex ( int index )
-#else
-void m_maxcolrindex ( index )
-int index;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -552,12 +384,7 @@ int index;
    return;
 }
 
-#ifdef PROTO
 void m_colrvalueext ( RGBcolour min, RGBcolour max )
-#else
-void m_colrvalueext ( min, max )
-RGBcolour min, max;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -574,13 +401,7 @@ RGBcolour min, max;
    return;
 }
 
-#ifdef PROTO
 void m_mfelemlist ( int num, Code *elemlist )
-#else
-void m_mfelemlist ( num, elemlist )
-int num;
-Code *elemlist;
-#endif
 {
    long *pi=pint+1;
    register int i;
@@ -599,11 +420,7 @@ Code *elemlist;
    return;
 }
 
-#ifdef PROTO
 void m_begmfdefaults ( void )
-#else
-void m_begmfdefaults ()
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -615,11 +432,7 @@ void m_begmfdefaults ()
    return;
 }
 
-#ifdef PROTO
 void m_endmfdefaults ( void )
-#else
-void m_endmfdefaults ()
-#endif
 {
    if ( cgmstate != MF_DEFAULTS )
    {
@@ -631,13 +444,7 @@ void m_endmfdefaults ()
    return;
 }
 
-#ifdef PROTO
 void m_fontlist ( int num, char **fontname )
-#else
-void m_fontlist ( num, fontname )
-int num;
-char **fontname ;
-#endif
 {
    long *pi = pint+1;
    int i, j = 0;
@@ -662,13 +469,7 @@ char **fontname ;
    return;
 }
 
-#ifdef PROTO
 void m_charsetlist ( int num, int *charset, char **set )
-#else
-void m_charsetlist ( num, charset, set )
-int num, *charset;
-char **set;
-#endif
 {
    long *pi = pint+1;
    int i, j = 0;
@@ -694,12 +495,7 @@ char **set;
    return;
 }
 
-#ifdef PROTO
 void m_charcoding ( Enum coding )
-#else
-void m_charcoding ( coding )
-Enum coding;
-#endif
 {
    if ( cgmstate != MF_DESC )
    {
@@ -713,13 +509,7 @@ Enum coding;
 
 /*************************************  Picture Descriptor elements ****/
 
-#ifdef PROTO
 void m_scalemode ( Enum mode, float factor )
-#else
-void m_scalemode ( mode, factor )
-Enum mode;
-float factor;
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != MF_DEFAULTS )
    {
@@ -732,12 +522,7 @@ float factor;
    return;
 }
 
-#ifdef PROTO
 void m_colrmode ( Enum mode )
-#else
-void m_colrmode ( mode )
-Enum mode;
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != MF_DEFAULTS )
    {
@@ -749,12 +534,7 @@ Enum mode;
    return;
 }
 
-#ifdef PROTO
 void m_linewidthmode ( Enum mode )
-#else
-void m_linewidthmode ( mode )
-Enum mode;
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != MF_DEFAULTS )
    {
@@ -766,12 +546,7 @@ Enum mode;
    return;
 }
 
-#ifdef PROTO
 void m_markersizemode ( Enum mode )
-#else
-void m_markersizemode ( mode )
-Enum mode;
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != MF_DEFAULTS )
    {
@@ -783,12 +558,7 @@ Enum mode;
    return;
 }
 
-#ifdef PROTO
 void m_edgewidthmode ( Enum mode )
-#else
-void m_edgewidthmode ( mode )
-Enum mode;
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != MF_DEFAULTS )
    {
@@ -800,12 +570,7 @@ Enum mode;
    return;
 }
 
-#ifdef PROTO
 void m_vdcext ( Point a, Point b )
-#else
-void m_vdcext ( a, b )
-Point a, b;
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != MF_DEFAULTS )
    {
@@ -830,12 +595,7 @@ Point a, b;
    return;
 }
 
-#ifdef PROTO
 void m_backcolr ( RGBcolour backcol )
-#else
-void m_backcolr ( backcol )
-RGBcolour backcol;
-#endif
 {
    if ( cgmstate != PIC_DESC && cgmstate != MF_DEFAULTS )
    {
@@ -851,12 +611,7 @@ RGBcolour backcol;
 
 /*************************************************  Control elements ***/
 
-#ifdef PROTO
 void m_vdcintegerprec ( int prec )
-#else
-void m_vdcintegerprec ( prec )
-int prec;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -868,13 +623,7 @@ int prec;
    return;
 }
 
-#ifdef PROTO
 void m_vdcrealprec ( int max, int min, int defexp, Enum expald )
-#else
-void m_vdcrealprec ( max, min, defexp, expald )
-int max, min, defexp;
-Enum expald;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -889,12 +638,7 @@ Enum expald;
    return;
 }
 
-#ifdef PROTO
 void m_auxcolr ( Colour col )
-#else
-void m_auxcolr ( col )
-Colour col;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -909,12 +653,7 @@ Colour col;
    return;
 }
 
-#ifdef PROTO
 void m_transparency ( Enum trans )
-#else
-void m_transparency ( trans )
-Enum trans;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -927,12 +666,7 @@ Enum trans;
    return;
 }
 
-#ifdef PROTO
 void m_cliprect ( Point a, Point b )
-#else
-void m_cliprect ( a, b )
-Point a, b;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -957,12 +691,7 @@ Point a, b;
    return;
 }
 
-#ifdef PROTO
 void m_clip ( Enum clip )
-#else
-void m_clip ( clip )
-Enum clip;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -976,13 +705,7 @@ Enum clip;
 
 /********************************************  Graphical Primitives ****/
 
-#ifdef PROTO
 void m_line ( int num, Point *points )
-#else
-void m_line ( num, points )
-int num;
-Point *points;
-#endif
 {
    if ( cgmstate != PIC_OPEN )
    {
@@ -994,13 +717,7 @@ Point *points;
    return;
 }
 
-#ifdef PROTO
 void m_disjtline ( int num, Point *points )
-#else
-void m_disjtline ( num, points )
-int num;
-Point *points;
-#endif
 {
    if ( cgmstate != PIC_OPEN )
    {
@@ -1012,13 +729,7 @@ Point *points;
    return;
 }
 
-#ifdef PROTO
 void m_marker ( int num, Point *points )
-#else
-void m_marker ( num, points )
-int num;
-Point *points;
-#endif
 {
    if ( cgmstate != PIC_OPEN )
    {
@@ -1030,14 +741,7 @@ Point *points;
    return;
 }
 
-#ifdef PROTO
 void m_text ( Point a, Enum final, char *text )
-#else
-void m_text ( a, final, text )
-Point a;
-Enum final;
-char *text;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1062,14 +766,7 @@ char *text;
    return;
 }
 
-#ifdef PROTO
 void m_restrtext ( Point a, Point b, Enum final, char *text )
-#else
-void m_restrtext ( a, b, final, text )
-Point a, b;
-Enum final;
-char *text;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1098,13 +795,7 @@ char *text;
    return;
 }
 
-#ifdef PROTO
 void m_apndtext ( Enum final, char *text )
-#else
-void m_apndtext ( final, text )
-Enum final;
-char *text;
-#endif
 {
    if ( cgmstate != TEXT_OPEN )
    {
@@ -1116,13 +807,7 @@ char *text;
    return;
 }
 
-#ifdef PROTO
 void m_polygon ( int num, Point *points )
-#else
-void m_polygon ( num, points )
-int num;
-Point *points;
-#endif
 {
    if ( cgmstate != PIC_OPEN )
    {
@@ -1134,14 +819,7 @@ Point *points;
    return;
 }
 
-#ifdef PROTO
 void m_polygonset ( int num, Point *points, Enum *set )
-#else
-void m_polygonset ( num, points, set )
-int num;
-Point *points;
-Enum *set;
-#endif
 {
    if ( cgmstate != PIC_OPEN )
    {
@@ -1153,16 +831,8 @@ Enum *set;
    return;
 }
 
-#ifdef PROTO
 void m_cellarray ( Point p, Point q, Point r, int nx, int ny,
                    Indexcolour *ilist, RGBcolour *clist )
-#else
-void m_cellarray ( p, q, r, nx, ny, ilist, clist )
-Point p, q, r;
-int nx, ny;
-Indexcolour *ilist;
-RGBcolour *clist;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1221,14 +891,7 @@ RGBcolour *clist;
    return;
 }
 
-#ifdef PROTO
 void m_gdp ( int gdpid, int num, Point *points, char *data )
-#else
-void m_gdp ( gdpid, num, points, data )
-int gdpid, num;
-Point *points;
-char *data;
-#endif
 {
    if ( cgmstate != PIC_OPEN )
    {
@@ -1242,12 +905,7 @@ char *data;
    return;
 }
 
-#ifdef PROTO
 void m_rect ( Point a, Point b )
-#else
-void m_rect ( a, b )
-Point a, b;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1275,13 +933,7 @@ Point a, b;
    return;
 }
 
-#ifdef PROTO
 void m_circle ( Point a, Point b, float rad )
-#else
-void m_circle ( a, b, rad )
-Point a, b;
-float rad;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1311,12 +963,7 @@ float rad;
    return;
 }
 
-#ifdef PROTO
 void m_arc3pt ( Point a, Point b, Point c )
-#else
-void m_arc3pt ( a, b, c )
-Point a, b, c;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1348,13 +995,7 @@ Point a, b, c;
    return;
 }
 
-#ifdef PROTO
 void m_arc3ptclose ( Point a, Point b, Point c, Enum close )
-#else
-void m_arc3ptclose ( a, b, c, close )
-Point a, b, c;
-Enum close;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1387,13 +1028,7 @@ Enum close;
    return;
 }
 
-#ifdef PROTO
 void m_arcctr ( Point centre, Point start, Point end, float rad )
-#else
-void m_arcctr ( centre, start, end, rad )
-Point centre, start, end;
-float rad;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1427,15 +1062,8 @@ float rad;
    return;
 }
 
-#ifdef PROTO
 void m_arcctrclose ( Point centre, Point start, Point end,
                      float rad, Enum close )
-#else
-void m_arcctrclose ( centre, start, end, rad, close )
-Point centre, start, end;
-float rad;
-Enum close;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1470,12 +1098,7 @@ Enum close;
    return;
 }
 
-#ifdef PROTO
 void m_ellipse ( Point centre, Point cjd1, Point cjd2 )
-#else
-void m_ellipse ( centre, cjd1, cjd2 )
-Point centre, cjd1, cjd2;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1507,13 +1130,8 @@ Point centre, cjd1, cjd2;
    return;
 }
 
-#ifdef PROTO
 void m_elliparc ( Point centre, Point cjd1, Point cjd2,
                   Point start, Point end )
-#else
-void m_elliparc ( centre, cjd1, cjd2, start, end )
-Point centre, cjd1, cjd2, start, end;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1553,14 +1171,8 @@ Point centre, cjd1, cjd2, start, end;
    return;
 }
 
-#ifdef PROTO
 void m_elliparcclose ( Point centre, Point cjd1, Point cjd2,
                        Point start, Point end, Enum close )
-#else
-void m_elliparcclose ( centre, cjd1, cjd2, start, end, close )
-Point centre, cjd1, cjd2, start, end;
-Enum close;
-#endif
 {
    long *pi = pint+1;
    float *pr = preal;
@@ -1603,12 +1215,7 @@ Enum close;
 
 /******************************************************  Attributes ****/
 
-#ifdef PROTO
 void m_lineindex ( Index index )
-#else
-void m_lineindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1620,12 +1227,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_linetype ( Index type )
-#else
-void m_linetype ( type )
-Index type;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1637,12 +1239,7 @@ Index type;
    return;
 }
 
-#ifdef PROTO
 void m_linewidth ( float width )
-#else
-void m_linewidth ( width )
-float width;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1657,12 +1254,7 @@ float width;
    return;
 }
 
-#ifdef PROTO
 void m_linecolr ( Colour col )
-#else
-void m_linecolr ( col )
-Colour col;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1674,12 +1266,7 @@ Colour col;
    return;
 }
 
-#ifdef PROTO
 void m_markerindex ( Index index )
-#else
-void m_markerindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1691,12 +1278,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_markertype ( Index type )
-#else
-void m_markertype ( type )
-Index type;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1708,12 +1290,7 @@ Index type;
    return;
 }
 
-#ifdef PROTO
 void m_markersize ( float size )
-#else
-void m_markersize ( size )
-float size;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1728,12 +1305,7 @@ float size;
    return;
 }
 
-#ifdef PROTO
 void m_markercolr ( Colour col )
-#else
-void m_markercolr ( col )
-Colour col;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1745,12 +1317,7 @@ Colour col;
    return;
 }
 
-#ifdef PROTO
 void m_textindex ( Index index )
-#else
-void m_textindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1763,12 +1330,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_textfontindex ( Index index )
-#else
-void m_textfontindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1781,12 +1343,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_textprec ( Enum prec )
-#else
-void m_textprec ( prec )
-Enum prec;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1799,12 +1356,7 @@ Enum prec;
    return;
 }
 
-#ifdef PROTO
 void m_charexpan ( float factor )
-#else
-void m_charexpan ( factor )
-float factor;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1817,12 +1369,7 @@ float factor;
    return;
 }
 
-#ifdef PROTO
 void m_charspace ( float spacing )
-#else
-void m_charspace ( spacing )
-float spacing;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1835,12 +1382,7 @@ float spacing;
    return;
 }
 
-#ifdef PROTO
 void m_textcolr ( Colour col )
-#else
-void m_textcolr ( col )
-Colour col;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1853,12 +1395,7 @@ Colour col;
    return;
 }
 
-#ifdef PROTO
 void m_charheight ( float height )
-#else
-void m_charheight ( height )
-float height;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1874,12 +1411,7 @@ float height;
    return;
 }
 
-#ifdef PROTO
 void m_charori ( Vector upvec, Vector basevec )
-#else
-void m_charori ( upvec, basevec )
-Vector upvec, basevec;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1904,12 +1436,7 @@ Vector upvec, basevec;
    return;
 }
 
-#ifdef PROTO
 void m_textpath ( Enum path )
-#else
-void m_textpath ( path )
-Enum path;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1921,13 +1448,7 @@ Enum path;
    return;
 }
 
-#ifdef PROTO
 void m_textalign ( Enum horiz, Enum vert, float conth, float contv )
-#else
-void m_textalign ( horiz, vert, conth, contv )
-Enum horiz, vert;
-float conth, contv;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1942,12 +1463,7 @@ float conth, contv;
    return;
 }
 
-#ifdef PROTO
 void m_charsetindex ( Index index )
-#else
-void m_charsetindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1960,12 +1476,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_altcharsetindex ( Index index )
-#else
-void m_altcharsetindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN )
@@ -1978,12 +1489,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_fillindex ( Index index )
-#else
-void m_fillindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -1995,12 +1501,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_intstyle ( Enum style )
-#else
-void m_intstyle ( style )
-Enum style;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2012,12 +1513,7 @@ Enum style;
    return;
 }
 
-#ifdef PROTO
 void m_fillcolr ( Colour col )
-#else
-void m_fillcolr ( col )
-Colour col;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2029,12 +1525,7 @@ Colour col;
    return;
 }
 
-#ifdef PROTO
 void m_hatchindex ( Index index )
-#else
-void m_hatchindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2046,12 +1537,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_patindex ( Index index )
-#else
-void m_patindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2063,12 +1549,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_edgeindex ( Index index )
-#else
-void m_edgeindex ( index )
-Index index;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2080,12 +1561,7 @@ Index index;
    return;
 }
 
-#ifdef PROTO
 void m_edgetype ( Index type )
-#else
-void m_edgetype ( type )
-Index type;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2097,12 +1573,7 @@ Index type;
    return;
 }
 
-#ifdef PROTO
 void m_edgewidth ( float width )
-#else
-void m_edgewidth ( width )
-float width;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2117,12 +1588,7 @@ float width;
    return;
 }
 
-#ifdef PROTO
 void m_edgecolr ( Colour col )
-#else
-void m_edgecolr ( col )
-Colour col;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2134,12 +1600,7 @@ Colour col;
    return;
 }
 
-#ifdef PROTO
 void m_edgevis ( Enum vis )
-#else
-void m_edgevis ( vis )
-Enum vis;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2151,12 +1612,7 @@ Enum vis;
    return;
 }
 
-#ifdef PROTO
 void m_fillrefpt ( Point refpoint )
-#else
-void m_fillrefpt ( refpoint )
-Point refpoint;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2177,15 +1633,7 @@ Point refpoint;
    return;
 }
 
-#ifdef PROTO
 void m_pattable ( Index index, int nx, int ny, Prec locprec, Colour *clist )
-#else
-void m_pattable ( index, nx, ny, locprec, clist )
-Index index;
-int nx, ny;
-Prec locprec;
-Colour *clist;
-#endif
 {
    long *pi = pint+1;
    register int i;
@@ -2215,12 +1663,7 @@ Colour *clist;
    return;
 }
 
-#ifdef PROTO
 void m_patsize ( Vector height, Vector width )
-#else
-void m_patsize ( height, width )
-Vector height, width;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS )
    {
@@ -2245,14 +1688,7 @@ Vector height, width;
    return;
 }
 
-#ifdef PROTO
 void m_colrtable ( Index index, int num, RGBcolour *col )
-#else
-void m_colrtable ( index, num, col )
-Index index;
-int num;
-RGBcolour *col;
-#endif
 {
    long *pi = pint+1;
    register int i;
@@ -2276,14 +1712,7 @@ RGBcolour *col;
    return;
 }
 
-#ifdef PROTO
 void m_asf ( int num, Code *aspect, Enum *value )
-#else
-void m_asf ( num, aspect, value )
-int num;
-Code *aspect;
-Enum *value;
-#endif
 {
    Code c;
    long *pi = pint+1;
@@ -2353,13 +1782,7 @@ Enum *value;
 
 /************************************* Escape and External elements ****/
 
-#ifdef PROTO
 void m_escape ( int id, char *data )
-#else
-void m_escape ( id, data )
-int id;
-char *data;
-#endif
 {
    if ( cgmstate != PIC_OPEN && cgmstate != MF_DEFAULTS &&
         cgmstate != TEXT_OPEN && cgmstate != PIC_DESC )
@@ -2372,26 +1795,14 @@ char *data;
    return;
 }
 
-#ifdef PROTO
 void m_message ( Enum action, char *message )
-#else
-void m_message ( action, message )
-Enum action;
-char *message;
-#endif
 {
    *pint = action;
    CGMout ( MESSAGE, pint, preal, message );
    return;
 }
 
-#ifdef PROTO
 void m_appldata ( int id, char *data )
-#else
-void m_appldata ( id, data )
-int id;
-char *data;
-#endif
 {
    *pint = id;
    CGMout ( APPLDATA, pint, preal, data );

@@ -123,7 +123,6 @@ static HerDef   *H_def=NULL;               /*  Hershey definitions of ditto  */
       |  their names modified to the HERxxx notation.
       */
 
-#ifdef PROTO
 
 static void HerOpen( void ),
             HerDraw( int, Tmatrix,
@@ -131,13 +130,5 @@ static void HerOpen( void ),
 
 static int  HerLoad( Index );
 
-#else
-
-static void HerOpen(),      /*  Open up the system, load first font  */
-            HerDraw();
-
-static int  HerLoad();      /*  Load a new font  */
-
-#endif
 
 #endif

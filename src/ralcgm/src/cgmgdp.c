@@ -52,22 +52,8 @@
 
 /********************************************************* GDPcentre ***/
 
-#ifdef PROTO
 void GDPcentre ( Point *cen, Double *rad, Double *ang,
                  Point *a, Point *b, Point *c )
-#else
-void GDPcentre ( cen, rad, ang, a, b, c )
-
-/*
-     Given three points a, b, and c on a circle
-     returns centre, radius and angle subtended (radians)
-*/
-
-Point *cen;         /* Centre of circle */
-Double *rad, *ang;  /* Radius and angle subtended by a through b to c
-                       in radians, negative if and only if clockwise */
-Point *a, *b, *c;   /* Three points on the arc */
-#endif
 
 {
    register float x, y, xab, yab, xac, yac, xbc, ybc, det;
@@ -130,24 +116,8 @@ det;
 
 /********************************************************* GDParc ******/
 
-#ifdef PROTO
 void GDParc ( Point *centre, Double rad,
               Point *a, Point *b, Double *ang, Point *c, Point *d )
-#else
-void GDParc ( centre, rad, a, b, ang, c, d )
-
-/*
-    Given the centre, radius and
-    start vector (a->x, a->y) and end vector (b->x, b->y)
-    returns start and end points on circle (c->x,c->y) and (d->x,d->y)
-    and angle subtended
-*/
-
-Point *centre;          /* centre */
-Double rad;             /* radius */
-Double *ang;            /* angle subtanded by arc to centre in radians */
-Point *a, *b, *c, *d;   /* start & end vectors, start & end points */
-#endif
 
 {
    register Double ang1, ang2;
@@ -184,19 +154,9 @@ Point *a, *b, *c, *d;   /* start & end vectors, start & end points */
 
 /********************************************************* GDPcircle ***/
 
-#ifdef PROTO
 void GDPcircle ( Point *centre, Double rad, Double angle,
                  Point *a, Double rat,
                  Long *np, LPOINT(pt), Enum close )
-#else
-void GDPcircle ( centre, rad, angle, a, rat, np, pt, close )
-
-Point *centre, *a;        /* Centre and starting point of arc */
-Double rad, angle, rat;   /* Radius, Angle in Radians and Resolution */
-Long *np;                 /* Number of points output */
-LPOINT(pt);               /* Points output */
-Enum close;               /* CGM closure type */
-#endif
 
 /*
     Works out points on circular arc from (a->x, a->y)
@@ -267,19 +227,9 @@ Enum close;               /* CGM closure type */
 
 /********************************************************* GDPellipse **/
 
-#ifdef PROTO
 void GDPellipse ( Point *centre, Point *cdp1, Point *cdp2,
                   Point *d1, Point *d2, Double rat,
                   Long *np, LPOINT(pt), Enum close )
-#else
-void GDPellipse ( centre, cdp1, cdp2, d1, d2, rat, np, pt, close )
-
-Point *centre, *cdp1, *cdp2, *d1, *d2;
-Double rat;
-long *np;
-LPOINT(pt);
-Enum close;
-#endif
 
 /*
     Works out points on elliptical arc for ellipse specifified by
@@ -392,25 +342,7 @@ Enum close;
 }
 /***************************************************** GDPcgm **********/
 
-#ifdef PROTO
 void GDPcgm ( Index gdp, Point *pt, Code *type, Enum *close)
-#else
-void GDPcgm ( gdp, pt, type, close)
-
-/*  converts the parameters of a RAL GDP (including transformation pts)
-    to those of the corresponding CGM primitive */
-
-/* NOTE: Once a routine that achieves this purpose is put into RAL GKS,
-         this will only be required in RAL CGM, for compatibility with
-         CGMs produced by previous versions of RAL GKS.
-*/
-
-Index gdp;                    /* GDP type */
-Point *pt;          /* IN as GDP points - OUT as CGM points */
-Code *type;                    /* CGM type */
-Enum *close;                  /* CGM closure code */
-
-#endif
 
 /* DEFINITIONS: CDP point = End point of an ellipse's Conjugate Diameter.
 
