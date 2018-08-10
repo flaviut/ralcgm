@@ -187,7 +187,7 @@ static struct textbundle text_bundle[NTEXTB] =
 };
 
 /* Tektronix colour table variables*/
-static n_coltab = DEF_N_COLTAB;
+static int n_coltab = DEF_N_COLTAB;
 static RGBcolour TEKcoltab[MAX_N_COLTAB];   /* The TEK colour table */
 static Enum      TEKcoluse[MAX_N_COLTAB];   /* The TEK colour flags */
 static Int colset_n;        /* Number of colour table entries set */

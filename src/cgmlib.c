@@ -38,6 +38,12 @@
 #define CGMLIB_C
 #include "cgmlib.h"
 
+extern void CGMOhpgl(FILE *, Code, Long*, Float*, char* );
+
+#ifdef TEK4200
+   extern void CGMOtek( FILE*, Code, long *, float *, char * );
+#endif
+
 /* Driver Routines */
 
 #ifdef PROTO

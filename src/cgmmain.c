@@ -280,6 +280,7 @@ Logical errfileopen = FALSE;
 #define OUTMESS      (void) fprintf( (FILE *) cgmerr,
 
 /******************************************************** main *********/
+int
 #ifdef PROTO
 main ( int argc, char **argv)
 #else

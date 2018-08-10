@@ -51,7 +51,7 @@ HerDef fontdef[maxfpoints];   /*  definitions of chars in a font  */
 static char *func = "genher";
 Logical cgmerrcount=FALSE, cgmquiet=FALSE;
 
-main()
+int main(int argc, char **argv)
 
 {
     int last, code, i;

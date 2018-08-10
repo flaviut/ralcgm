@@ -37,7 +37,7 @@ Logical cgmerrcount=FALSE, cgmquiet=FALSE;
 BezDir  Dir;
 BezFont Bfont;
 
-main()
+int main(int argc, char **argv)
 {
     FILE *generator, *directory;
     char *dirname, *genname;

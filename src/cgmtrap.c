@@ -45,6 +45,7 @@
 #include "cgmelem.h"
 #include "cgmpar.h"
 #include "cgmpts.h"
+#include "cgmgraph.h"
 
 /* Fixed Limit to the number trapezoids (protect CPU from bug) */
 #define MAXTRAPS 100000

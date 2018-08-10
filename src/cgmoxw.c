@@ -111,6 +111,8 @@
 
  */
 
+#include <unistd.h>
+
 #define CGMOXW_C
 #include "cgmout.h"
 
