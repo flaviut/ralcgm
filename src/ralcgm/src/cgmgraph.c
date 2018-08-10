@@ -36,7 +36,7 @@
  *
  */
 
-#define CGMGRAPH_C
+
 
 
 #include "cgmout.h"

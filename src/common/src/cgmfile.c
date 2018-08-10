@@ -39,7 +39,7 @@
  *   24 Jul 94 KEVP In CGMfopen put in binary option for BORLANDC
  */
 
-#define CGMFILE_C
+
 
 #include "cgmmach.h"
 #include "cgmpar.h"

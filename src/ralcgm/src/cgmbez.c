@@ -47,7 +47,7 @@
 
 #include "cgmtext.h"
 
-#define CGMBEZ_C
+
 
 #include "cgmubez.h"
 #include "cgmerr.h"

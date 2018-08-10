@@ -132,7 +132,7 @@
  *  25 Jan 95 PMG  Add direct handling of Bezier and Hershey fonts by number
  */
 
-#define CGMFONT_C
+
 
 #include "cgmout.h"
 #include "cgmfile.h"

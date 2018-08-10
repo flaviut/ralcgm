@@ -28,7 +28,7 @@
  *  10 Feb 94 RTP  Move definition of DMESS to cgmmach.h
  */
 
-#define CGMINPUT_C
+
 
 #include "cgmin.h"
 

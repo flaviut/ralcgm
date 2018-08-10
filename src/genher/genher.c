@@ -33,7 +33,7 @@
 #include "cgmmach.h"
 #include "cgmpar.h"
 
-#define GENHER_C
+
 
 #include "cgmuher.h"
 

@@ -45,7 +45,7 @@
 #define DEBUG_TEST
 #define DEBUG_FULL
 */
-#define CGMFILL_C
+
 
 #include "cgmout.h"
 #include "cgmgraph.h"

@@ -35,7 +35,7 @@
 
 /*  CGM Library calls */
 
-#define CGMLIB_C
+
 
 #include "cgmlib.h"
 

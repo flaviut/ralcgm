@@ -88,7 +88,7 @@
  *
  */
 
-#define CGMTEXT_C
+
 
 #include "cgmout.h"
 #include "cgmtext.h"

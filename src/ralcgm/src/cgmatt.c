@@ -63,7 +63,7 @@
  */
 
 
-#define CGMATT_C
+
 
 #include "cgmout.h"
 #include "cgmatt.h"

@@ -23,6 +23,8 @@
 #ifndef CGMBEZ_H
 #define CGMBEZ_H
 
+#include "cgmtext.h"
+
 /*  The following routines are the only ones that are callable
       |  by the CGM system, so needs to obey the BEZxxx convention.
       */

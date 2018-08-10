@@ -25,7 +25,7 @@
 #include "cgmmach.h"
 #include "cgmpar.h"
 
-#define GENBEZ_C
+
 
 #include "cgmubez.h"
 

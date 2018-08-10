@@ -42,7 +42,7 @@
  *                            the 3 points being collinear (because 1st = 3rd).
  */
 
-#define CGMGDP_C
+
 
 #include "cgmout.h"
 #include "cgmgdp.h"

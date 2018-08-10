@@ -24,7 +24,7 @@
  *  10 Feb 94 RTP  Move definition of DMESS to cgmmach.h
  */
 
-#define CGMCELL_C
+
 
 #include "cgmout.h"
 #include "cgmcell.h"

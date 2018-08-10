@@ -51,11 +51,11 @@
  *
  */
 
-#define CGMHER_C
+
 
 #include "cgmtext.h"
 
-#define CGMHER_C
+
 
 #include "cgmuher.h"
 #include "cgmerr.h"

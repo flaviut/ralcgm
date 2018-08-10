@@ -33,7 +33,7 @@
  *
  */
 
-#define CGMTRAP_C
+
 
 #undef DEBUG
 #undef DEBUG_FULL

@@ -24,7 +24,7 @@
  *    5 Oct 94 KEVP Free entire colour table if cgmfinished.
  */
 
-#define CGMCOLR_C
+
 
 #include "cgmout.h"
 #include "cgmcolr.h"

@@ -44,7 +44,7 @@
  *                 when saving frame position
  */
 
-#define CGMRAND_C
+
 
 #include "cgmin.h"
 #include "cgmrand.h"

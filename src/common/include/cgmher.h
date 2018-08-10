@@ -26,6 +26,7 @@
  */
 #ifndef CGMHER_H
 #define CGMHER_H
+#include "cgmtext.h"
 
 void HERtext(Textitem *, Point,
              void (*)(int, Point *, Tmatrix, int)),

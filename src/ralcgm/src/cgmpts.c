@@ -34,7 +34,7 @@
  */
 
 
-#define CGMPTS_C
+
 
 #include "cgmout.h"
 #include "cgmpts.h"

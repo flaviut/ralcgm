@@ -31,7 +31,7 @@
  *
  */
 
-#define CGMPOLY_C
+
 
 #include "cgmout.h"
 #include "cgmelem.h"
