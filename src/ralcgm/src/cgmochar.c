@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmochar.c  version 3.2
+/*   RAL-CGM interpreter module:  @(#) cgmochar.c  version 3.2
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -38,7 +38,7 @@
  *   6 Sep 90 RTP  Change internal routines to static
  *  19 Sep 90 RTP  Remove unused variables and clear lint problems
  *                 Add message at BEGPIC if cgmverbose set
- *   4 Oct 90 RTP  Change types to Int, Long, float etc
+ *   4 Oct 90 RTP  Change types to int, long, float etc
  *  14 Dec 90 RTP  Replace 'sqrt' and 'fabs' by macros SQRT and FABS
  *  21 Jan 90 RTP  Correct problem with Runlength Bitstream colour list
  *  22 Jan 90 RTP  Change algorithm for determining optimum colour list
@@ -67,20 +67,20 @@ static FILE *cgmoc;
 
 /*  declare void internal functions  */
 
-void CGMOchar(FILE *, Code, Long *, float *, char *);
+void CGMOchar(FILE *, Code, long *, float *, char *);
 
 static void MOCchkatt(Code type),
-        MOCcint(Code, Int, Long *, Long *),
-        MOCcenum(Code, Int, Enum *, Enum *),
+        MOCcint(Code, int, long *, long *),
+        MOCcenum(Code, int, Enum *, Enum *),
         MOCcreal(Code c, float *v1, float *v2, Enum prec),
-        MOCccol(Code, Int, struct colour *, struct colour *),
+        MOCccol(Code, int, struct colour *, struct colour *),
         MOCrectc(Code, struct rect *, struct rect *),
-        MOCvdc(Int, Long *, float *),
-        MOCpoints(Long n, Long *pi, float *pr, Enum set),
+        MOCvdc(int, long *, float *),
+        MOCpoints(long n, long *pi, float *pr, Enum set),
         MOCattrib(Code),
         MOCreal(double x, Enum type, Prec *prec),
-        MOCinteger(Long intval, Logical present, Logical allowed),
-        MOCcells(Long n, Long *pi, Enum mode, Prec prec),
+        MOCinteger(long intval, Logical present, Logical allowed),
+        MOCcells(long n, long *pi, Enum mode, Prec prec),
         MOCstring(char *),
         MOCdircol(Posint r, Posint g, Posint b, Prec prec),
         MOCcoldef(void),
@@ -88,7 +88,7 @@ static void MOCchkatt(Code type),
 
 /*  Local Variables */
 
-static Long subchars = 0;
+static long subchars = 0;
 static char charsub[CHARSUBNUM];
 
 static char *func = "CGMochar", mess[40];
@@ -100,23 +100,23 @@ static char *func = "CGMochar", mess[40];
 #define RADIFF(x)   ( FABS(oldatt.x-curatt.x) > cur.realmin )
 #define VADIFF(x)   ( FABS(oldatt.x-curatt.x) > cur.vdcmin )
 
-#define ACINT(x, y)    ( MOCcint(x, (Int)1, &oldatt.y, &curatt.y) )
-#define ACENUM(x, y)   ( MOCcenum(x, (Int)1, &oldatt.y, &curatt.y) )
+#define ACINT(x, y)    ( MOCcint(x, (int)1, &oldatt.y, &curatt.y) )
+#define ACENUM(x, y)   ( MOCcenum(x, (int)1, &oldatt.y, &curatt.y) )
 #define ACREAL(x, y, z) ( MOCcreal(x, &oldatt.y, &curatt.y, z) )
-#define ACCOL(x, y)    ( MOCccol(x, (Int)1, &oldatt.y, &curatt.y) )
+#define ACCOL(x, y)    ( MOCccol(x, (int)1, &oldatt.y, &curatt.y) )
 #define NEWATTRIB(x)  ( oldatt.x = curatt.x )
 #define ATTDIFF(x)    ( oldatt.x != curatt.x )
-#define PUTINT(x)     ( MOCinteger( (Long) x, FALSE, FALSE) )
+#define PUTINT(x)     ( MOCinteger( (long) x, FALSE, FALSE) )
 #define PUTREAL(x)  ( MOCreal( (double)(x), REAL, (Prec *) NULL) )
 #define PUTVDC(x)   ( MOCreal( (double)(x), VDC, (Prec *) NULL) )
 
 /***************************************************** CGMOchar ********/
 
-void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
+void CGMOchar(FILE *stream, Code c, long *pi, float *pr, char *pc) {
     static Logical first = TRUE, first_pic = TRUE;
     static Prec loc_prec;
-    static Long pic_num = ZERO;
-    register Long n, j, num;
+    static long pic_num = ZERO;
+    register long n, j, num;
     Code major;
     char pcx[STRING_MAX];
 
@@ -125,7 +125,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
 #endif
 
     if (c == (Code) EOF) {
-        if (cgmverbose) (void) fprintf(cgmerr, "Interpreter ended OK\n");
+        if (cgmverbose) (void) fprintf(cgmerr, "interpreter ended OK\n");
         exit(0);
     }
 
@@ -170,7 +170,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                 case TEXT:         /*  Text   */
                     MOCchkatt(TEXT);
                     MOCout(c);
-                    MOCvdc((Int) 2, pi, pr);
+                    MOCvdc((int) 2, pi, pr);
                     PUTINT (num);
                     MOCstring(pc);
                     break;
@@ -178,7 +178,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                 case RESTRTEXT:         /*  Restricted Text */
                     MOCchkatt(TEXT);
                     MOCout(c);
-                    MOCvdc((Int) 4, pi, pr);
+                    MOCvdc((int) 4, pi, pr);
                     PUTINT (num);
                     MOCstring(pc);
                     break;
@@ -211,13 +211,13 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                 case CELLARRAY:         /*  Cell Array  */
                     if (first) {
                         MOCout(c);
-                        MOCvdc((Int) 6, pi, pr);
+                        MOCvdc((int) 6, pi, pr);
                         pi += 6;
                         PUTINT (*pi++);
                         PUTINT (*pi++);
                         loc_prec = *pi++;
                         if (num > 0) {
-                            register Long max = ZERO, *ppc = pi;
+                            register long max = ZERO, *ppc = pi;
 
 /*  if within a buffer then find maximum colour  */
 
@@ -245,7 +245,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                 case RECT:         /*  Rectangle   */
                     MOCchkatt(POLYGON);
                     MOCout(c);
-                    MOCvdc((Int) 4, pi, pr);
+                    MOCvdc((int) 4, pi, pr);
                     break;
 
                 default:
@@ -287,7 +287,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                     oldatt = curatt;
                     strcpy(pcx, pc);
                     if (strcmp(pcx, "") == 0)
-                        strcpy(pcx, "RAL-CGM Interpreter");
+                        strcpy(pcx, "RAL-CGM interpreter");
                     MOCstring(pcx);
                     if (cgmverbose) DMESS "Metafile: %s\n", pcx);
                     break;
@@ -357,12 +357,12 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                     break;
 
                 case VDCTYPE:         /*  VDC Type   */
-                    MOCcenum(c, (Int) 1, &old.vdc_type, &cur.vdc_type);
+                    MOCcenum(c, (int) 1, &old.vdc_type, &cur.vdc_type);
                     break;
 
-                case INTEGERPREC:         /*  Integer Precision  */
+                case INTEGERPREC:         /*  integer Precision  */
                     curchar.int_prec = cur.int_bits;
-                    MOCcint(c, (Int) 1, &oldchar.int_prec, &curchar.int_prec);
+                    MOCcint(c, (int) 1, &oldchar.int_prec, &curchar.int_prec);
                     break;
 
                 case REALPREC:         /*  Real Precision   */
@@ -373,40 +373,40 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                         curchar.real.defexp = curchar.real.min;
                     curchar.real.expald = cur.real_expald;
 
-                    MOCcint(c, (Int) 4, &oldchar.real.prec, &curchar.real.prec);
+                    MOCcint(c, (int) 4, &oldchar.real.prec, &curchar.real.prec);
                     break;
 
                 case INDEXPREC:         /*  Index Precision   */
                     curchar.index_prec = cur.index_bits;
-                    MOCcint(c, (Int) 1, &oldchar.index_prec, &curchar.index_prec);
+                    MOCcint(c, (int) 1, &oldchar.index_prec, &curchar.index_prec);
                     break;
 
                 case COLRPREC:         /*  Colour Precision  */
                     curchar.col_prec = cur.col_bits;
-                    MOCcint(c, (Int) 1, &oldchar.col_prec, &curchar.col_prec);
+                    MOCcint(c, (int) 1, &oldchar.col_prec, &curchar.col_prec);
                     break;
 
                 case COLRINDEXPREC:         /*  Colour Index Precision  */
                     curchar.colind_prec = cur.colind_bits;
-                    MOCcint(c, (Int) 1, &oldchar.colind_prec, &curchar.colind_prec);
+                    MOCcint(c, (int) 1, &oldchar.colind_prec, &curchar.colind_prec);
                     break;
 
                 case MAXCOLRINDEX:         /*  Maximum Colour Index  */
-                    MOCcint(c, (Int) 1, &old.max_colind, &cur.max_colind);
+                    MOCcint(c, (int) 1, &old.max_colind, &cur.max_colind);
                     break;
 
                 case COLRVALUEEXT:         /*  Colour value extent  */
-                    MOCcint(COLRPREC, (Int) 1, &curchar.col_prec, &cur.col_bits);
+                    MOCcint(COLRPREC, (int) 1, &curchar.col_prec, &cur.col_bits);
                     curchar.min_rgb = cur.min_rgb;
                     curchar.max_rgb = cur.max_rgb;
-                    MOCccol(c, (Int) 2, &oldchar.min_rgb, &curchar.min_rgb);
+                    MOCccol(c, (int) 2, &oldchar.min_rgb, &curchar.min_rgb);
                     break;
 
                 case MFELEMLIST:         /*  Metafile element List  */
                     MOCout(c);
                     MOCout(st_start);
                     for (j = ZERO; j < num; j++, pi++) {
-                        switch ((Int) *pi) {
+                        switch ((int) *pi) {
                             case 0:
                             case 1:
                                 PUTINT (*pi);
@@ -440,7 +440,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                 case CHARSETLIST:         /*  Character set list  */
                     MOCout(c);
                     for (j = ZERO; j < num;) {
-                        Int b1, b2;
+                        int b1, b2;
                         char c1, chr[2];
 
                         PUTINT (*pi++);
@@ -481,19 +481,19 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                     break;
 
                 case COLRMODE:         /*  Colour Selection Mode */
-                    MOCcenum(c, (Int) 1, &old.color_mode, &cur.color_mode);
+                    MOCcenum(c, (int) 1, &old.color_mode, &cur.color_mode);
                     break;
 
                 case LINEWIDTHMODE:    /*  Line width Specification  */
-                    MOCcenum(c, (Int) 1, &old.linewidth_mode, &cur.linewidth_mode);
+                    MOCcenum(c, (int) 1, &old.linewidth_mode, &cur.linewidth_mode);
                     break;
 
                 case MARKERSIZEMODE:   /*  Marker size Specification  */
-                    MOCcenum(c, (Int) 1, &old.markersize_mode, &cur.markersize_mode);
+                    MOCcenum(c, (int) 1, &old.markersize_mode, &cur.markersize_mode);
                     break;
 
                 case EDGEWIDTHMODE:     /*  Edge width Specification  */
-                    MOCcenum(c, (Int) 1, &old.edgewidth_mode, &cur.edgewidth_mode);
+                    MOCcenum(c, (int) 1, &old.edgewidth_mode, &cur.edgewidth_mode);
                     break;
 
                 case VDCEXT:         /*  VDC Extent    */
@@ -514,8 +514,8 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
 
         case 0x33:  /* Control Elements  */
             switch (c) {
-                case VDCINTEGERPREC:       /* VDC Integer Precision  */
-                    MOCcint(c, (Int) 1, &oldchar.vdcint_prec, &curchar.vdcint_prec);
+                case VDCINTEGERPREC:       /* VDC integer Precision  */
+                    MOCcint(c, (int) 1, &oldchar.vdcint_prec, &curchar.vdcint_prec);
                     break;
 
                 case VDCREALPREC:       /* VDC Real Precision  */
@@ -525,19 +525,19 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                     if (curchar.vdc.defexp > curchar.vdc.min)
                         curchar.vdc.defexp = curchar.vdc.min;
                     curchar.vdc.expald = cur.vdc_expald;
-                    MOCcint(c, (Int) 4, &oldchar.vdc.prec, &curchar.vdc.prec);
+                    MOCcint(c, (int) 4, &oldchar.vdc.prec, &curchar.vdc.prec);
                     break;
 
                 case AUXCOLR:       /* Auxiliary Colour  */
                     if (cur.color_mode == DIRECT) {
-                        MOCccol(c, (Int) 1, &old.aux, &cur.aux);
+                        MOCccol(c, (int) 1, &old.aux, &cur.aux);
                     } else {
-                        MOCcint(c, (Int) 1, &old.aux.index, &cur.aux.index);
+                        MOCcint(c, (int) 1, &old.aux.index, &cur.aux.index);
                     }
                     break;
 
                 case TRANSPARENCY:       /* Transparency  */
-                    MOCcenum(c, (Int) 1, &old.transparency, &cur.transparency);
+                    MOCcenum(c, (int) 1, &old.transparency, &cur.transparency);
                     break;
 
                 case CLIPRECT:       /* Clip Rectangle  */
@@ -545,7 +545,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                     break;
 
                 case CLIP:       /* Clip Indicator  */
-                    MOCcenum(c, (Int) 1, &old.clip_ind, &cur.clip_ind);
+                    MOCcenum(c, (int) 1, &old.clip_ind, &cur.clip_ind);
                     break;
 
                 default:
@@ -560,51 +560,51 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                 case CIRCLE:       /* Circle      */
                     MOCchkatt(POLYGON);
                     MOCout(c);
-                    MOCvdc((Int) 3, pi, pr);
+                    MOCvdc((int) 3, pi, pr);
                     break;
 
                 case ARC3PT:       /* Circular Arc  3 point */
                     MOCchkatt(LINE);
                     MOCout(c);
-                    MOCvdc((Int) 6, pi, pr);
+                    MOCvdc((int) 6, pi, pr);
                     break;
 
                 case ARC3PTCLOSE:       /* Circular Arc  3 point close */
                     MOCchkatt(POLYGON);
                     MOCout(c);
-                    MOCvdc((Int) 6, pi, pr);
+                    MOCvdc((int) 6, pi, pr);
                     PUTINT (*(pi + 6));
                     break;
 
                 case ARCCTR:       /* Circle Arc centre */
                     MOCchkatt(LINE);
                     MOCout(c);
-                    MOCvdc((Int) 7, pi, pr);
+                    MOCvdc((int) 7, pi, pr);
                     break;
 
                 case ARCCTRCLOSE:       /* Circle Arc centre close */
                     MOCchkatt(POLYGON);
                     MOCout(c);
-                    MOCvdc((Int) 7, pi, pr);
+                    MOCvdc((int) 7, pi, pr);
                     PUTINT (*(pi + 7));
                     break;
 
                 case ELLIPSE:       /* Ellipse    */
                     MOCchkatt(POLYGON);
                     MOCout(c);
-                    MOCvdc((Int) 6, pi, pr);
+                    MOCvdc((int) 6, pi, pr);
                     break;
 
                 case ELLIPARC:       /* Elliptical Arc */
                     MOCchkatt(LINE);
                     MOCout(c);
-                    MOCvdc((Int) 10, pi, pr);
+                    MOCvdc((int) 10, pi, pr);
                     break;
 
                 case ELLIPARCCLOSE:       /* Elliptical Arc close*/
                     MOCchkatt(POLYGON);
                     MOCout(c);
-                    MOCvdc((Int) 10, pi, pr);
+                    MOCvdc((int) 10, pi, pr);
                     PUTINT (*(pi + 10));
                     break;
 
@@ -712,7 +712,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
                     att.fill_index = TRUE;
                     break;
 
-                case INTSTYLE:       /*  Interior Style  */
+                case INTSTYLE:       /*  interior Style  */
                     att.int_style = TRUE;
                     break;
 
@@ -758,7 +758,7 @@ void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
 
                 case PATTABLE:       /*  Pattern Table  */
                     if (first) {
-                        register Long max = ZERO;
+                        register long max = ZERO;
                         MOCout(c);
                         PUTINT (*pi++);
                         PUTINT (*pi++);
@@ -1357,7 +1357,7 @@ static void MOCattrib(Code code) {
             PUTINT (curatt.fill_ind);
             break;
 
-        case INTSTYLE:       /*  Interior Style  */
+        case INTSTYLE:       /*  interior Style  */
             PUTINT (curatt.int_style);
             break;
 
@@ -1440,8 +1440,8 @@ static void MOCattrib(Code code) {
 
 /****************************************************** MOCcint ********/
 
-static void MOCcint(Code code, Int n, Long *var1, Long *var2) {
-    register Long i;
+static void MOCcint(Code code, int n, long *var1, long *var2) {
+    register long i;
     register Logical diff = FALSE;
 
     for (i = ZERO; i < n; i++)
@@ -1458,7 +1458,7 @@ static void MOCcint(Code code, Int n, Long *var1, Long *var2) {
 /****************************************************** MOCcenum *******/
 
 static void MOCcenum(Code code, int n, Enum *var1, Enum *var2) {
-    register Long i;
+    register long i;
     register Logical diff = FALSE;
 
     for (i = ZERO; i < n; i++)
@@ -1546,8 +1546,8 @@ static void MOCccol(Code code, int n, struct colour *var1,
 
 /****************************************************** MOCvdc *********/
 
-static void MOCvdc(int n, Long *pi, float *pr) {
-    register Long j;
+static void MOCvdc(int n, long *pi, float *pr) {
+    register long j;
 
     if (cur.vdc_type == REAL)
         for (j = ZERO; j < n; j++)
@@ -1559,12 +1559,12 @@ static void MOCvdc(int n, Long *pi, float *pr) {
 
 /****************************************************** MOCpoints ******/
 
-static void MOCpoints(Long n, Long *pi, float *pr, Enum set) {
+static void MOCpoints(long n, long *pi, float *pr, Enum set) {
     static Logical first = TRUE;
-    static Long ix, iy;
-    static Long exp_x, exp_y;
+    static long ix, iy;
+    static long exp_x, exp_y;
     static float xx, yy;
-    register Long i;
+    register long i;
 
     if (first) {
         exp_x = exp_y = curchar.vdc.defexp;
@@ -1599,7 +1599,7 @@ static void MOCpoints(Long n, Long *pi, float *pr, Enum set) {
 /****************************************************** MOCreal ********/
 
 static void MOCreal(double x, Enum type, Prec *ptlist) {
-    register Long def_exp, mantissa, expnt;
+    register long def_exp, mantissa, expnt;
     register double y, realmin, prec;
     register Logical present = ZERO, expald;
 
@@ -1660,7 +1660,7 @@ static void MOCreal(double x, Enum type, Prec *ptlist) {
         if (x < 0.0) mantissa = -mantissa;
     }
 
-    MOCinteger((Long) mantissa, present, expald);
+    MOCinteger((long) mantissa, present, expald);
     if (present) PUTINT (expnt);
 
     if (mantissa && (ptlist != NULL)) *ptlist = expnt;
@@ -1668,9 +1668,9 @@ static void MOCreal(double x, Enum type, Prec *ptlist) {
 
 /****************************************************** MOCinteger *****/
 
-static void MOCinteger(Long intval, Logical present, Logical allowed) {
-    register Long ival;
-    register Long i, j;
+static void MOCinteger(long intval, Logical present, Logical allowed) {
+    register long ival;
+    register long i, j;
     Code hex[16];
 
 #ifdef DEBUG1
@@ -1717,14 +1717,14 @@ static void MOCstring(register char *s) {
 
 /****************************************************** MOCcells *******/
 
-static void MOCcells(register Long n, register Long *pi,
+static void MOCcells(register long n, register long *pi,
                      Enum mode, Prec prec) {
-    register Long i, j, k, num;
+    register long i, j, k, num;
     static Logical first = TRUE;
-    static Long normal_list, bit_stream, run_length, run_bits, colbytes;
+    static long normal_list, bit_stream, run_length, run_bits, colbytes;
     Posint red, green, blue, lastred, lastgreen, lastblue;
     Logical more;
-    Long col, last, run, *pi0 = pi;
+    long col, last, run, *pi0 = pi;
 
 #ifdef DEBUG
     DMESS "\nCell Array %d cells\n", n);
@@ -1734,7 +1734,7 @@ static void MOCcells(register Long n, register Long *pi,
     num = (more ? -n : n);
 
     if (first) {
-        Long bytes, cols;
+        long bytes, cols;
 
 /* if Prec = 0 the use Current precision */
         if (!prec)
@@ -1974,7 +1974,7 @@ static void MOCcells(register Long n, register Long *pi,
 
 /****************************************************** MOCdircol ******/
 static void MOCdircol(Posint r, Posint g, Posint b, Prec prec) {
-    register Long i;
+    register long i;
     register Code c;
 
     if (prec & 0x01) {
@@ -2037,7 +2037,7 @@ static void MOCcoldef(void)
 /****************************************************** MOCout *********/
 
 static void MOCout(Code hex) {
-    register Int bits, j;
+    register int bits, j;
     register unsigned char c;
     static size_t index = ZERO;
     static unsigned char buffer[BUFF_LEN + 1];
@@ -2075,7 +2075,7 @@ static void MOCout(Code hex) {
             }
 
 #ifdef EBCDIC
-        buffer[index++] = (cgmdriver == NATIVE ? cgmebcdic[(Int)c] : c);
+        buffer[index++] = (cgmdriver == NATIVE ? cgmebcdic[(int)c] : c);
 #else
         buffer[index++] = c;
 #endif

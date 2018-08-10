@@ -1,4 +1,4 @@
-/*  RAL-CGM Interpreter header file: @(#) cgmstruc.h  version 3.1
+/*  RAL-CGM interpreter header file: @(#) cgmstruc.h  version 3.1
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -12,7 +12,7 @@
  *
  * R T Platon @ Rutherford Appleton Laboratory (rtp@uk.ac.rl.ib)
  *
- * Description:  CGM Interpreter structures
+ * Description:  CGM interpreter structures
  *
  * Modification log:
  *

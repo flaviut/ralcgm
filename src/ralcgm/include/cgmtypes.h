@@ -1,4 +1,4 @@
-/*  RAL-CGM Interpreter header file: @(#) cgmtypes.h  version 3.1
+/*  RAL-CGM interpreter header file: @(#) cgmtypes.h  version 3.1
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -12,7 +12,7 @@
  *
  * R T Platon @ Rutherford Appleton Laboratory (rtp@uk.ac.rl.ib)
  *
- * Description: Typedefs and basic structures for CGM Interpreter
+ * Description: Typedefs and basic structures for CGM interpreter
  *
  * Modification log:
  *
@@ -31,11 +31,9 @@
 typedef short Logical;
 typedef long Index;
 typedef unsigned short Enum;
-typedef Int16 Code;
+typedef int16_t Code;
 typedef long Prec;
 typedef unsigned long Posint;
-typedef float Ptype;
-typedef double Mtype;
 
 /*  Structures used by CGM user interface */
 

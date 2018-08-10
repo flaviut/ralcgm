@@ -1,4 +1,4 @@
-/*  RAL-CGM Interpreter header file: @(#) cgmpar.h  version 3.2
+/*  RAL-CGM interpreter header file: @(#) cgmpar.h  version 3.2
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -12,7 +12,7 @@
  *
  * R T Platon @ Rutherford Appleton Laboratory (rtp@uk.ac.rl.ib)
  *
- * Description: Parameters used throughout the RAL-CGM Interpreter
+ * Description: Parameters used throughout the RAL-CGM interpreter
  *
  *  Modification log:
  *
@@ -20,7 +20,7 @@
  *                 groups
  *   2 Aug 91 RTP  Add SCCS id
  *   7 Aug 91 RTP  Use value CGMVERSION instead of defined VERSIONx
- *   9 Aug 94 KEVP Add Windows MetaFile/Graphics Device Interface driver parameter
+ *   9 Aug 94 KEVP Add Windows MetaFile/Graphics Device interface driver parameter
  *
  */
 
@@ -126,7 +126,7 @@
 #define NOTFINAL    (Enum) 0
 #define FINAL       (Enum) 1
 
-/*  Interior styles  */
+/*  interior styles  */
 #define HOLLOW      (Enum) 0
 #define SOLID       (Enum) 1
 #define PAT         (Enum) 2
@@ -258,12 +258,12 @@
 
 /*  Number of character substitutions possible */
 
-#define CHARSUBNUM  (Int) 34
+#define CHARSUBNUM  (int) 34
 
 /*  Mathematical quantities  */
 
 #ifndef ZERO
-#define ZERO        (Int) 0
+#define ZERO        (int) 0
 #endif
 
 #define LOG2        0.30103

@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmprof.c  version 3.2
+/*   RAL-CGM interpreter module:  @(#) cgmprof.c  version 3.2
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -43,7 +43,7 @@ void CGMprofile(Code c) {
         case PROF_INDEXCOL: /* Indexed colour only */
             PROindcol(c);
             break;
-        case PROF_INTVDC:   /* Integer VDC only */
+        case PROF_INTVDC:   /* integer VDC only */
             break;
 
         default:

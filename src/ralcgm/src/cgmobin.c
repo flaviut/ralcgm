@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmobin.c  version 3.4
+/*   RAL-CGM interpreter module:  @(#) cgmobin.c  version 3.4
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -29,7 +29,7 @@
  *  19 Sep 90 RTP  Remove unused variables and clear lint problems
  *                 Add message at BEGPIC if cgmverbose set
  *                 Correct brackets in REALSIZE & VDCSIZE
- *   4 Oct 90 RTP  Use typedefs Int, Long and float
+ *   4 Oct 90 RTP  Use typedefs int, long and float
  *   3 Dec 90 RTP  Change MOBreal parameter to double
  *  15 Mar 91 RTP  Change cgmstate to Enum type
  *   2 May 91 RTP  Change test in Direct colour cell arrays to || instead
@@ -56,19 +56,19 @@ static FILE *cgmob;
 
 /* declare internal functions */
 
-void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str);
+void CGMObin(FILE *stream, Code c, long *pi, float *pr, char *str);
 
-static void MOBopcode(Code, Long),
-        MOBint(Long, Prec, Enum),
+static void MOBopcode(Code, long),
+        MOBint(long, Prec, Enum),
         MOBreal(double, Enum, Enum),
         MOBcolour(struct colour *, Enum),
-        MOBvdc(Int, Long *, float *),
-        MOBpointlist(Long, Long *, float *, Enum),
-        MOBclist(Long, Long *, Prec, Enum, Prec),
-        MOBbits(Posint, Prec, Long *),
+        MOBvdc(int, long *, float *),
+        MOBpointlist(long, long *, float *, Enum),
+        MOBclist(long, long *, Prec, Enum, Prec),
+        MOBbits(Posint, Prec, long *),
         MOBstring(char *),
         MOBout(Posint, Prec),
-        MOBcharci(Code, Int *, Int *);
+        MOBcharci(Code, int *, int *);
 
 /*  Local Parameters */
 
@@ -91,27 +91,27 @@ static void MOBopcode(Code, Long),
 
 /*  Parameter sizes */
 
-#define ENUMSIZE     ( (Long) 2 )
-#define INDEXSIZE    ( (Long) curbin.index_prec>>3 )
-#define COLINDEXSIZE ( (Long) curbin.colind_prec>>3 )
-#define INTSIZE      ( (Long) curbin.int_prec>>3 )
-#define REALSIZE     ( (Long) (curbin.real_whole + curbin.real_fraction)>>3 )
-#define VDCSIZE      ( (Long) (cur.vdc_type == REAL\
+#define ENUMSIZE     ( (long) 2 )
+#define INDEXSIZE    ( (long) curbin.index_prec>>3 )
+#define COLINDEXSIZE ( (long) curbin.colind_prec>>3 )
+#define INTSIZE      ( (long) curbin.int_prec>>3 )
+#define REALSIZE     ( (long) (curbin.real_whole + curbin.real_fraction)>>3 )
+#define VDCSIZE      ( (long) (cur.vdc_type == REAL\
                        ? (curbin.vdc_whole + curbin.vdc_fraction)>>3 \
                        : curbin.vdcint_prec>>3 ) )
-#define COLOURSIZE    ( (Long) (cur.color_mode == DIRECT\
+#define COLOURSIZE    ( (long) (cur.color_mode == DIRECT\
                        ? 3*curbin.col_prec>>3 : curbin.colind_prec>>3 ) )
-#define STRINGSIZE(x) ( (Long) (256 * strlen(x) / 255 + 1) )
+#define STRINGSIZE(x) ( (long) (256 * strlen(x) / 255 + 1) )
 
 /*  Basic Common Output functions */
 
 #define PUTBYTE(x)    MOBout( (Posint) x, (Prec) 1 )
 #define PUTWORD(x)    MOBout( (Posint) x, (Prec) 2 )
-#define PUTINT(x)     MOBint( (Long) x, curbin.int_prec, SIGNED )
+#define PUTINT(x)     MOBint( (long) x, curbin.int_prec, SIGNED )
 #define PUTREAL(x)    MOBreal ( (double)x, curbin.real_type, REAL )
-#define PUTINDEX(x)   MOBint( (Long) x, curbin.index_prec, SIGNED )
-#define PUTENUM(x)    MOBint( (Long) x, ENUMERATED, SIGNED )
-#define PUTINTVDC(x)  MOBint( (Long) x, curbin.vdcint_prec, SIGNED )
+#define PUTINDEX(x)   MOBint( (long) x, curbin.index_prec, SIGNED )
+#define PUTENUM(x)    MOBint( (long) x, ENUMERATED, SIGNED )
+#define PUTINTVDC(x)  MOBint( (long) x, curbin.vdcint_prec, SIGNED )
 #define PUTREALVDC(x) MOBreal( (double)x, curbin.vdc_type, VDC )
 
 /* Local Variables */
@@ -129,17 +129,17 @@ static char *func = "CGMobin", mess[40];
 
 /********************************************************* CGMObin *****/
 
-void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
-    register Long j, n, num;
+void CGMObin(FILE *stream, Code c, long *pi, float *pr, char *str) {
+    register long j, n, num;
     Code major;
-    Long parmlen = ZERO;
-    static Long defindex, saveparmlen;
+    long parmlen = ZERO;
+    static long defindex, saveparmlen;
     static Logical first = TRUE, first_pic = TRUE;
-    Int class, id;
+    int class, id;
 
     if (c == (Code) EOF) {
         MOBout((Posint) 0, (Prec) 0); /* flush output buffer */
-        if (cgmverbose) (void) fprintf(cgmerr, "Interpreter ended OK\n");
+        if (cgmverbose) (void) fprintf(cgmerr, "interpreter ended OK\n");
         exit(0);
     }
 
@@ -166,7 +166,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                 case TEXT: /* Text */
                     parmlen = 2 * VDCSIZE + ENUMSIZE + STRINGSIZE(str);
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 2, pi, pr);
+                    MOBvdc((int) 2, pi, pr);
                     PUTENUM (num);
                     MOBstring(str);
                     break;
@@ -174,7 +174,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                 case RESTRTEXT: /* Restricted Text */
                     parmlen = 4 * VDCSIZE + ENUMSIZE + STRINGSIZE(str);
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 4, pi, pr);
+                    MOBvdc((int) 4, pi, pr);
                     PUTENUM (num);
                     MOBstring(str);
                     break;
@@ -204,10 +204,10 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
                 case CELLARRAY: /* Cell Array */
                 {
-                    register Long *pt = pi, i, k;
-                    Long red, green, blue, nc, ncol, run, packed;
-                    Long last, lastred, lastgreen, lastblue;
-                    static Long nx, ny;
+                    register long *pt = pi, i, k;
+                    long red, green, blue, nc, ncol, run, packed;
+                    long last, lastred, lastgreen, lastblue;
+                    static long nx, ny;
                     static Prec lprec;
                     static Enum runlength;
 
@@ -312,7 +312,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                         if (num < 0) parmlen = -parmlen;
                         MOBopcode(c, parmlen);
 
-                        MOBvdc((Int) 6, pi, pr);
+                        MOBvdc((int) 6, pi, pr);
                         PUTINT (nx);
                         PUTINT (ny);
                         PUTINT (lprec);
@@ -358,7 +358,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                 case RECT: /* Rectangle */
                     parmlen = 4 * VDCSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 4, pi, pr);
+                    MOBvdc((int) 4, pi, pr);
                     break;
 
                 default:
@@ -382,7 +382,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     break;
 
                 case ENDMF: /* End Metafile */
-                    MOBopcode(c, (Long) 0);
+                    MOBopcode(c, (long) 0);
                     break;
 
                 case BEGPIC: /* Begin Picture Descriptor */
@@ -398,11 +398,11 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     break;
 
                 case BEGPICBODY: /* Begin Picture Body */
-                    MOBopcode(c, (Long) 0);
+                    MOBopcode(c, (long) 0);
                     break;
 
                 case ENDPIC: /* End  Picture */
-                    MOBopcode(c, (Long) 0);
+                    MOBopcode(c, (long) 0);
                     break;
 
                 default:
@@ -434,7 +434,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     PUTENUM (cur.vdc_type);
                     break;
 
-                case INTEGERPREC: /* Integer Precision */
+                case INTEGERPREC: /* integer Precision */
                     parmlen = INTSIZE;
                     MOBopcode(c, parmlen);
                     j = (cur.int_bits <= 8 ? 8
@@ -512,11 +512,11 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     MOBopcode(c, parmlen);
                     PUTINT (num);
                     for (n = 0; n < num; n++, pi++) {
-                        switch ((Int) *pi) {
+                        switch ((int) *pi) {
                             case 0:
                             case 1:
                                 class = -1;
-                                id = (Int) *pi;
+                                id = (int) *pi;
                                 break;
                             default:
                                 MOBcharci((Code) *pi, &class, &id);
@@ -553,7 +553,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 /* copy defaults buffer to output */
                     for (n = 0; n < mobdeflen; n++)
                         PUTBYTE(mobdefbuff[n]);
-                    FREE(mobdefbuff);
+                    free(mobdefbuff);
 #ifdef DEBUG
                     DMESS "\nEnd MF defaults replacement\n");
 #endif
@@ -561,7 +561,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
                 case FONTLIST: /* Font List */
                 {
-                    register Long *pt = pi;
+                    register long *pt = pi;
 
                     for (j = 0, parmlen = 0; j < num; j = *pt++)
                         parmlen += STRINGSIZE(&str[j]);
@@ -573,7 +573,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
                 case CHARSETLIST: /* Character set list */
                 {
-                    register Long *pt = pi;
+                    register long *pt = pi;
 
                     for (j = 0, parmlen = 0; j < num; j = *pt++) {
                         parmlen += ENUMSIZE + STRINGSIZE(&str[j]);
@@ -663,7 +663,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
         case 0x33:  /* Control Elements */
             switch (c) {
-                case VDCINTEGERPREC: /* VDC Integer Precision */
+                case VDCINTEGERPREC: /* VDC integer Precision */
                     parmlen = INTSIZE;
                     MOBopcode(c, parmlen);
                     curbin.vdcint_prec = (cur.vdcint_bits <= 8 ? 8
@@ -732,51 +732,51 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                 case CIRCLE: /* Circle */
                     parmlen = 3 * VDCSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 3, pi, pr);
+                    MOBvdc((int) 3, pi, pr);
                     break;
 
                 case ARC3PT: /* Circular Arc  3 point */
                     parmlen = 6 * VDCSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 6, pi, pr);
+                    MOBvdc((int) 6, pi, pr);
                     break;
 
                 case ARC3PTCLOSE: /* Circular Arc  3 point close */
                     parmlen = 6 * VDCSIZE + ENUMSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 6, pi, pr);
+                    MOBvdc((int) 6, pi, pr);
                     PUTENUM (*(pi + 6));
                     break;
 
                 case ARCCTR: /* Circle Arc centre */
                     parmlen = 7 * VDCSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 7, pi, pr);
+                    MOBvdc((int) 7, pi, pr);
                     break;
 
                 case ARCCTRCLOSE: /* Circle Arc centre close */
                     parmlen = 7 * VDCSIZE + ENUMSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 7, pi, pr);
+                    MOBvdc((int) 7, pi, pr);
                     PUTENUM (*(pi + 7));
                     break;
 
                 case ELLIPSE: /* Ellipse */
                     parmlen = 6 * VDCSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 6, pi, pr);
+                    MOBvdc((int) 6, pi, pr);
                     break;
 
                 case ELLIPARC: /* Elliptical Arc */
                     parmlen = 10 * VDCSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 10, pi, pr);
+                    MOBvdc((int) 10, pi, pr);
                     break;
 
                 case ELLIPARCCLOSE: /* Elliptical Arc close */
                     parmlen = 10 * VDCSIZE + ENUMSIZE;
                     MOBopcode(c, parmlen);
-                    MOBvdc((Int) 10, pi, pr);
+                    MOBvdc((int) 10, pi, pr);
                     PUTENUM (*(pi + 10));
                     break;
 
@@ -959,7 +959,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     PUTINDEX (curatt.fill_ind);
                     break;
 
-                case INTSTYLE: /* Interior Style */
+                case INTSTYLE: /* interior Style */
                     parmlen = ENUMSIZE;
                     MOBopcode(c, parmlen);
                     PUTENUM (curatt.int_style);
@@ -1036,8 +1036,8 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
                 case PATTABLE: /* Pattern Table */
                 {
-                    register Long *pt = pi, patind, i, k;
-                    Long nx, ny;
+                    register long *pt = pi, patind, i, k;
+                    long nx, ny;
                     Prec lprec;
 
                     parmlen = INDEXSIZE + 3 * INTSIZE;
@@ -1117,8 +1117,8 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
                 case ASF: /* Aspect source flags */
                 {
-                    Long k, l, *pt = pi;
-                    Int type, value;
+                    long k, l, *pt = pi;
+                    int type, value;
                     Logical asflag[ASFS];
 
                     for (j = 0; j < ASFS; j++) asflag[j] = FALSE;
@@ -1217,9 +1217,9 @@ void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
 /******************************************************** MOBopcode ****/
 
-static void MOBopcode(Code c, Long len) {
-    Int class, id;
-    unsigned Long oneword, plen, remainder;
+static void MOBopcode(Code c, long len) {
+    int class, id;
+    unsigned long oneword, plen, remainder;
     Logical part;
 
 /* Pad out last element if necessary */
@@ -1264,7 +1264,7 @@ static void MOBopcode(Code c, Long len) {
 
 /******************************************************** MOBcharci ****/
 
-static void MOBcharci(Code c, Int *class, Int *id) {
+static void MOBcharci(Code c, int *class, int *id) {
     Code major = c >> 8, minor = c & 0xff;
 
     *class = -1;
@@ -1359,10 +1359,10 @@ static void MOBcharci(Code c, Int *class, Int *id) {
 
 /******************************************************** MOBint *******/
 
-static void MOBint(Long n, Prec prec, Enum sign) {
+static void MOBint(long n, Prec prec, Enum sign) {
 
 #ifdef DEBUG
-    DMESS "\nInteger: %d prec: %d Type: %d", n, prec, sign);
+    DMESS "\ninteger: %d prec: %d Type: %d", n, prec, sign);
 #endif
 
 /*
@@ -1383,19 +1383,19 @@ static void MOBcolour(struct colour *col, Enum type) {
        DMESS "Colour: %d\n", col->index );
 #endif
     if (type == DIRECT) {
-        MOBint((Long) col->red, curbin.col_prec, UNSIGNED);
-        MOBint((Long) col->green, curbin.col_prec, UNSIGNED);
-        MOBint((Long) col->blue, curbin.col_prec, UNSIGNED);
+        MOBint((long) col->red, curbin.col_prec, UNSIGNED);
+        MOBint((long) col->green, curbin.col_prec, UNSIGNED);
+        MOBint((long) col->blue, curbin.col_prec, UNSIGNED);
     } else {
-        MOBint((Long) col->index, curbin.colind_prec, UNSIGNED);
+        MOBint((long) col->index, curbin.colind_prec, UNSIGNED);
     }
 
 }
 
 /******************************************************** MOBvdc *******/
 
-static void MOBvdc(Int n, Long *pi, float *pr) {
-    Int i;
+static void MOBvdc(int n, long *pi, float *pr) {
+    int i;
 
 #ifdef DEBUG
     DMESS "%d vdcs:\n", n);
@@ -1413,8 +1413,8 @@ static void MOBvdc(Int n, Long *pi, float *pr) {
 
 /******************************************************** MOBpointlist */
 
-static void MOBpointlist(Long n, Long *pi, float *pr, Enum set) {
-    Int i;
+static void MOBpointlist(long n, long *pi, float *pr, Enum set) {
+    int i;
 
 #ifdef DEBUG
     DMESS "%d points:", n);
@@ -1526,7 +1526,7 @@ static void MOBreal(double x, Enum real_type, Enum real_or_vdc) {
 /******************************************************** MOBstring ****/
 
 static void MOBstring(char *s) {
-    register Int i, len, slen = strlen(s);
+    register int i, len, slen = strlen(s);
     register char chr;
 
 #ifdef DEBUG
@@ -1556,10 +1556,10 @@ static void MOBstring(char *s) {
 
 /******************************************************** MOBclist *****/
 
-static void MOBclist(register Long num, register Long *col,
+static void MOBclist(register long num, register long *col,
                      Prec mode, Enum type, Prec prec) {
-    register Long j, k, n;
-    Long bits, bytes = 0;
+    register long j, k, n;
+    long bits, bytes = 0;
 
 #ifdef DEBUG_CELL
     DMESS "\n%d Colours (prec: %d)", num, prec);
@@ -1571,7 +1571,7 @@ static void MOBclist(register Long num, register Long *col,
 #endif
 
     if (type == RUNLENGTH) {
-        Long run = 1, bit = 0;
+        long run = 1, bit = 0;
 
         if (mode == DIRECT) {
             Posint red, green, blue, lastred, lastgreen, lastblue;
@@ -1602,7 +1602,7 @@ static void MOBclist(register Long num, register Long *col,
             }
         } else   /* Indexed runlength */
         {
-            Long lastcol;
+            long lastcol;
 
             lastcol = (*col++);
             for (j = 1; j <= num; j++, col++) {
@@ -1650,7 +1650,7 @@ static void MOBclist(register Long num, register Long *col,
 
 /******************************************************** MOBbits ******/
 
-static void MOBbits(Posint value, Prec prec, Long *bit) {
+static void MOBbits(Posint value, Prec prec, long *bit) {
     static Posint oneword = 0;
     Posint mask = (Posint) 0xffffffff;
 
@@ -1685,7 +1685,7 @@ static void MOBbits(Posint value, Prec prec, Long *bit) {
 /******************************************************** MOBout *******/
 
 static void MOBout(Posint hex, Prec bytes) {
-    register Int i;
+    register int i;
 
     start:
 #ifdef DEBUG2

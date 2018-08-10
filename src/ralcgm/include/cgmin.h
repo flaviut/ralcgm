@@ -1,4 +1,4 @@
-/*  RAL-CGM Interpreter header file: @(#) cgmin.h  version 3.3
+/*  RAL-CGM interpreter header file: @(#) cgmin.h  version 3.3
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *

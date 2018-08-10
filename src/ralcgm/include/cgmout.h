@@ -1,4 +1,4 @@
-/*  RAL-CGM Interpreter header file: @(#) cgmout.h  version 3.4
+/*  RAL-CGM interpreter header file: @(#) cgmout.h  version 3.4
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -34,7 +34,6 @@
 
 /*  Include file that all modules using this file will use.  */
 
-#include "cgmatt.h"
 #include "cgmerr.h"
 
 /*  external structures needed by driver  */

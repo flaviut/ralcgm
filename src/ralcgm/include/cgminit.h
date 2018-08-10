@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter header file:  @(#) cgminit.h  version 3.6
+/*   RAL-CGM interpreter header file:  @(#) cgminit.h  version 3.6
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -48,7 +48,7 @@
 
 /*  CGM Version Identifier  */
 
-const char *cgmversion = "RAL CGM Interpreter Version 3.50";
+const char *cgmversion = "RAL CGM interpreter Version 3.50";
 Enum cgmverno = CGMVERSION;
 
 /*  Initialise flags */
@@ -59,7 +59,7 @@ Logical cgmterm = FALSE;    /*  Flag set for input from stdin  */
 
 Logical cgmEOF = FALSE;     /*  End of File flag is OFF */
 
-Logical cgmfinished = FALSE;  /* Interpreter finished flag */
+Logical cgmfinished = FALSE;  /* interpreter finished flag */
 
 /*  Default string start and terminator  */
 
@@ -511,7 +511,7 @@ char *str, *strmax;
 
 /*   Set default values for common flags  */
 
-Int cgmerrcount = ERROR_MAX;   /*  USE error count limit by default */
+int cgmerrcount = ERROR_MAX;   /*  USE error count limit by default */
 
 Logical cgmralgks = DEFRALGKSGDP;    /*  Use RAL-GKS GDPs */
 

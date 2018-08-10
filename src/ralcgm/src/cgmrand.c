@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmrand.c  version 3.3
+/*   RAL-CGM interpreter module:  @(#) cgmrand.c  version 3.3
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -21,7 +21,7 @@
  *                 Add routine CGMdefaults to copy structures
  *   7 Aug 90 RTP  Add VDC dependent checks to CGMdefaults
  *  15 Aug 90 NMH  VMS specific #ifdefs added
- *  31 Aug 90 RTP  Introduce Input dependent MF default structs
+ *  31 Aug 90 RTP  introduce Input dependent MF default structs
  *  24 Sep 90 RTP  Put cgmdefaults, cgmfopen, cgmpath &
  *                 cgmialloc etc in file cgmutil.c
  *  27 Nov 90 NMH  Added routine CGMvaxst, Stores start position of
@@ -50,11 +50,11 @@
 #include "cgmrand.h"
 
 
-/*  Internal routines */
+/*  internal routines */
 
 static void CGMfrsave(Code),
         CGMmfsave(void),
-        CGMpoint(Int frame, Code *rc);
+        CGMpoint(int frame, Code *rc);
 
 /*  External Routine  */
 
@@ -69,9 +69,9 @@ extern Logical miccharsub, micsubchar[];
 
 static Logical nosave_meta = FALSE, eof_meta = FALSE;
 /* Device    */
-static Int cur_frame = 1, target_frame = 0;              /* control   */
-static Int n_frame = 1, max_frame = 0;                   /* addresses */
-static Int cur_meta = 1, n_meta = 1, max_meta = 0;
+static int cur_frame = 1, target_frame = 0;              /* control   */
+static int n_frame = 1, max_frame = 0;                   /* addresses */
+static int cur_meta = 1, n_meta = 1, max_meta = 0;
 static struct data_frame *start_frame = NULL;
 static struct data_frame *start_meta = NULL;
 
@@ -88,7 +88,7 @@ Code CGMframe(Code code)
     in the input file and calls the output driver
 */
 {
-    Int frame;
+    int frame;
     Code rc = NONOP;
 
 #ifdef DEBUG
@@ -219,7 +219,7 @@ Code CGMframe(Code code)
 
 /****************************************************** CGMpoint **/
 
-static void CGMpoint(Int frame, Code *rc)
+static void CGMpoint(int frame, Code *rc)
 /*  Function to move file to 'frame' */
 {
     struct data_frame *p;
@@ -271,7 +271,7 @@ static void CGMfrsave(Code code)
 {
     fpos_t disk_addr;
     struct data_frame *p;
-    Int i;
+    int i;
 
 #ifdef DEBUG
     DMESS "CGMfrsave (%d/%d): %04x\n", cur_frame, cur_meta, code );
@@ -321,7 +321,7 @@ static void CGMfrsave(Code code)
         start_frame = (struct data_frame *)
                 calloc(max_frame, sizeof(struct data_frame));
         for (i = 0; i < n_frame; i++) start_frame[i] = p[i];
-        FREE(p);
+        free(p);
     }
 
 /* Save file pointer and current metafile number */
@@ -335,7 +335,7 @@ static void CGMmfsave(void)
 /*  Save metafile pointer at ENDMF */
 {
     struct data_frame *pm;
-    Int i;
+    int i;
 
 #ifdef DEBUG
     DMESS "CGMmfsave: %d (%d)\n", cur_meta, n_meta );
@@ -359,7 +359,7 @@ static void CGMmfsave(void)
         start_meta = (struct data_frame *)
                 calloc(max_meta, sizeof(struct data_frame));
         for (i = 0; i < n_meta; i++) start_meta[i] = pm[i];
-        FREE(pm);
+        free(pm);
     }
 
 /* Store pointer to BEGPICBODY */
@@ -400,24 +400,3 @@ void CGMstframe(void)
 #endif
 
 }
-
-#ifndef HAVE_SETPOS /*  Define routines for fsetpos and fgetpos for old C */
-
-/****************************************************** fsetpos ********/
-static int fsetpos ( file, bptr )
-FILE *file;
-fpos_t *bptr;
-{
-    return fseek(file,*bptr,0);
-}
-
-/****************************************************** fgetpos ********/
-static int fgetpos ( file, bptr )
-FILE *file;
-fpos_t *bptr;
-{
-    *bptr = ftell(file);
-    return 0;
-}
-
-#endif

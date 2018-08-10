@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgminput.c  version 3.2
+/*   RAL-CGM interpreter module:  @(#) cgminput.c  version 3.2
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -32,8 +32,6 @@
 
 #include "cgmin.h"
 
-extern struct char_defaults curchar;
-extern struct text_defaults curtext;
 extern struct bin_defaults curbin;
 
 /**************************************************** CGMdefaults ******/
@@ -235,7 +233,7 @@ void CGMdefaults(Code c, Enum type) {
     fprintf(stderr,"  Alternate character set %d\n", curatt.altchar_set);
 
     fprintf(stderr,"  Fill index        %d\n", curatt.fill_ind);
-    fprintf(stderr,"  Interior style    %d\n", curatt.int_style);
+    fprintf(stderr,"  interior style    %d\n", curatt.int_style);
     fprintf(stderr,"  Hatch index       %d\n", curatt.hatch_ind);
     fprintf(stderr,"  Pattern index     %d\n", curatt.pat_ind);
     if (cur.vdc_type == REAL)
@@ -285,7 +283,7 @@ void CGMdefaults(Code c, Enum type) {
 
 void CGMsetasf(long *pi) {
     long n, num;
-    Int type, value, k, l;
+    int type, value, k, l;
 
     num = *pi++;
     for (n = ZERO; n < num; n++) {
@@ -332,7 +330,6 @@ void CGMsetasf(long *pi) {
 }
 
 
-#ifdef VAR_BUFFER
 
 /****************************************************** CGMialloc ******/
 
@@ -351,7 +348,7 @@ long *CGMialloc(long *pi, long size) {
     }
     pimax = pint + buffsize;
 #ifdef DEBUG
-    DMESS "New Integer Buffer: %x to %x %d bytes\n", pint, pimax, buffsize);
+    DMESS "New integer Buffer: %x to %x %d bytes\n", pint, pimax, buffsize);
 #endif
 
     return (pint + pt);
@@ -401,4 +398,3 @@ char *CGMsalloc(char *ps, long size) {
     return (str + pt);
 }
 
-#endif

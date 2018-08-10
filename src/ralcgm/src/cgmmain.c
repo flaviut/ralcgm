@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmmain.c  version 3.6
+/*   RAL-CGM interpreter module:  @(#) cgmmain.c  version 3.6
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -15,7 +15,7 @@
  * Original Author:
  *    R T Platon @ Rutherford Appleton Laboratory (rtp@uk.ac.rl.ib)
  *
- * Description: Main RAL-CGM Interpreter Routine
+ * Description: Main RAL-CGM interpreter Routine
  *
  *
  * Arguments:     -x   Options - Valid parameters are:
@@ -39,7 +39,7 @@
  *                            Tek  : Tektronix 42xx
  *                            Hpgl : HPGL
  *                            Vga  : PC VGA
- *                            Win:  MiscroSoft Windows Graphics Device Interface or Metafile
+ *                            Win:  MiscroSoft Windows Graphics Device interface or Metafile
  *                     To be added later
  *                            8514 : PC 8514 monitor
  *
@@ -134,7 +134,7 @@
  *  15 Jun 94 KEVP Delay announcement of CGM version till error file is defined
  *  23 Jun 94 KEVP Change default ClearText output CGM filetype from TXT to CLT.
  *                             Force ClearText output onto file, ifdef WINDOWS
- *   9 Aug 94 KEVP Add output driver for Windows MetaFile on Graphics Device Interface
+ *   9 Aug 94 KEVP Add output driver for Windows MetaFile on Graphics Device interface
  *  13 Feb 95 KEVP Allow default GDP option to remain DEFRALGKSGDP when the
  *                 corresponding environment variable is absent
  *  14 Feb 95 KEVP Make sure PostScript always writes to file, if NOSTDOUT.
@@ -623,8 +623,6 @@ main(int argc, char **argv) {
             break;
 
 
-
-
         case CLEAR_TEXT:   /*  Clear Text Output  */
 #ifdef NOSTDOUT
             outfilename = TRUE;
@@ -694,7 +692,6 @@ main(int argc, char **argv) {
 
     /*  Define initial buffers for dynamic allocation */
 
-#ifdef VAR_BUFFER
     pint = (long *) calloc(ARRAY_MAX, sizeof(long));
     pimax = pint + ARRAY_MAX;
     preal = (float *) calloc(ARRAY_MAX, sizeof(float));
@@ -705,18 +702,17 @@ main(int argc, char **argv) {
         exit(CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
     }
 #ifdef DEBUG
-        OUTMESS "Buffers allocated\n  int:  %x-%x (%d)\n",
-                                        pint, pimax, pimax - pint);
-        OUTMESS " real:  %x-%x (%d)\n", preal, prmax, prmax - preal);
-        OUTMESS " char:  %x-%x (%d)\n", str, strmax, strmax - str );
-#endif
+    OUTMESS "Buffers allocated\n  int:  %x-%x (%d)\n",
+                                    pint, pimax, pimax - pint);
+    OUTMESS " real:  %x-%x (%d)\n", preal, prmax, prmax - preal);
+    OUTMESS " char:  %x-%x (%d)\n", str, strmax, strmax - str );
 #endif
 
 /* Free filenames */
 
-    FREE(cgmin);
-    FREE(cgmefile);
-    FREE(cgmroot);
+    free(cgmin);
+    free(cgmefile);
+    free(cgmroot);
 
 #ifdef _DEBUG_MALLOC_INC
     dbfile = open("malloc.log",O_WRONLY);
@@ -724,9 +720,9 @@ main(int argc, char **argv) {
     malloc_dump(dbfile);
 #endif
 
-    /*  Run Interpreter  */
+    /*  Run interpreter  */
 
-    if (cgmverbose) OUTMESS "Interpreter started\n");
+    if (cgmverbose) OUTMESS "interpreter started\n");
     switch (cgminput) {
 #ifdef EBCDIC
         case NATIVE:  /*  Native character input (EBCDIC)  */
@@ -748,7 +744,7 @@ main(int argc, char **argv) {
             exit(CGMerror(func, ERR_NOCODE, FATAL, NULLSTR));
     }
 
-    if (cgmverbose && cgmfinished) OUTMESS "Interpreter Finished OK\n");
+    if (cgmverbose && cgmfinished) OUTMESS "interpreter Finished OK\n");
 #ifdef WINDOWS
     return;
 #else

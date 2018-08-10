@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmichar.c  version 3.4
+/*   RAL-CGM interpreter module:  @(#) cgmichar.c  version 3.4
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -47,7 +47,7 @@
  *   9 Sep 90 RTP  Change parameters in FNT*list to include
  *                 number of strings
  *  19 Sep 90 RTP  Remove unused variables and clear lint problems
- *   4 Oct 90 RTP  Change typedefs to Int, Long and float
+ *   4 Oct 90 RTP  Change typedefs to int, long and float
  *  30 Oct 90 RTP  Add check for RAL-GKS 1.11 CGMs
  *  15 Mar 91 RTP  Change cgmstate to Enum type
  *  14 May 91 RTP  Add ANSI declarations
@@ -64,7 +64,7 @@
  *  12 Aug 94 KEVP Enable interpreter to finish with a return rather than an exit
  *  17 Oct 94 KEVP Enable interpreter to finish with return within Metafile Defaults
  *                 Replacement.
- *  19 Oct 94 KEVP Interpret Auxilliary Colour according to Current Colour Mode.
+ *  19 Oct 94 KEVP interpret Auxilliary Colour according to Current Colour Mode.
  *  30 Nov 94 KEVP Corrected test to determine use of pow function (see 20 Jul 94)
  *   1 Mar 95 KEVP Allow for FONTLIST overrunning the next BEGPIC element
  *                 when at end of metafile descriptor.
@@ -91,7 +91,7 @@ void CGMIchar(void);
 
 static void MICexternal(Code),
         MICstring(char *),
-        MICvdc(Int, Long *, float *);
+        MICvdc(int, long *, float *);
 
 static Code MICmfdesc(Code c),
         MICpdesc(Code c, Logical single),
@@ -100,12 +100,12 @@ static Code MICmfdesc(Code c),
         MICnextbyte(void),
         MICopcode(Logical ignore);
 
-static Long MICint(Code byte, Logical allowed, Logical *present),
+static long MICint(Code byte, Logical allowed, Logical *present),
         MICcol(Code byte, struct colour *c,
                Enum type, Prec prec),
-        MICcells(Code *c, Long *pi, Long nx, Long ny,
+        MICcells(Code *c, long *pi, long nx, long ny,
                  Enum mode, Prec prec),
-        MICpoints(Code *c, Long *pi, float *pr, Logical set),
+        MICpoints(Code *c, long *pi, float *pr, Logical set),
         MICbit(Code *byte, Code *bit, Prec prec);
 
 static double MICreal(Code byte, Prec defexp, Prec *points, Prec allowed);
@@ -119,7 +119,7 @@ static double MICreal(Code byte, Prec defexp, Prec *points, Prec allowed);
 #define NEXTREAL(y, z)  MICreal(y, curichar.z.defexp, (Prec *) NULL, \
                                curichar.z.expald )
 
-/*  Internal Encoding variables */
+/*  internal Encoding variables */
 
 static Logical micerror = FALSE;
 Logical miccharsub = FALSE, micsubchar[CHARSUBNUM];
@@ -165,7 +165,7 @@ static Code MICmfdesc(Code code)
     Code c;
 
     while (NEXTCODE(code) != BEGPIC) {
-        register Long j, n, *pi = pint + 1;
+        register long j, n, *pi = pint + 1;
 
         c = ZERO;
         micerror = FALSE;
@@ -264,7 +264,7 @@ static Code MICmfdesc(Code code)
                 cur.vdc_type = NEXTINT(ZERO);
                 break;
 
-            case INTEGERPREC:  /*  Integer Precision  */
+            case INTEGERPREC:  /*  integer Precision  */
                 cur.int_bits = curichar.int_prec = NEXTINT(ZERO);
                 break;
 
@@ -514,7 +514,7 @@ static Code MICpdesc(Code code, Logical single) {
 
 static Code MICpbody(Code code, Logical single) {
     Code c, cf;
-    static Long nx, ny;
+    static long nx, ny;
     static Prec loc_prec;
     Logical first = TRUE;
 
@@ -523,7 +523,7 @@ static Code MICpbody(Code code, Logical single) {
     if (cgmstate == MF_CLOSED) return (code);
 
     while (NEXTCODE(code)) {
-        register Long n, *pi = pint + 1;
+        register long n, *pi = pint + 1;
         float *pr = preal;
 
         c = ZERO;
@@ -569,7 +569,7 @@ static Code MICpbody(Code code, Logical single) {
             case POLYGONSET:         /*  Polygon Set  */
                 c = code;
                 *pint = MICpoints(&c, pi, preal,
-                                  (Logical) (code == POLYGONSET));
+                                  (Logical)(code == POLYGONSET));
                 break;
 
             case APNDTEXT:       /*  Append Text   */
@@ -583,12 +583,12 @@ static Code MICpbody(Code code, Logical single) {
                 break;
 
             case RESTRTEXT:      /*  Restricted Text */
-                MICvdc((Int) 2, pi, preal);
+                MICvdc((int) 2, pi, preal);
                 pi += 2;
                 pr += 2;
 
             case TEXT:           /*  Text   */
-                MICvdc((Int) 2, pi, pr);
+                MICvdc((int) 2, pi, pr);
                 *pint = NEXTINT(ZERO);
                 MICstring(str);
                 if (*pint) cgmstate = PIC_OPEN;
@@ -600,7 +600,7 @@ static Code MICpbody(Code code, Logical single) {
 
             case CELLARRAY:      /*  Cell Array  */
                 if (first) {
-                    MICvdc((Int) 6, pi, preal);
+                    MICvdc((int) 6, pi, preal);
                     pi += 6;
                     *pi++ = nx = NEXTINT(ZERO);
                     *pi++ = ny = NEXTINT(ZERO);
@@ -619,7 +619,7 @@ static Code MICpbody(Code code, Logical single) {
                 break;
 
             case RECT:          /*  Rectangle   */
-                MICvdc((Int) 4, pi, preal);
+                MICvdc((int) 4, pi, preal);
                 break;
 
             case LINECOLR:      /*  Line Colour  */
@@ -662,7 +662,7 @@ static Code MICpbody(Code code, Logical single) {
                 curatt.fill_ind = NEXTINT(ZERO);
                 break;
 
-            case INTSTYLE:        /*  Interior Style  */
+            case INTSTYLE:        /*  interior Style  */
                 curatt.int_style = NEXTINT(ZERO);
                 break;
 
@@ -687,37 +687,37 @@ static Code MICpbody(Code code, Logical single) {
                 break;
 
             case CIRCLE:         /* Circle      */
-                MICvdc((Int) 3, pi, preal);
+                MICvdc((int) 3, pi, preal);
                 break;
 
             case ARC3PT:         /* Circular Arc  3 point */
-                MICvdc((Int) 6, pi, preal);
+                MICvdc((int) 6, pi, preal);
                 break;
 
             case ARC3PTCLOSE:    /* Circular Arc  3 point close */
-                MICvdc((Int) 6, pi, preal);
+                MICvdc((int) 6, pi, preal);
                 *(pi + 6) = NEXTINT(ZERO);
                 break;
 
             case ARCCTR:         /* Circle Arc centre */
-                MICvdc((Int) 7, pi, preal);
+                MICvdc((int) 7, pi, preal);
                 break;
 
             case ARCCTRCLOSE:     /* Circle Arc centre close */
-                MICvdc((Int) 7, pi, preal);
+                MICvdc((int) 7, pi, preal);
                 *(pi + 7) = NEXTINT(ZERO);
                 break;
 
             case ELLIPSE:         /* Ellipse    */
-                MICvdc((Int) 6, pi, preal);
+                MICvdc((int) 6, pi, preal);
                 break;
 
             case ELLIPARC:        /* Elliptical Arc */
-                MICvdc((Int) 10, pi, preal);
+                MICvdc((int) 10, pi, preal);
                 break;
 
             case ELLIPARCCLOSE:   /* Elliptical Arc close*/
-                MICvdc((Int) 10, pi, preal);
+                MICvdc((int) 10, pi, preal);
                 *(pi + 10) = NEXTINT(ZERO);
                 break;
 
@@ -833,7 +833,7 @@ static Code MICpbody(Code code, Logical single) {
 
 /*  Control elements */
 
-            case VDCINTEGERPREC:    /*  VDC Integer Precision  */
+            case VDCINTEGERPREC:    /*  VDC integer Precision  */
                 curichar.vdcint_prec = NEXTINT(ZERO);
                 break;
 
@@ -846,7 +846,7 @@ static Code MICpbody(Code code, Logical single) {
                                   (float) (1L << curichar.vdc.min));
                 } else cur.vdcmin = pow((double) 2, (double) curichar.vdc.min);
                 if (curichar.vdc.prec <= sizeof(long))
-                    cur.max_vdc = ((Long) 1L << curichar.vdc.prec) - 1;
+                    cur.max_vdc = ((long) 1L << curichar.vdc.prec) - 1;
                 else cur.max_vdc = pow((double) 2, (double) curichar.vdc.prec) - 1;
                 cur.min_vdc = -cur.max_vdc;
                 cur.vdc_defexp = curichar.vdc.defexp = NEXTINT(ZERO);
@@ -1133,14 +1133,14 @@ static void MICstring(char *s1) {
 
 /****************************************************** MICpoints ******/
 
-static Long MICpoints(Code *code, Long *pi, float *pr, Logical set) {
-    register Long n = ZERO, j;
-    static Long ix, iy, *pmax;
+static long MICpoints(Code *code, long *pi, float *pr, Logical set) {
+    register long n = ZERO, j;
+    static long ix, iy, *pmax;
     static Prec exp_x, exp_y;
     static Logical first = TRUE;
     static float *pmaxreal;
     static double xx, yy;
-    Code byte = ZERO;
+    Code byte;
 
     if (first) {
         pmax = pimax - 4;
@@ -1209,8 +1209,8 @@ static Long MICpoints(Code *code, Long *pi, float *pr, Logical set) {
 
 /****************************************************** MICvdc *********/
 
-static void MICvdc(Int n, Long *pi, float *pr) {
-    register Long j;
+static void MICvdc(int n, long *pi, float *pr) {
+    register long j;
 
     for (j = ZERO; j < n; j++) {
         if (cur.vdc_type == REAL) *pr++ = NEXTREAL(ZERO, vdc);
@@ -1220,9 +1220,9 @@ static void MICvdc(Int n, Long *pi, float *pr) {
 
 /****************************************************** MICint *********/
 
-static Long MICint(Code byte, Logical allowed, Logical *present) {
+static long MICint(Code byte, Logical allowed, Logical *present) {
     register Code mask, bits;
-    register Long num, neg;
+    register long num, neg;
 
     bits = 4 - allowed;
     mask = (1L << bits) - 1;
@@ -1257,7 +1257,7 @@ static double MICreal(Code byte, Prec defexp, Prec *ptlist, Prec allowed) {
     static Logical first = TRUE;
     static double ptab[2 * NPOWER + 1];
 
-    Long expnt;
+    long expnt;
     Logical present = ZERO;
     register double x, *power2 = ptab + NPOWER;
 
@@ -1297,12 +1297,12 @@ static double MICreal(Code byte, Prec defexp, Prec *ptlist, Prec allowed) {
 
 /****************************************************** MICcells *******/
 
-static Long MICcells(Code *code, register Long *pi,
-                     Long nx, Long ny, Enum mode, Prec prec) {
+static long MICcells(Code *code, register long *pi,
+                     long nx, long ny, Enum mode, Prec prec) {
     static Logical first = TRUE;
-    static Int type, repeat, col;
+    static int type, repeat, col;
     static struct colour c;
-    register Long n = ZERO, *pmax = pimax - 1;
+    register long n = ZERO, *pmax = pimax - 1;
     static Code bit, byte;
 
     if (first) {
@@ -1535,8 +1535,8 @@ static Long MICcells(Code *code, register Long *pi,
 
 /****************************************************** MICcol *********/
 
-static Long MICcol(Code byte, struct colour *c, Enum type, Prec prec) {
-    register Long j, k = ZERO, r = ZERO, g = ZERO, b = ZERO;
+static long MICcol(Code byte, struct colour *c, Enum type, Prec prec) {
+    register long j, k = ZERO, r = ZERO, g = ZERO, b = ZERO;
 
     if (!prec)
         prec = (cur.color_mode == INDEXED ?
@@ -1580,8 +1580,8 @@ static Long MICcol(Code byte, struct colour *c, Enum type, Prec prec) {
 
 /****************************************************** MICbit *********/
 
-static Long MICbit(Code *byte, Code *bit, Prec nbit) {
-    register Long n, col = ZERO;
+static long MICbit(Code *byte, Code *bit, Prec nbit) {
+    register long n, col = ZERO;
 
     for (n = ZERO; n < nbit; n++) {
         if (*bit < ZERO) {

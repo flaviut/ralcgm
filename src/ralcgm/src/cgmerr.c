@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmerr.c  version 3.4
+/*   RAL-CGM interpreter module:  @(#) cgmerr.c  version 3.4
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -38,7 +38,7 @@
 #define ERRMESS         (void) fprintf(cgmerr,
 
 
-extern Int cgmerrcount;
+extern int cgmerrcount;
 extern Logical cgmquiet;
 
 

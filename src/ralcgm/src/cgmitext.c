@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmitext.c  version 3.5
+/*   RAL-CGM interpreter module:  @(#) cgmitext.c  version 3.5
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -36,7 +36,7 @@
  *  13 Aug 90 RTP  Add variable buffer routines
  *  16 Aug 90 RTP  Add error handler routine
  *   6 Sep 90 RTP  Change internal routines to static
- *   4 Oct 90 RTP  Use typedefs Int, Long and float
+ *   4 Oct 90 RTP  Use typedefs int, long and float
  *   2 Nov 90 RTP  Add line no to error messages
  *                 Prevent EOF if NONOPs in Pic body
  *  11 Feb 91 RTP  Add ( void ) to ANSI prototypes
@@ -56,7 +56,7 @@
  *  12 Aug 94 KEVP Enable interpreter to finish with a return rather than an exit
  *  17 Oct 94 KEVP Enable interpreter to finish with a return within Metafile Defaults
  *                           Replacement.
- *  19 Oct 94 KEVP Interpret auxilliary colour according to current colour mode.
+ *  19 Oct 94 KEVP interpret auxilliary colour according to current colour mode.
  *   7 Mar 95 RTP  Remove use of CGM element count
  *   1 Jun 95 KEVP For (VDC)REALPREC, define cur.(real/vdc)min, so that
  *                 the macros REQUAL and VEQUAL are always realistic.
@@ -79,7 +79,7 @@ void CGMItext(void);
 static void MITexternal(Code),
         MITgettoken(char *),
         MITstring(char *),
-        MITvdc(int, Long *, float *),
+        MITvdc(int, long *, float *),
         MITcol(struct colour *c, Enum type);
 
 static Code MITmfdesc(Code c),
@@ -89,12 +89,12 @@ static Code MITmfdesc(Code c),
         MITcode(void),
         MITdecode(char *);
 
-static Long MITcells(Long *pi, Long nx, Enum mode),
-        MITpoints(Long *pi, float *pr, Enum set);
+static long MITcells(long *pi, long nx, Enum mode),
+        MITpoints(long *pi, float *pr, Enum set);
 
 static Enum MITenum(char *);
 
-static Long MITint(void);
+static long MITint(void);
 
 static double MITreal(void);
 
@@ -107,7 +107,7 @@ static double MITreal(void);
 #define TERM       (Code) 3
 #define QUOTE      (Code) 4
 
-/*  Internal Encoding variables  */
+/*  internal Encoding variables  */
 
 static Logical mitnewline = TRUE, mitnulstr, mitincr, miterror;
 static Code mitsep = TERM;
@@ -169,8 +169,8 @@ static Code MITmfdesc(Code code)
     Code c;
 
     while (NEXTCODE(code) != BEGPIC) {
-        register Long i, j, *pi = pint + 1;
-        unsigned Long max, n;
+        register long i, j, *pi = pint + 1;
+        unsigned long max, n;
         float f;
 
         c = ZERO;
@@ -229,7 +229,7 @@ static Code MITmfdesc(Code code)
                 cur.vdc_type = MITenum("INTEGER/REAL");
                 break;
 
-            case INTEGERPREC:         /*  Integer Precision  */
+            case INTEGERPREC:         /*  integer Precision  */
                 curitext.min_int = MITint();
                 max = curitext.max_int = MITint();
                 for (i = 1; max; i++) max >>= 1;
@@ -481,9 +481,9 @@ static Code MITpbody(Code code, Logical single) {
 
     while (TRUE) {
         Logical cont_list = FALSE;
-        register Long i, n, j, *pi = pint + 1;
+        register long i, n, j, *pi = pint + 1;
         register float f, *pr = preal;
-        Long max, nx;
+        long max, nx;
 
         NEXTCODE (code);
         c = ZERO;
@@ -539,12 +539,12 @@ static Code MITpbody(Code code, Logical single) {
                 break;
 
             case RESTRTEXT:         /*  Restricted Text */
-                MITvdc((Int) 2, pi, preal);
+                MITvdc((int) 2, pi, preal);
                 pi += 2;
                 pr += 2;
 
             case TEXT:         /*  Text   */
-                MITvdc((Int) 2, pi, pr);
+                MITvdc((int) 2, pi, pr);
                 *pint = MITenum("NOTFINAL/FINAL");
                 MITstring(str);
                 if (!*pint) /* Not final */
@@ -556,7 +556,7 @@ static Code MITpbody(Code code, Logical single) {
 
             case CELLARRAY:         /*  Cell Array  */
                 if (!cont_list) {
-                    MITvdc((Int) 6, pi, preal);
+                    MITvdc((int) 6, pi, preal);
                     pi += 6;
                     nx = *pi++ = MITint();   /* nx */
                     *pi++ = MITint();        /* ny */
@@ -575,7 +575,7 @@ static Code MITpbody(Code code, Logical single) {
                 break;
 
             case RECT:         /*  Rectangle   */
-                MITvdc((Int) 4, pi, preal);
+                MITvdc((int) 4, pi, preal);
                 break;
 
             case LINEINDEX:       /*  Line Bundle index  */
@@ -624,7 +624,7 @@ static Code MITpbody(Code code, Logical single) {
                 curatt.fill_ind = MITint();
                 break;
 
-            case INTSTYLE:       /*  Interior Style  */
+            case INTSTYLE:       /*  interior Style  */
                 curatt.int_style = MITenum("HOLLOW/SOLID/PAT/HATCH/EMPTY");
                 break;
 
@@ -664,37 +664,37 @@ static Code MITpbody(Code code, Logical single) {
                 break;
 
             case CIRCLE:       /* Circle      */
-                MITvdc((Int) 3, pi, preal);
+                MITvdc((int) 3, pi, preal);
                 break;
 
             case ARC3PT:       /* Circular Arc  3 point */
-                MITvdc((Int) 6, pi, preal);
+                MITvdc((int) 6, pi, preal);
                 break;
 
             case ARC3PTCLOSE:       /* Circular Arc  3 point close */
-                MITvdc((Int) 6, pi, preal);
+                MITvdc((int) 6, pi, preal);
                 *(pi + 6) = MITenum("PIE/CHORD");
                 break;
 
             case ARCCTR:       /* Circle Arc centre */
-                MITvdc((Int) 7, pi, preal);
+                MITvdc((int) 7, pi, preal);
                 break;
 
             case ARCCTRCLOSE:       /* Circle Arc centre close */
-                MITvdc((Int) 7, pi, preal);
+                MITvdc((int) 7, pi, preal);
                 *(pi + 7) = MITenum("PIE/CHORD");
                 break;
 
             case ELLIPSE:       /* Ellipse    */
-                MITvdc((Int) 6, pi, preal);
+                MITvdc((int) 6, pi, preal);
                 break;
 
             case ELLIPARC:       /* Elliptical Arc */
-                MITvdc((Int) 10, pi, preal);
+                MITvdc((int) 10, pi, preal);
                 break;
 
             case ELLIPARCCLOSE:       /* Elliptical Arc close*/
-                MITvdc((Int) 10, pi, preal);
+                MITvdc((int) 10, pi, preal);
                 *(pi + 10) = MITenum("PIE/CHORD");
                 break;
 
@@ -765,7 +765,7 @@ static Code MITpbody(Code code, Logical single) {
                 if (!cont_list) {
                     *pi++ = MITint();  /* colour index */
                 }
-                *pint = MITcells(pi, (Long) 1, DIRECT);
+                *pint = MITcells(pi, (long) 1, DIRECT);
                 if (cont_list = (*pint < ZERO)) c = code;
                 break;
 
@@ -794,7 +794,7 @@ static Code MITpbody(Code code, Logical single) {
 
 /*  Control elements */
 
-            case VDCINTEGERPREC:       /*  VDC Integer Precision  */
+            case VDCINTEGERPREC:       /*  VDC integer Precision  */
                 curitext.min_vdc.intr = MITint();
                 max = curitext.min_vdc.intr = MITint();
                 for (i = 1; max; max >>= 1, i++);
@@ -1009,10 +1009,10 @@ static Code MITcode(void)
 /**************************************************** MITdecode ********/
 
 static Code MITdecode(char *s) {
-    register Int i, k, h, len, hit;
-    static Int htable[HASHSIZE], maxhits = 0;
+    register int i, k, h, len, hit;
+    static int htable[HASHSIZE], maxhits = 0;
 #ifdef HASHTEST
-    static Int misses = 0, miss = 0;
+    static int misses = 0, miss = 0;
 #endif
     static Logical first = TRUE;
     char c[17];
@@ -1094,7 +1094,7 @@ static void MITgettoken(char *s) {
     Logical after = FALSE;
     static Code textchar;
     register Code c;
-    register Long j;
+    register long j;
     char *s1 = s;
 
 /*  Get characters until separator found */
@@ -1223,21 +1223,21 @@ static void MITgettoken(char *s) {
 
 /**************************************************** MITint ***********/
 
-static Long MITint(void)
+static long MITint(void)
 
 /*  Reads token and converts to integer  */
 
 {
-    register Long i, n, base = ZERO;
-    register Long k = ZERO;
+    register long i, n, base = ZERO;
+    register long k = ZERO;
     char s[STRING_MAX], c;
 
     MITgettoken(s);
     for (i = ZERO; c = s[i]; i++) {
         if (base) {
-            if (c >= '0' && c <= '9') n = (Long) c - (Long) '0';
+            if (c >= '0' && c <= '9') n = (long) c - (long) '0';
             else if (c >= 'A' && c <= 'F')
-                n = (Long) c - (Long) 'A' + 10;
+                n = (long) c - (long) 'A' + 10;
             else n = base + 1;  /* forces error */
 
             if (n > base) {
@@ -1277,8 +1277,8 @@ static double MITreal(void)
 
 static Enum MITenum(char *s) {
     char s1[STRING_MAX], s2[STRING_MAX];
-    register Long i, j;
-    Int toklen;
+    register long i, j;
+    int toklen;
     register Enum k;
 
     while (TRUE) {
@@ -1325,8 +1325,8 @@ static void MITcol(struct colour *col, Enum type) {
 
 /**************************************************** MITvdc ***********/
 
-static void MITvdc(Int n, Long *pi, float *pr) {
-    register Long i;
+static void MITvdc(int n, long *pi, float *pr) {
+    register long i;
 
     if (cur.vdc_type == REAL) {
         for (i = ZERO; i < n; i++) {
@@ -1359,13 +1359,13 @@ static void MITstring(char *s) {
 
 /**************************************************** MITpoints ********/
 
-static Long MITpoints(Long *pi, float *pr, Enum set) {
-    register Long i, *pmax;
+static long MITpoints(long *pi, float *pr, Enum set) {
+    register long i, *pmax;
     register float *pmaxreal;
-    register Long n = ZERO;
+    register long n = ZERO;
     register float x;
     static Logical first = TRUE;
-    static Long ix, iy;
+    static long ix, iy;
     static float xx, yy;
 
     if (first) {
@@ -1425,10 +1425,10 @@ static Long MITpoints(Long *pi, float *pr, Enum set) {
 
 /**************************************************** MITcells *********/
 
-static Long MITcells(Long *pi, Long nx, Enum mode) {
-    Long *pmax, ncol;
+static long MITcells(long *pi, long nx, Enum mode) {
+    long *pmax, ncol;
     static Logical first = TRUE;
-    register Long n = ZERO;
+    register long n = ZERO;
 
 
     if (first) {

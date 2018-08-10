@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmotext.c  version 3.4
+/*   RAL-CGM interpreter module:  @(#) cgmotext.c  version 3.4
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -17,7 +17,7 @@
  *
  * Arguments:     stream   FILE structure for output file
  *                c        CGM element code (character form)
- *                pi       Pointer to 'Long' Communications buffer
+ *                pi       Pointer to 'long' Communications buffer
  *                pr       Pointer to 'float' Communications buffer
  *                str      Pointer to 'char' Communications buffer
  *
@@ -34,7 +34,7 @@
  *                 Change Cell array format
  *  16 Aug 90 RTP  Add error handler routines
  *   6 Sep 90 RTP  Change internal routines to static
- *   4 Oct 90 RTP  Use typedefs Int, Long,float etc
+ *   4 Oct 90 RTP  Use typedefs int, long,float etc
  *  15 Mar 91 RTP  Change cgmstate to Enum type
  *  14 May 91 RTP  Add ANSI declarations
  *   2 Aug 91 RTP  Add SCCS id
@@ -60,10 +60,10 @@ static FILE *cgmot;
 
 /*  Functions in this Module  */
 
-void CGMOtext(FILE *, Code, Long *, float *, char *);
+void CGMOtext(FILE *, Code, long *, float *, char *);
 
-static void MOTpoints(Long, Long *, float *, Enum),
-        MOTvdc(int, Long *, float *),
+static void MOTpoints(long, long *, float *, Enum),
+        MOTvdc(int, long *, float *),
         MOTcol(struct colour *c, Enum type),
         MOTstring(char *),
         MOTenum(char *s, Enum type),
@@ -82,22 +82,20 @@ extern const struct commands cgmelement[];
 static int vp = 4, rp = 4;   /* decimal places for real numbers */
 static int indent;         /*  Indent for current element  */
 
-#include "cgmatt.h"
-
 static char *func = "CGMotext", mess[40];
 
 /****************************************************** CGMOtext *******/
 
-void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
+void CGMOtext(FILE *stream, Code c, long *pi, float *pr, char *str) {
     static Logical first = TRUE, first_pic = TRUE;
     static Prec loc_prec;
-    static Long nx, ny;
-    register Long n, i, j, k, num;
+    static long nx, ny;
+    register long n, i, j, k, num;
     Code major;
     Posint prec;
 
     if (c == (Code) EOF) {
-        if (cgmverbose) (void) fprintf(cgmerr, "Interpreter ended OK\n");
+        if (cgmverbose) (void) fprintf(cgmerr, "interpreter ended OK\n");
         exit(0);
     }
 
@@ -139,7 +137,7 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     MOTprcode(TEXT);
                     if (cgmverbose > 1)
                         (void) fprintf(cgmerr, "TEXT: %d chars\n", strlen(str));
-                    MOTpoints((Long) 1, pi, pr, NOSET);
+                    MOTpoints((long) 1, pi, pr, NOSET);
                     MOTenum("notfinal/final", (Enum) num);
                     MOTstring(str);
                     break;
@@ -148,8 +146,8 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     MOTprcode(RESTRTEXT);
                     if (cgmverbose > 1)
                         (void) fprintf(cgmerr, "RESTRICTED TEXT: %d chars\n", strlen(str));
-                    MOTvdc((Int) 2, pi, pr);
-                    MOTpoints((Long) 1, pi + 2, pr + 2, NOSET);
+                    MOTvdc((int) 2, pi, pr);
+                    MOTpoints((long) 1, pi + 2, pr + 2, NOSET);
                     MOTenum("notfinal/final", (Enum) num);
                     MOTstring(str);
                     break;
@@ -183,7 +181,7 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                         (void) fprintf(cgmerr, "CELL ARRAY: %d cells\n", num);
                     if (first) {
                         MOTprcode(CELLARRAY);
-                        MOTpoints((Long) 3, pi, pr, NOSET);
+                        MOTpoints((long) 3, pi, pr, NOSET);
                         pi += 6;
                         nx = *pi++;
                         ny = *pi++;
@@ -215,7 +213,7 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                                 if (j == n) {
                                     n += nx;
                                     i = j + k;
-/* Extra line skip if row is Longer than one line */
+/* Extra line skip if row is longer than one line */
                                     if (nx > k) TEXTOUT "\n");
                                 } else i += k;
                             } else
@@ -226,7 +224,7 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                         else {
                             TEXTOUT "%*ld %*ld %*ld",
                                     (int) prec, *pi, (int) prec, *(pi + 1), (int) prec, *(pi + 2));
-                            pi += (Long) 3;
+                            pi += (long) 3;
                         }
                     }
                     if (!first)   /* Not finished yet */
@@ -249,7 +247,7 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     if (cgmverbose > 1)
                         (void) fprintf(cgmerr, "RECTANGLE:\n");
                     MOTprcode(RECT);
-                    MOTpoints((Long) 2, pi, pr, ZERO);
+                    MOTpoints((long) 2, pi, pr, ZERO);
                     break;
 
                 default:
@@ -318,9 +316,9 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                     MOTenum("integer/real", cur.vdc_type);
                     break;
 
-                case INTEGERPREC:         /*  Integer Precision  */
+                case INTEGERPREC:         /*  integer Precision  */
                     MOTprcode(INTEGERPREC);
-                    curtext.max_int = (Long) (1L << cur.int_bits - 1) - 1;
+                    curtext.max_int = (long) (1L << cur.int_bits - 1) - 1;
                     curtext.min_int = -curtext.max_int - 1;
                     TEXTOUT " %ld, %ld", curtext.min_int, curtext.max_int);
                     TEXTOUT " %% %d binary bits %%", cur.int_bits);
@@ -341,20 +339,20 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
 
                 case INDEXPREC:         /*  Index Precision   */
                     MOTprcode(INDEXPREC);
-                    curtext.max_index = (Long) (1L << cur.index_bits - 1) - 1;
+                    curtext.max_index = (long) (1L << cur.index_bits - 1) - 1;
                     curtext.min_index = -curtext.max_index - 1;
                     TEXTOUT " %ld, %ld", curtext.min_index, curtext.max_index);
                     break;
 
                 case COLRPREC:         /*  Colour Precision  */
                     MOTprcode(COLRPREC);
-                    curtext.col_prec = (Long) (1L << cur.col_bits) - 1;
+                    curtext.col_prec = (long) (1L << cur.col_bits) - 1;
                     TEXTOUT " %lu", curtext.col_prec);
                     break;
 
                 case COLRINDEXPREC:         /*  Colour Index Precision  */
                     MOTprcode(COLRINDEXPREC);
-                    curtext.colind_prec = (Long) (1L << cur.colind_bits - 1) - 1;
+                    curtext.colind_prec = (long) (1L << cur.colind_bits - 1) - 1;
                     TEXTOUT " %ld", curtext.colind_prec);
                     break;
 
@@ -399,7 +397,7 @@ void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
                             endmfdef = FALSE;
                             continue;
                         }
-                        switch ((Int) *pi) {
+                        switch ((int) *pi) {
                             case ZERO:
                             case 1:
                                 MOTenum("DRAWINGSET/DRAWINGPLUS", (Enum) *pi);
@@ -512,9 +510,9 @@ STD96MULTIBYTE/COMPLETECODE", (Enum) *pi++);
 
         case 0x33:  /* Control Elements  */
             switch (c) {
-                case VDCINTEGERPREC:       /* VDC Integer Precision  */
+                case VDCINTEGERPREC:       /* VDC integer Precision  */
                     MOTprcode(VDCINTEGERPREC);
-                    curtext.max_vdc.intr = (Long) (1L << cur.vdcint_bits - 1) - 1;
+                    curtext.max_vdc.intr = (long) (1L << cur.vdcint_bits - 1) - 1;
                     curtext.min_vdc.intr = -curtext.max_vdc.intr - 1;
                     TEXTOUT " %ld, %ld", curtext.min_vdc.intr,
                             curtext.max_vdc.intr);
@@ -573,47 +571,47 @@ STD96MULTIBYTE/COMPLETECODE", (Enum) *pi++);
             switch (c) {
                 case CIRCLE:       /* Circle      */
                     MOTprcode(CIRCLE);
-                    MOTpoints((Long) 1, pi, pr, ZERO);
-                    MOTvdc((Int) 1, pi + 2, pr + 2);
+                    MOTpoints((long) 1, pi, pr, ZERO);
+                    MOTvdc((int) 1, pi + 2, pr + 2);
                     break;
 
                 case ARC3PT:       /* Circular Arc  3 point */
                     MOTprcode(ARC3PT);
-                    MOTpoints((Long) 3, pi, pr, ZERO);
+                    MOTpoints((long) 3, pi, pr, ZERO);
                     break;
 
                 case ARC3PTCLOSE:       /* Circular Arc  3 point close */
                     MOTprcode(ARC3PTCLOSE);
-                    MOTpoints((Long) 3, pi, pr, ZERO);
+                    MOTpoints((long) 3, pi, pr, ZERO);
                     MOTenum("pie/chord", (Enum) *(pi + 6));
                     break;
 
                 case ARCCTR:       /* Circle Arc centre */
                     MOTprcode(ARCCTR);
-                    MOTpoints((Long) 3, pi, pr, ZERO);
-                    MOTvdc((Int) 1, pi + 6, pr + 6);
+                    MOTpoints((long) 3, pi, pr, ZERO);
+                    MOTvdc((int) 1, pi + 6, pr + 6);
                     break;
 
                 case ARCCTRCLOSE:       /* Circle Arc centre close */
                     MOTprcode(ARCCTRCLOSE);
-                    MOTpoints((Long) 3, pi, pr, ZERO);
-                    MOTvdc((Int) 1, pi + 6, pr + 6);
+                    MOTpoints((long) 3, pi, pr, ZERO);
+                    MOTvdc((int) 1, pi + 6, pr + 6);
                     MOTenum("pie/chord", (Enum) *(pi + 7));
                     break;
 
                 case ELLIPSE:       /* Ellipse    */
                     MOTprcode(ELLIPSE);
-                    MOTpoints((Long) 3, pi, pr, ZERO);
+                    MOTpoints((long) 3, pi, pr, ZERO);
                     break;
 
                 case ELLIPARC:       /* Elliptical Arc */
                     MOTprcode(ELLIPARC);
-                    MOTpoints((Long) 5, pi, pr, ZERO);
+                    MOTpoints((long) 5, pi, pr, ZERO);
                     break;
 
                 case ELLIPARCCLOSE:       /* Elliptical Arc close*/
                     MOTprcode(ELLIPARCCLOSE);
-                    MOTpoints((Long) 5, pi, pr, ZERO);
+                    MOTpoints((long) 5, pi, pr, ZERO);
                     MOTenum("pie/chord", (Enum) *(pi + 10));
                     break;
 
@@ -766,7 +764,7 @@ STD96MULTIBYTE/COMPLETECODE", (Enum) *pi++);
                     TEXTOUT " %d", curatt.fill_ind);
                     break;
 
-                case INTSTYLE:       /*  Interior Style  */
+                case INTSTYLE:       /*  interior Style  */
                     MOTprcode(INTSTYLE);
                     MOTenum("hollow/solid/pat/hatch/empty", curatt.int_style);
                     break;
@@ -954,8 +952,8 @@ edgetype/edgewidth/edgecolr", (Enum) *pi++);
 
 /******************************************************* MOTpoints *****/
 
-static void MOTpoints(Long n, Long *pi, float *pr, Enum set) {
-    register Long i, k, no;
+static void MOTpoints(long n, long *pi, float *pr, Enum set) {
+    register long i, k, no;
     register int prec;
 
 /*  Set number of points to print on each line  */
@@ -991,8 +989,8 @@ static void MOTpoints(Long n, Long *pi, float *pr, Enum set) {
 
 /******************************************************* MOTvdc ********/
 
-static void MOTvdc(int n, Long *pi, float *pr) {
-    register Long j, k, no;
+static void MOTvdc(int n, long *pi, float *pr) {
+    register long j, k, no;
     register Prec prec;
 
     if (cur.vdc_type == REAL) {
@@ -1027,7 +1025,7 @@ static void MOTcol(struct colour *c, Enum type) {
 /******************************************************* MOTstring *****/
 
 static void MOTstring(char *s) {
-    register Long i;
+    register long i;
 
     TEXTOUT " '");
     for (i = ZERO; i < strlen(s); i++) {
@@ -1040,7 +1038,7 @@ static void MOTstring(char *s) {
 /******************************************************* MOTenum *******/
 
 static void MOTenum(char *s, Enum k) {
-    register Long i = ZERO, j = ZERO, n = k;
+    register long i = ZERO, j = ZERO, n = k;
 
     char s1[16];
 

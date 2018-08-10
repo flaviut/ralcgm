@@ -1,4 +1,4 @@
-/*   RAL-CGM Interpreter module:  @(#) cgmibin.c  version 3.5
+/*   RAL-CGM interpreter module:  @(#) cgmibin.c  version 3.5
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -125,8 +125,8 @@ static Code MIBmfdesc(Code),
 static void MIBtext(Code),
         MIBexternal(Code),
         MIBstring(char *),
-        MIBvdc(Int, Long *, float *),
-        MIBclist(Long *pi, Long n, Prec prec, Enum type),
+        MIBvdc(int, long *, float *),
+        MIBclist(long *pi, long n, Prec prec, Enum type),
         MIBcolour(struct colour *c, Enum mode);
 
 static Code MIBopcode(void),
@@ -134,9 +134,9 @@ static Code MIBopcode(void),
 
 static double MIBreal(Enum type, Prec bits);
 
-static Long MIBint(Prec p, Enum type),
+static long MIBint(Prec p, Enum type),
         MIBbits(Prec, Prec *),
-        MIBpointlist(Long *pi, float *pr, Logical set);
+        MIBpointlist(long *pi, float *pr, Logical set);
 
 static Code MIBnextbyte(void);
 
@@ -145,10 +145,10 @@ static Code MIBnextbyte(void);
 extern Code CGMframe(Code),
         CGMoutput(Code);
 
-/* Internal Encoding variables */
+/* internal Encoding variables */
 
 static Logical miberror;
-static Long mibplen, mibbytes, mibdefbytes;
+static long mibplen, mibbytes, mibdefbytes;
 static Logical mibpart = ZERO;
 
 static char *func = "CGMibin", mess[40];
@@ -194,7 +194,7 @@ static Code MIBmfdesc(Code code)
 {
 
     while (NEXTCODE(code) != BEGPIC) {
-        register Long j, n, *pi = pint + 1;
+        register long j, n, *pi = pint + 1;
         Code class, id;
 
         miberror = FALSE;
@@ -242,7 +242,7 @@ static Code MIBmfdesc(Code code)
                 cur.vdc_type = GETENUM;
                 break;
 
-            case INTEGERPREC: /* Integer Precision */
+            case INTEGERPREC: /* integer Precision */
                 cur.int_bits = GETINT(int_prec);
                 curibin.int_prec = cur.int_bits;
                 break;
@@ -467,8 +467,8 @@ static Code MIBpbody(Code code, Logical single)
     static Logical first = TRUE;
 
     while (NEXTCODE(code) != ENDMF) {
-        register Long i, k, *pi = pint + 1;
-        static Long nx, ny;
+        register long i, k, *pi = pint + 1;
+        static long nx, ny;
         static Prec locprec;
 
         float *pr = preal;
@@ -523,12 +523,12 @@ static Code MIBpbody(Code code, Logical single)
                     (void) CGMerror(func, ERR_NOTAPNDTXT, ERROR, mess);
                     break;
                 }
-                MIBvdc((Int) 2, pi, pr);
+                MIBvdc((int) 2, pi, pr);
                 pi += 2;
                 pr += 2;
 
             case TEXT: /* Text */
-                MIBvdc((Int) 2, pi, pr);
+                MIBvdc((int) 2, pi, pr);
                 *pint = GETENUM;
                 MIBstring(str);
                 if (*pint) cgmstate = PIC_OPEN;
@@ -537,12 +537,12 @@ static Code MIBpbody(Code code, Logical single)
 
             case CELLARRAY: /* Cell Array */
             {
-                static Long nnx, nny, rowlen;
+                static long nnx, nny, rowlen;
                 static Enum ctype;
-                Long *pmax = pimax - 1;
+                long *pmax = pimax - 1;
 
                 if (first) {
-                    MIBvdc((Int) 6, pi, pr);
+                    MIBvdc((int) 6, pi, pr);
                     pi += 6;
 /*  Cell array sizes */
                     *pi++ = nnx = GETINT(int_prec);
@@ -599,46 +599,46 @@ static Code MIBpbody(Code code, Logical single)
             case GDP: /* Generalised Drawing Primitive */
                 *pi++ = GETINT(int_prec);
                 *pint = GETINT(int_prec);
-                MIBvdc((Int) (2 * (*pint)), pi, pr);
+                MIBvdc((int) (2 * (*pint)), pi, pr);
                 MIBstring(str);
                 break;
 
             case RECT: /* Rectangle */
-                MIBvdc((Int) 4, pi, pr);
+                MIBvdc((int) 4, pi, pr);
                 break;
 
             case CIRCLE: /* Circle */
-                MIBvdc((Int) 3, pi, pr);
+                MIBvdc((int) 3, pi, pr);
                 break;
 
             case ARC3PT: /* Circular Arc 3 point */
-                MIBvdc((Int) 6, pi, pr);
+                MIBvdc((int) 6, pi, pr);
                 break;
 
             case ARC3PTCLOSE: /* Circular Arc 3 point close */
-                MIBvdc((Int) 6, pi, pr);
+                MIBvdc((int) 6, pi, pr);
                 *(pi + 6) = GETENUM;
                 break;
 
             case ARCCTR: /* Circle Arc centre */
-                MIBvdc((Int) 7, pi, pr);
+                MIBvdc((int) 7, pi, pr);
                 break;
 
             case ARCCTRCLOSE: /* Circle Arc centre close */
-                MIBvdc((Int) 7, pi, pr);
+                MIBvdc((int) 7, pi, pr);
                 *(pi + 7) = GETENUM;
                 break;
 
             case ELLIPSE: /* Ellipse */
-                MIBvdc((Int) 6, pi, pr);
+                MIBvdc((int) 6, pi, pr);
                 break;
 
             case ELLIPARC: /* Elliptical Arc */
-                MIBvdc((Int) 10, pi, pr);
+                MIBvdc((int) 10, pi, pr);
                 break;
 
             case ELLIPARCCLOSE: /* Elliptical Arc close */
-                MIBvdc((Int) 10, pi, pr);
+                MIBvdc((int) 10, pi, pr);
                 *(pi + 10) = GETENUM;
                 break;
 
@@ -717,7 +717,7 @@ static Code MIBpbody(Code code, Logical single)
                 curatt.fill_ind = GETINT(index_prec);
                 break;
 
-            case INTSTYLE: /* Interior Style */
+            case INTSTYLE: /* interior Style */
                 curatt.int_style = GETENUM;
                 break;
 
@@ -826,7 +826,7 @@ static Code MIBpbody(Code code, Logical single)
 
 /*  Control Elements */
 
-            case VDCINTEGERPREC: /* VDC Integer Precision */
+            case VDCINTEGERPREC: /* VDC integer Precision */
                 curibin.vdcint_prec = GETINT(int_prec);
                 cur.vdcint_bits = curibin.vdcint_prec;
                 break;
@@ -1024,13 +1024,13 @@ static void MIBexternal(Code code) {
 
 /******************************************************* MIBclist ****/
 
-static void MIBclist(Long *pi, Long nx, Prec prec, Enum type)
+static void MIBclist(long *pi, long nx, Prec prec, Enum type)
 
 /* Get a row of a cell array */
 
 {
-    register Long j, k, run;
-    unsigned Long col, red, green, blue;
+    register long j, k, run;
+    unsigned long col, red, green, blue;
     Prec bit;
 
 #ifdef DEBUG
@@ -1079,9 +1079,9 @@ static void MIBclist(Long *pi, Long nx, Prec prec, Enum type)
 
 /******************************************************* MIBbits *****/
 
-static Long MIBbits(Prec prec, Prec *bit) {
+static long MIBbits(Prec prec, Prec *bit) {
     static Posint oneword, wordmask;
-    Long col = 0, k;
+    long col = 0, k;
 
 #ifdef DEBUG2
     DMESS " Get bits: %d bit: %d", prec, *bit );
@@ -1120,8 +1120,8 @@ static void MIBstring(char *s1)
 
 {
     register Code c;
-    register Long len;
-    unsigned Long n;
+    register long len;
+    unsigned long n;
     register char *s = s1;
 
     if (mibplen) {
@@ -1131,8 +1131,8 @@ static void MIBstring(char *s1)
             do {
                 n = MIBint(WORD, UNSIGNED);
                 len <<= 16;
-                len += n & (unsigned Long) 0x7fff;
-            } while (n & (unsigned Long) 0x8000);
+                len += n & (unsigned long) 0x7fff;
+            } while (n & (unsigned long) 0x8000);
         }
 
         for (; len; len--) {
@@ -1150,14 +1150,14 @@ static void MIBstring(char *s1)
 
 /******************************************************* MIBpointlist */
 
-static Long MIBpointlist(Long *pi, float *pr, Logical set)
+static long MIBpointlist(long *pi, float *pr, Logical set)
 
 /* Get a list of points */
 
 {
-    register Long i;
+    register long i;
     static Logical first = TRUE;
-    Long *pmax;
+    long *pmax;
     float *pmaxreal;
 
     if (first) {
@@ -1207,12 +1207,12 @@ static Long MIBpointlist(Long *pi, float *pr, Logical set)
 
 /******************************************************* MIBvdc ******/
 
-static void MIBvdc(Int n, Long *pi, float *pr)
+static void MIBvdc(int n, long *pi, float *pr)
 
 /* Get n VDC values starting at array index i */
 
 {
-    register Long j;
+    register long j;
 
     for (j = 0; j < n; j++) {
         if (cur.vdc_type == REAL) *pr++ = GETVDC;
@@ -1353,7 +1353,7 @@ static double MIBreal(Enum real_type, Prec real_prec)
     static Logical first = TRUE;
     static double ptab[2 * NPOWER + 1];
     register double num, *power2 = ptab + NPOWER;
-    register Long whole, mantissa;
+    register long whole, mantissa;
     register Posint fract;
     register int byte, sign, exponent;
 
@@ -1374,11 +1374,11 @@ static double MIBreal(Enum real_type, Prec real_prec)
         whole = (byte & 0x7F) << BYTE;
         if (real_prec == 32) {
 /*  Fixed point 64-bit  */
-            whole += (Long) MIBnextbyte();
+            whole += (long) MIBnextbyte();
             whole <<= BYTE;
-            whole += (Long) MIBnextbyte();
+            whole += (long) MIBnextbyte();
             whole <<= BYTE;
-            whole += (Long) MIBnextbyte();
+            whole += (long) MIBnextbyte();
             fract = (Posint) MIBnextbyte() << BYTE;
             fract += (Posint) MIBnextbyte();
             fract <<= BYTE;
@@ -1389,7 +1389,7 @@ static double MIBreal(Enum real_type, Prec real_prec)
             else num = (double) whole + (double) fract / TWO32;
         } else {
 /*  Fixed point 32-bit  */
-            whole += (Long) MIBnextbyte();
+            whole += (long) MIBnextbyte();
             fract = (Posint) MIBnextbyte() << BYTE;
             fract += (Posint) MIBnextbyte();
             if (sign) num = (double) whole - (double) fract / TWO16;
@@ -1401,18 +1401,18 @@ static double MIBreal(Enum real_type, Prec real_prec)
             exponent = (byte & 0x7F) << 4;
             byte = MIBnextbyte();
             exponent += (byte & 0xF0) >> 4;
-            mantissa = (Long) (byte & 0x0F) << BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa = (long) (byte & 0x0F) << BYTE;
+            mantissa += (long) MIBnextbyte();
             mantissa <<= BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa += (long) MIBnextbyte();
             mantissa <<= BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa += (long) MIBnextbyte();
             mantissa <<= BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa += (long) MIBnextbyte();
             mantissa <<= BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa += (long) MIBnextbyte();
             mantissa <<= BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa += (long) MIBnextbyte();
             if (exponent) {
                 num = 1.0 + (double) mantissa / TWO52;
                 exponent -= 1023;
@@ -1428,10 +1428,10 @@ static double MIBreal(Enum real_type, Prec real_prec)
             exponent = (byte & 0x7F) << 1;
             byte = MIBnextbyte();
             exponent += (byte & 0x80) >> 7;
-            mantissa = (Long) (byte & 0x7F) << BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa = (long) (byte & 0x7F) << BYTE;
+            mantissa += (long) MIBnextbyte();
             mantissa <<= BYTE;
-            mantissa += (Long) MIBnextbyte();
+            mantissa += (long) MIBnextbyte();
             if (exponent) {
                 num = 1.0 + (double) mantissa / TWO23;
                 exponent -= 127;
@@ -1468,15 +1468,15 @@ static double MIBreal(Enum real_type, Prec real_prec)
 
 /******************************************************* MIBint ******/
 
-static Long MIBint(Prec int_prec, Enum int_type)
+static long MIBint(Prec int_prec, Enum int_type)
 
 /* Get an integer value */
 
 {
-    Long num;
-    Long bitmask = -1;
-    Long bytes, i;
-    Long sign = ZERO;
+    long num;
+    long bitmask = -1;
+    long bytes, i;
+    long sign = ZERO;
 
     bytes = int_prec >> 3;
     bitmask <<= (int_prec - 1);
@@ -1498,7 +1498,7 @@ static Long MIBint(Prec int_prec, Enum int_type)
         }
     }
 #ifdef DEBUG
-    DMESS "Integer : %d (0x%x)\n", num, num );
+    DMESS "integer : %d (0x%x)\n", num, num );
 #endif
     return (num);
 }
@@ -1519,9 +1519,9 @@ static Code MIBnextbyte(void)
         Code d;
 
         d = fgetc(cgmi);
-        mibplen = (Long) (d & 0x7f) << BYTE;
+        mibplen = (long) (d & 0x7f) << BYTE;
         mibpart = (Logical) (d & 0x80);
-        mibplen += (Long) fgetc(cgmi);
+        mibplen += (long) fgetc(cgmi);
         mibbytes = mibplen;
         if (mibbytes & 1L) mibbytes++;
 #ifdef DEBUG1

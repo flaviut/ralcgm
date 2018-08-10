@@ -1,4 +1,4 @@
-/*  RAL-CGM Interpreter header file: @(#) cgmmach.h  version 3.5
+/*  RAL-CGM interpreter header file: @(#) cgmmach.h  version 3.5
  *
  * Copyright (C) Rutherford Appleton Laboratory 1990, All Rights Reserved.
  *
@@ -12,7 +12,7 @@
  *
  * R T Platon @ Rutherford Appleton Laboratory (rtp@uk.ac.rl.ib)
  *
- *  Description: System Specific setting for RAL-CGM Interpreter
+ *  Description: System Specific setting for RAL-CGM interpreter
  *
  * Modification log:
  *
@@ -43,47 +43,8 @@
 /*  Current CGM version */
 #define CGMVERSION   1
 
-#if __STDC__  /*  ANSI C Include files */
-#define ANSI
-
 #include <stddef.h>
 #include <stdlib.h>
-
-#endif
-
-#ifdef ANSI
-#define FREE(x)  free ( (void *) x )
-#define PROTO
-#define HAVE_SETPOS
-
-#else         /*  non-ANSI C */
-
-#define const
-#define volatile
-#define FREE(x) free ( (char *) x )
-
-#ifndef NULL     /*  Null Pointer */
-#define NULL     (int *) 0
-#endif
-#endif  /*  ANSI */
-
-/*  Define anything that has not been explicitly set  **************/
-
-#ifndef SignChar
-#define SignChar signed char
-#endif
-#ifndef Int16
-#define Int16   short
-#endif
-#ifndef Char
-#define Char    char
-#endif
-#ifndef Int
-#define Int     int
-#endif
-#ifndef Long
-#define Long    long
-#endif
 
 /* Define macros for some maths routines which may cause problems */
 
@@ -97,11 +58,7 @@
 /*  Define if font system needed */
 
 
-#ifndef FIXED_BUFFER  /* Use variable communications Area by default */
-#define VAR_BUFFER
-#endif
-
-#ifndef ARRAY_MAX    /*  Maximum Sizes for Interface buffer  */
+#ifndef ARRAY_MAX    /*  Maximum Sizes for interface buffer  */
 #define ARRAY_MAX   1024
 #endif
 
@@ -155,10 +112,6 @@
 
 #ifndef MAXFNSIZE    /*  Maximum font name size */
 #define MAXFNSIZE     40
-#endif
-
-#ifndef DATADIR      /*  Directory for font & data files */
-#define DATADIR      ""
 #endif
 
 #ifndef FILESEP      /*  File seperator  */
