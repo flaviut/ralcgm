@@ -1,4 +1,4 @@
-# Created by https://www.gitignore.io/api/c,vim,macos,linux,emacs,windows
+# Created by https://www.gitignore.io/api/c,vim,macos,linux,emacs,windows,cmake
 
 ### C ###
 # Prerequisites
@@ -53,6 +53,18 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+### CMake ###
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+/build/
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
@@ -187,4 +199,4 @@ $RECYCLE.BIN/
 *.lnk
 
 
-# End of https://www.gitignore.io/api/c,vim,macos,linux,emacs,windows
+# End of https://www.gitignore.io/api/c,vim,macos,linux,emacs,windows,cmake
