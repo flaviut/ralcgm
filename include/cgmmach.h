@@ -87,6 +87,9 @@
 #ifndef Double
 #define Double  double
 #endif
+#ifndef Posint64
+#define Posint64 unsigned long
+#endif
 
 /* Define macros for some maths routines which may cause problems */
 

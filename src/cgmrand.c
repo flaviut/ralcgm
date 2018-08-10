@@ -349,7 +349,11 @@ Code code;
 /* Correct any overrun */
    if(cgmoverrun)
    {
+#ifdef LINUX
+      disk_addr.__pos -= cgmoverrun;
+#else
       disk_addr -= cgmoverrun;
+#endif
       cgmoverrun = 0;
    }
 

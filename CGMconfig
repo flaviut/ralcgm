@@ -111,13 +111,13 @@ if test $# -lt 1 ; then
    echo; exit
 fi
 
-systems='sun3|sun4|cray|craypcc|iris|iris4d|indigo|rs6000|hpux|ultrix|decosf|topaz'
+systems='sun3|sun4|cray|craypcc|iris|iris4d|indigo|rs6000|hpux|ultrix|decosf|topaz|linux'
 
 #
 # Set the echo options - check the system.
 #
 case $1 in
-sun3|sun4|iris|ultrix|dec|rs6000)
+sun3|sun4|iris|ultrix|dec|rs6000|linux)
 #  Berkely echo format
                 el="-n"
                 er=""
@@ -268,6 +268,14 @@ topaz)
       system=topaz
       cflags="-c -O -m68881"
       lflags="-lE -lmalloc -lm"
+      ;;
+linux)
+      system=linux
+      cflags="-c ${OPT}"
+      lflags="-lm"
+      xw="yes"
+      xlib="-lX11"
+      ar="ar crs"
       ;;
 esac
 
@@ -672,31 +680,31 @@ echo
 echo Your desired system will now be configured.
 echo
 
-oututils="$(ATTUTILS)"
+oututils='$(ATTUTILS)'
 
 if test "$gdpflag" = "yes"
 then
-   oututils=$oututils" $(GDPUTILS)"
+   oututils=$oututils' $(GDPUTILS)'
 fi
 
 if test "$filflag" = "yes"
 then
-   oututils=$oututils" $(FILUTILS)"
+   oututils=$oututils' $(FILUTILS)'
 fi
 
 if test "$colrflag" = "yes"
 then
-   oututils=$oututils" $(COLRUTILS)"
+   oututils=$oututils' $(COLRUTILS)'
 fi
 
 if test "$cellflag" = "yes"
 then
-   oututils=$oututils" $(CELLUTILS)"
+   oututils=$oututils' $(CELLUTILS)'
 fi
 
 if test "$ptsflag" = "yes"
 then
-   oututils=$oututils" $(PTSUTILS)"
+   oututils=$oututils' $(PTSUTILS)'
 fi
 
 sed "/^MODULE =/s!=.*\$!= $module!

@@ -1593,7 +1593,8 @@ Double x;
 Enum real_type, real_or_vdc;
 #endif
 {
-   Posint whole, exponent, fract, neg;
+   Posint whole, exponent, neg;
+   Posint64 fract;
    Prec prec;
    Double f;
 
@@ -1610,7 +1611,7 @@ Enum real_type, real_or_vdc;
       prec = (real_or_vdc == VDC ? curbin.vdc_whole
                                  : curbin.real_whole);
       whole = (Posint)( neg ? -((floor(x))) : x );
-      fract = (Posint)( ( neg ? x + (Double)whole : x - (Double)whole )
+      fract = (Posint64)( ( neg ? x + (Double)whole : x - (Double)whole )
                             * ( 1L<<prec-2 ) * 4.0 );
 
 #ifdef DEBUG
@@ -1669,7 +1670,7 @@ Enum real_type, real_or_vdc;
                exponent--;
             }
          }
-         fract = (Long) ( (f - 1.0) * (Double)(1L<<(prec == 12 ? 52 : 23)) );
+         fract = (Posint64) ( (f - 1.0) * (Double)(1L<<(prec == 12 ? 52 : 23)) );
       }
 
 #ifdef DEBUG
