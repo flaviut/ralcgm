@@ -219,7 +219,6 @@ void ATTtext(int nb, Textbundle *tb, int nc, Textatt *ta) {
     }
 
     set_shared(nc, ta->shared);
-    return;
 }
 
 /***************************************************** ATTfill *********/
@@ -298,8 +297,6 @@ void ATTedge(int nb, Edgebundle *eb, int nc, Edgeatt *ea) {
     }
 
     set_shared(nc, ea->shared);
-
-    return;
 }
 
 /***************************************************** set_shared ******/

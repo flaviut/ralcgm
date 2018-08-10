@@ -327,8 +327,6 @@ static void CGMfrsave(Code code)
 /* Save file pointer and current metafile number */
     start_frame[n_frame - 1].disk_addr = disk_addr;
     start_frame[n_frame - 1].index.meta = cur_meta;
-
-    return;
 }
 
 /****************************************************** CGMmfsave **/
@@ -369,8 +367,6 @@ static void CGMmfsave(void)
 /* Set index to curent frame */
     start_meta[n_meta].index.frame = cur_frame;
     n_meta++;
-
-    return;
 }
 
 /****************************************************** CGMstframe *****/
@@ -403,7 +399,6 @@ void CGMstframe(void)
 #endif
 #endif
 
-    return;
 }
 
 #ifndef HAVE_SETPOS /*  Define routines for fsetpos and fgetpos for old C */

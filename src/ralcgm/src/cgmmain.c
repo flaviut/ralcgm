@@ -827,7 +827,6 @@ static void CGMgetenv(void) {
         cgmralbin = CGMmatch(env, "OLDBIN", 3);
     }
 
-    return;
 }
 
 /********************************************************* CGMgetarg ***/
@@ -889,8 +888,6 @@ void CGMoutput(Code c) {
         (void) CGMprofile(c);
         cur = saveset;    /*  Restore settings */
     } else CGMocode(c);
-
-    return;
 }
 
 /********************************************************* CGMocode ****/
@@ -932,5 +929,4 @@ void CGMocode(Code c) {
     }
 #endif
 
-    return;
 }

@@ -50,7 +50,6 @@ void CGMprofile(Code c) {
             break;
     }
 
-    return;
 
 }
 
@@ -78,5 +77,4 @@ static void PROindcol(Code c) {
         }
 
     CGMocode(c);
-    return;
 }

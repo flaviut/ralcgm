@@ -183,7 +183,6 @@ void CGMIbin(void) {
         }
         if (cgmfinished) break;
     }
-    return;
 }
 
 /******************************************************* MIBmfdesc ***/
@@ -962,7 +961,6 @@ static void MIBtext(Code code) {
             break;
     }
 
-    return;
 }
 
 /******************************************************* MIBexternal ***/
@@ -1022,7 +1020,6 @@ static void MIBexternal(Code code) {
             break;
     }
 
-    return;
 }
 
 /******************************************************* MIBclist ****/
@@ -1078,7 +1075,6 @@ static void MIBclist(Long *pi, Long nx, Prec prec, Enum type)
         }
     }
 
-    return;
 }
 
 /******************************************************* MIBbits *****/
@@ -1150,11 +1146,6 @@ static void MIBstring(char *s1)
         }
     }
     *s++ = '\0';
-
-#ifdef DEBUG1
-    DMESS " String: %s\n", s1);
-#endif
-    return;
 }
 
 /******************************************************* MIBpointlist */
@@ -1228,7 +1219,6 @@ static void MIBvdc(Int n, Long *pi, Float *pr)
         else *pi++ = GETINT(vdcint_prec);
         if (cgmEOF) break;
     }
-    return;
 }
 
 /******************************************************* MIBcolour ***/
@@ -1244,8 +1234,6 @@ static void MIBcolour(struct colour *c, Enum colour_mode)
         c->blue = MIBint(curibin.col_prec, UNSIGNED);
     } else
         c->index = MIBint(curibin.colind_prec, UNSIGNED);
-
-    return;
 }
 
 /******************************************************* MIBopcode ***/

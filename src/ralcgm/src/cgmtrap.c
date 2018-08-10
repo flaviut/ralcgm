@@ -327,7 +327,6 @@ void TRPfill(Polygonset *pset, Int numtz, Float ytol,
     }
 #endif
 
-    return;
 }
 
 /******************************************************* edge_cross ***/
@@ -1005,7 +1004,6 @@ static void peak_truncate(Trapezoid *tz)
     }
     /* Else base too high, do nothing */
 
-    return;
 }
 
 /*********************************************** touching_peak *********/
@@ -1066,7 +1064,7 @@ static void touching_peak(Peakedge *lp, Peakedge *rp, Enum *pass)
             *pass = ANOTHERPASS;
         }
     }
-    return;  /* No error detected */
+    /* No error detected */
 }
 
 /***************************************************** trap_extract ****/

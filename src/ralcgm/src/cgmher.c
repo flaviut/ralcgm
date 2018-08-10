@@ -383,8 +383,6 @@ void HERgetfd(Textitem *txtit) {
     txtit->rmaxwd = maxwidth / H_font->height;
     txtit->rbot = (float) (H_font->bottom) / H_font->height;
     txtit->rtop = (float) (H_font->top - H_font->cap) / H_font->height;
-
-    return;
 }
 
 /*  HerDraw:
@@ -429,5 +427,4 @@ static void HerDraw(int ichar, Tmatrix xmat,
         (pbx++)->y = (float) ((cp++)->y);
     }
 
-    return;
 }

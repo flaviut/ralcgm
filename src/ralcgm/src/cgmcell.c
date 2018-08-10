@@ -105,7 +105,6 @@ void CELLfill(Long ncells, Long *pi, Tmatrix celtrans,
         DMESS "Cell Array has invalid dimensions %d by %d \n",nx,ny);
 #endif
     }
-    return;
 }
 
 /****************************************************** CELLparget *****/
@@ -131,15 +130,7 @@ void CELLparget(Long *pi, Float *pr,
     }
     *nx = *pi++;      /* Number of cells in each Row */
     *ny = *pi++;      /* Number of cells in each Column */
-    *lp = *pi++;      /* Local Precision */
-
-#ifdef DEBUG
-    DMESS "CELLparget: (%f,%f),(%f,%f),(%f,%f) \n",
-                       p->x,p->y,q->x,q->y,r->x,r->y);
-    DMESS "CELLparget: %d by %d \n",*nx,*ny);
-#endif
-
-    return;
+    *lp = *pi++;
 }
 
 /****************************************************** CELLtran *******/
@@ -164,5 +155,4 @@ void CELLtran(Point p, Point q, Point r, Int nx, Int ny, Tmatrix tm) {
         DMESS "Cell Array has invalid dimensions %d by %d \n",nx,ny);
 #endif
     }
-    return;
 }

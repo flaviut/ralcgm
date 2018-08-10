@@ -278,7 +278,6 @@ void CGMdefaults(Code c, Enum type) {
        fprintf(stderr,"\n");
     }
 #endif
-    return;
 
 }
 
@@ -330,7 +329,6 @@ void CGMsetasf(long *pi) {
             for (; k <= l; curatt.asf[k++] = value);
         }
     }
-    return;
 }
 
 

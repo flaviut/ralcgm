@@ -219,9 +219,6 @@ void CGMmodfextn(char *fn, char *extn) {
     /* Add the new extension to the filename */
     (void) strcat(fn, extn);
 
-
-    return;
-
 }
 
 
@@ -287,8 +284,6 @@ void CGMmodfname(char *fn, char *newname) {
 
 
     FREE(fn2);
-
-    return;
 
 }
 

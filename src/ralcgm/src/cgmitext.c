@@ -157,7 +157,6 @@ void CGMItext(void) {
         }
         if (cgmfinished) break;
     }
-    return;
 }
 
 /**************************************************** MITmfdesc ********/
@@ -978,7 +977,6 @@ static void MITexternal(Code code) {
             (void) sprintf(mess, "%s (Line %u)", mess, mitlinenr);
             (void) CGMerror(func, ERR_INVELEM, ERROR, mess);
     }
-    return;
 }
 
 /**************************************************** MITcode **********/
@@ -1221,30 +1219,6 @@ static void MITgettoken(char *s) {
     }
     *s1 = '\0';
     mitnulstr = (strlen(s) == ZERO);
-
-#ifdef DEBUG
-    DMESS " Token: %x '%s' sep: %d", c, s, mitsep);
-    switch ( mitsep )
-    {
-       case TERM:
-           DMESS " TERM\n");
-           break;
-       case QUOTE:
-           DMESS " QUOTE\n");
-           break;
-       case SOFTSEP:
-           DMESS " SOFTSEP\n");
-           break;
-       case HARDSEP:
-           DMESS " HARDSEP\n");
-           break;
-       default:
-           DMESS " UNKNOWN\n");
-           break;
-    }
-#endif
-
-    return;
 }
 
 /**************************************************** MITint ***********/
@@ -1347,7 +1321,6 @@ static void MITcol(struct colour *col, Enum type) {
         col->index = MITint();
     }
 
-    return;
 }
 
 /**************************************************** MITvdc ***********/
@@ -1371,7 +1344,6 @@ static void MITvdc(Int n, Long *pi, Float *pr) {
     DMESS " %ld VDCs\n", n);
 #endif
 
-    return;
 }
 
 /**************************************************** MITstring ********/
@@ -1383,12 +1355,6 @@ static void MITstring(char *s) {
     while (mitsep != QUOTE && mitsep != TERM) MITgettoken(s);
 
     if (mitsep != TERM) MITgettoken(s);
-
-#ifdef DEBUG
-    DMESS " %s\n", s);
-#endif
-
-    return;
 }
 
 /**************************************************** MITpoints ********/

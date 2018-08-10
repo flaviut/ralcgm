@@ -102,12 +102,6 @@ void GDPcentre(Point *cen, Double *rad, Double *ang,
 
     if (det < 0.0 && *ang > 0.0) *ang -= 2 * PI;
     if (det > 0.0 && *ang < 0.0) *ang += 2 * PI;
-
-#ifdef DEBUG
-    DMESS "  New angle: %f radians (det: %f)\n", *ang, det);
-#endif
-
-    return;
 }
 
 /********************************************************* GDParc ******/
@@ -137,13 +131,6 @@ void GDParc(Point *centre, Double rad,
     c->y = rad * sin(ang1) + centre->y;
     d->x = rad * cos(ang2) + centre->x;
     d->y = rad * sin(ang2) + centre->y;
-
-#ifdef DEBUG
-    DMESS  "  Arc between: (%f,%f) and (%f, %f)\n",
-                            c->x, c->y, d->x, d->y);
-#endif
-
-    return;
 }
 
 /********************************************************* GDPcircle ***/
@@ -211,7 +198,6 @@ void GDPcircle(Point *centre, Double rad, Double angle,
     }
     ENDLIST(pt);
 
-    return;
 }
 
 /********************************************************* GDPellipse **/
@@ -321,7 +307,6 @@ void GDPellipse(Point *centre, Point *cdp1, Point *cdp2,
     }
     ENDLIST(pt);
 
-    return;
 }
 
 /***************************************************** GDPcgm **********/
@@ -619,5 +604,4 @@ End of Algorithm */
         }
     }
 
-    return;
 }

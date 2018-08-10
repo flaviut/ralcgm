@@ -80,7 +80,6 @@
 extern void CGMoutput(Code),
         CGMOtext(FILE *, Code);
 
-extern Code CGMframe(Code);
 
 /*  Files used  */
 
@@ -154,7 +153,6 @@ void CGMIchar(void) {
         }
         if (cgmfinished) break;
     }
-    return;
 }
 
 /****************************************************** MICmfdesc ******/
@@ -1017,7 +1015,6 @@ static void MICexternal(Code code) {
             }
     }
 
-    return;
 }
 
 /****************************************************** MICnextbyte ****/
@@ -1132,11 +1129,6 @@ static void MICstring(char *s1) {
 #endif
     }
     *s2++ = '\0';
-
-#ifdef DEBUG
-    DMESS "'%s'\n", s1);
-#endif
-    return;
 }
 
 /****************************************************** MICpoints ******/
@@ -1224,7 +1216,6 @@ static void MICvdc(Int n, Long *pi, Float *pr) {
         if (cur.vdc_type == REAL) *pr++ = NEXTREAL(ZERO, vdc);
         else *pi++ = NEXTINT(ZERO);
     }
-    return;
 }
 
 /****************************************************** MICint *********/

@@ -950,7 +950,6 @@ edgetype/edgewidth/edgecolr", (Enum) *pi++);
             break;
     }
     if (first && c != NONOP) TEXTOUT ";\n");
-    return;
 }
 
 /******************************************************* MOTpoints *****/
@@ -988,7 +987,6 @@ static void MOTpoints(Long n, Long *pi, Float *pr, Enum set) {
             k += 10;
         }
     }
-    return;
 }
 
 /******************************************************* MOTvdc ********/
@@ -1015,7 +1013,6 @@ static void MOTvdc(int n, Long *pi, Float *pr) {
             k = no;
         }
     }
-    return;
 }
 
 /******************************************************* MOTcol ********/
@@ -1025,8 +1022,6 @@ static void MOTcol(struct colour *c, Enum type) {
         TEXTOUT " %ld %ld %ld", c->red, c->green, c->blue);
     else
         TEXTOUT " %ld", c->index);
-
-    return;
 }
 
 /******************************************************* MOTstring *****/
@@ -1040,7 +1035,6 @@ static void MOTstring(char *s) {
         if (s[i] == '\'') TEXTOUT "'");
     }
     TEXTOUT "'");
-    return;
 }
 
 /******************************************************* MOTenum *******/
@@ -1073,8 +1067,6 @@ static void MOTenum(char *s, Enum k) {
 
     if (cgmstate != MF_ELEMLIST) TEXTOUT " ");
     TEXTOUT "%s", s1);
-
-    return;
 }
 
 /******************************************************* MOTprcode *****/
@@ -1184,6 +1176,4 @@ static void MOTprcode(Code code) {
 
     (void) sprintf(mess, "(code: %x)", code);
     (void) CGMerror(func, ERR_INVOPCODE, ERROR, mess);
-
-    return;
 }

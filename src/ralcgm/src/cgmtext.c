@@ -683,7 +683,6 @@ void TXTalign(Textitem *txtlist, Point txtp, double horext, double vertext)
         txtlp = txtlp->next;
     }
     /* return from TXTalign */
-    return;
 }
 
 void TXTfree(Textitem *txtlist)
@@ -732,7 +731,6 @@ void TXTfree(Textitem *txtlist)
         FREE(txtlistp1);
     }
 
-    return;
 }
 
 double TXTgwidth(Textitem *txtlist)
@@ -988,20 +986,6 @@ void TXTxform(Point txtp, Tmatrix matrix)
                part of the matrix to shift back to original position */
     matrix[2][0] = e1 - e1 * cosa - f1 * cosb;
     matrix[2][1] = f1 - e1 * sina - f1 * sinb;
-
-#ifdef DEBUG
-    { int i,j;
-       fprintf(stderr, "Transformation Matrix:\n");
-       for ( i=0; i<3; i++ )
-       {
-          for ( j=0; j<3; j++)
-             fprintf(stderr, " %f", matrix[i][j] );
-          fprintf(stderr,"\n");
-       }
-    }
-#endif
-
-    return;
 }
 
 /*

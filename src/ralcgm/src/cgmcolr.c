@@ -130,7 +130,6 @@ void COLRput(Long nc, Long *pi) {
         ncol_fixed = ncol_defined;
     }
 
-    return;
 }
 
 /****************************************************** COLRtab ****/
@@ -169,5 +168,4 @@ void COLRfree(void) {
         default:
             break;
     }
-    return;
 }

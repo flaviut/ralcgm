@@ -974,7 +974,6 @@ void CGMOps(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
             (void) CGMerror(func, ERR_INVELEM, ERROR, mess);
             break;
     }
-    return;
 }
 
 /*************************************************************************
@@ -1148,7 +1147,6 @@ void PSoptions(char *opts) {
                 break;
         }
     }
-    return;
 }
 
 /*********       Functions local to this module         ***********/
@@ -1226,7 +1224,6 @@ static void PSpoints(long n, Long *pi, Float *pr, Enum set,
         }
         if (!i) PSOUT "%s", str1); else PSOUT "%s", str2);
     }
-    return;
 }
 
 /********************************************************************
@@ -1437,9 +1434,7 @@ static void PSbegpic(void) {
 
     for (dec_all = 0, t = decrpmin; t <= rpmax; dec_all++, t *= 10.0);
     for (dec_right = 0, t = rpmin; t < 1.0; dec_right++, t *= 10.0);
-    if (dec_right != 0) dec_all++;  /* Count decimal point */
-
-    return;
+    if (dec_right != 0) dec_all++;
 }
 
 /*********************************************************************
@@ -1550,7 +1545,6 @@ static void PSattrib(Code prim) {
         default:
             break;
     }
-    return;
 }
 
 
@@ -2888,7 +2882,6 @@ static void PStxtdraw(Textitem *list, Point txtp) {
         }
         TXTfree(list);
     }
-    return;
 }
 
 
@@ -2967,7 +2960,6 @@ static void PStext(Textitem *itemp, Point txtp) {
                   matrix[2][0], matrix[2][1]);
             break;
     }
-    return;
 }
 
 /***********************************************************************
@@ -3100,7 +3092,6 @@ static void PStrapfill(Long np, Long *pi, Float *pr,
         FREE(polset.pts);
     }
 
-    return;
 }
 
 /****************************************************** PSLINEfunc *****/
@@ -3124,7 +3115,6 @@ void PSLINEfunc(Long np, Point *pt) {
         PSOUT "%.*f %.*f l ", (int) prec, pt->x, (int) prec, pt->y);
     }
 
-    return;
 }
 
 /****************************************************** PSdodecomp ****/
@@ -3183,8 +3173,6 @@ void PSTRPdraw(Int ntz, Trapezoid *tz) {
 
     PSfill(NZ, INVIS);   /* Fill with simple interior rule & no edges */
     PSOUT "grestore\n");
-
-    return;
 }
 
 /***********************************************************************
@@ -3547,7 +3535,6 @@ static void PSreadafm(char *fontname, Textitem *thisitem) {
 static void PSskp2dgt(char **cp) {
     while (!isdigit(**cp) && **cp != '+' && **cp != '-' && **cp != '.' && **cp != '\0')
         (*cp)++;
-    return;
 }
 
 /*************************************************************************
@@ -3576,7 +3563,6 @@ static void PSskp2dgt(char **cp) {
 static void PSskpdgt(char **cp) {
     while (isdigit(**cp) || **cp == '+' || **cp == '-' || **cp == '.' || **cp == '\0')
         (*cp)++;
-    return;
 }
 
 

@@ -84,7 +84,6 @@ void PTSfree() {
         ndynpts = 0;
         ndynfls = 0;
     }
-    return;
 }
 
 /****************************************************** PTSget *****/
@@ -143,7 +142,6 @@ void PTSget(Long np, Long *pi, Float *pr, Point *pt, Enum *fl)
             }
         }
     }
-    return;
 }
 
 /**************************************************** PTSclipget ******/
@@ -193,7 +191,6 @@ void PTSclipget(Enum *clipind, Rect *cliprect) {
         cliprect->top = cliprect->bot;
         cliprect->bot = swap;
     }
-    return;
 }
 
 /****************************************************** PTSdefclip *****/
@@ -218,7 +215,6 @@ to ensure that PTSclipget gets the true clipping rectangle.
         cur.clip_rect.b.x.intr = cur.vdc_extent.b.x.intr;
         cur.clip_rect.b.y.intr = cur.vdc_extent.b.y.intr;
     }
-    return;
 }
 
 /****************************************************** PTSlineclip ***/
@@ -429,7 +425,6 @@ void PTSlineclip(Long np, Point *pt, Rect cl,
 
     /* Draw any remaining edges */
     if (npcl > 1)linefunc(npcl, ptclip);
-    return;
 }
 
 /****************************************************** PTSlist ****/
@@ -731,7 +726,6 @@ void PTSmarker(Long nmk, Point *pt, Float nomsize, Markeratt *ma,
             }                   /* End of loop over Marker Lines */
         }                      /* End of if current marker is being drawn */
     }                         /* End of loop over Markers */
-    return;
 }
 
 /***************************************************** PTSvdcextget ****/
@@ -748,5 +742,4 @@ void PTSvdcextget(Rect *vdcxt) {
         vdcxt->bot = (Float) cur.vdc_extent.a.y.intr;
         vdcxt->top = (Float) cur.vdc_extent.b.y.intr;
     }
-    return;
 }

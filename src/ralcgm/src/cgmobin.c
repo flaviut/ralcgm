@@ -1213,7 +1213,6 @@ void CGMObin(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
             (void) CGMerror(func, ERR_INVELEM, ERROR, mess);
             break;
     }
-    return;
 }
 
 /******************************************************** MOBopcode ****/
@@ -1261,12 +1260,6 @@ static void MOBopcode(Code c, Long len) {
     mobparmlen = plen;
     mobremainder = remainder;
     if (mobparmlen & 1) mobparmlen++;
-
-#ifdef DEBUG
-    DMESS " (%d)\n", mobparmlen);
-#endif
-
-    return;
 }
 
 /******************************************************** MOBcharci ****/
@@ -1362,7 +1355,6 @@ static void MOBcharci(Code c, Int *class, Int *id) {
         *class = 0;
     }
 
-    return;
 }
 
 /******************************************************** MOBint *******/
@@ -1378,7 +1370,6 @@ static void MOBint(Long n, Prec prec, Enum sign) {
       n = (-n | (Posint) 1L<<(prec-1));
 */
     MOBout((Posint) n, prec >> 3);
-    return;
 }
 
 /******************************************************** MOBcolour ****/
@@ -1399,7 +1390,6 @@ static void MOBcolour(struct colour *col, Enum type) {
         MOBint((Long) col->index, curbin.colind_prec, UNSIGNED);
     }
 
-    return;
 }
 
 /******************************************************** MOBvdc *******/
@@ -1419,7 +1409,6 @@ static void MOBvdc(Int n, Long *pi, Float *pr) {
         }
     }
 
-    return;
 }
 
 /******************************************************** MOBpointlist */
@@ -1442,7 +1431,6 @@ static void MOBpointlist(Long n, Long *pi, Float *pr, Enum set) {
         if (set) PUTENUM (*pi++);
     }
 
-    return;
 }
 
 /******************************************************** MOBreal ******/
@@ -1533,7 +1521,6 @@ static void MOBreal(Double x, Enum real_type, Enum real_or_vdc) {
     DMESS "\n");
 #endif
 
-    return;
 }
 
 /******************************************************** MOBstring ****/
@@ -1565,7 +1552,6 @@ static void MOBstring(char *s) {
     DMESS "\n");
 #endif
 
-    return;
 }
 
 /******************************************************** MOBclist *****/
@@ -1660,7 +1646,6 @@ static void MOBclist(register Long num, register Long *col,
     DMESS "\n");
 #endif
 
-    return;
 }
 
 /******************************************************** MOBbits ******/
@@ -1695,7 +1680,6 @@ static void MOBbits(Posint value, Prec prec, Long *bit) {
     DMESS " Word: 0x%04x *bit: %d\n", oneword, *bit );
 #endif
 
-    return;
 }
 
 /******************************************************** MOBout *******/
@@ -1765,5 +1749,4 @@ static void MOBout(Posint hex, Prec bytes) {
         goto start;
     }
 
-    return;
 }

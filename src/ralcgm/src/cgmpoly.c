@@ -150,8 +150,6 @@ void POLget(Long np, Long *pi, Float *pr, Logical set,
 
     /* Put data into polygon set stucture (get as Points) */
     PTSget(pset->n, pi, pr, pset->pts + start, pset->eofl + start);
-
-    return;
 }
 
 /************************************************** POLhandle ********/
@@ -402,7 +400,6 @@ void POLedge(Polygonset *pset, Rect *clip, void(*linefunc)(Long, Point *)) {
                 break;
         }            /* End of switch */
     }                /* Endif Polygon Set */
-    return;
 }
 
 /***************************************************** POLend *********/
@@ -447,7 +444,6 @@ void POLend(Long np, Enum *fl, Index xmp, Index *start, Index *end)
 #endif
         }
     }
-    return;
 }
 
 /************************************************** POLin **********/
@@ -656,7 +652,6 @@ static void xing_addclin(Enum *cls, Float *xy, Rect *cl, Int index,
             freept->x = freept->y = 0.0;  /* Invalid value from cls */
             break;
     }
-    return;
 }
 
 /************************************************** POLaddcnrs ******/
@@ -1769,9 +1764,7 @@ No additional space is allocated during the execution of this function.
         }
     }
     if (shift) ps->vacant = tosec;  /* Move back vacancies */
-    ps->contig = TRUE;             /* Mark section list as contiguous */
-
-    return;
+    ps->contig = TRUE;
 }
 
 /************************************************** POLcount_sl ******/
@@ -1822,7 +1815,6 @@ void POLcount_sl(Sectlist *ps, Int poly, Int *ns, Long *np) {
         }
         if (ns != NULL) *ns = i;
     }
-    return;
 }
 
 /*************************************************** POLfree_sl *******/
@@ -1966,8 +1958,7 @@ void POLinfind_sl(Sectlist *ps, Int *inpoly, Int *outpoly) {
         if (found)break;
     }
 
-    if (!found) *inpoly = -1;   /* Set inpoly to -1 if not found */
-    return;
+    if (!found) *inpoly = -1;
 }
 
 /************************************************** POLinjoin_sl ******/
@@ -2022,8 +2013,6 @@ void POLinjoin_sl(Sectlist *ps,
      This causes them to be joined along the edge
      between the joining vertices */
     POLjoin_sl(ps, &na, &nb, NULL);
-
-    return;
 }
 
 /************************************************** POLinpoly_sl ******/
@@ -2140,8 +2129,6 @@ void POLjoin_sl(Sectlist *ps, Scursor *sc1, Scursor *sc2, Point *join) {
     }
     *(ps->poly + jpoly) = ps->vacant;
     ps->npoly = jpoly;
-
-    return;
 }
 
 /************************************************** POLnext_sl ********/
@@ -2481,5 +2468,4 @@ void POLscursor_sl(Sectlist *ps, Int ipoly, Scursor *sc)
       ipoly,ps->npoly,ps->mpoly);
 #endif
     }
-    return;
 }

@@ -243,5 +243,4 @@ void GRAsort(Long np, Point *pt, Int *po) {
 #ifdef DEBUG
     DMESS "  %d comparisons  %d exchanges\n", comp, exch);
 #endif
-    return;
 }

@@ -385,8 +385,6 @@ void BEZgetfd(Textitem *txtit) {
     txtit->rmaxwd = maxwidth / B_font->height;
     txtit->rbot = -(B_font->bottom) / B_font->height;
     txtit->rtop = (B_font->top - B_font->cap) / B_font->height;
-
-    return;
 }
 
 /*  BezArc:
@@ -566,8 +564,6 @@ static void BezDraw(int ichar, Tmatrix xmat, struct textatt *txtatt,
     if (pbx - bex > 2)
         linedraw(pbx - bex, bex, imat, newchar);
     FREE(bez);
-
-    return;
 }
 
 /*  BezNest:

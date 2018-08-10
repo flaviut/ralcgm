@@ -353,7 +353,6 @@ void FNTflist(long *inthead, long *ints, char *string, struct cgmfont *list) {
         pms += strlen(ps) + 1;
         ps = string + *pi;
     }
-    return;
 }
 
 /*-----------------------------------------------------------------*
@@ -2767,7 +2766,6 @@ static void read_rest(FILE *fileid, char *loc, int len) {
             break;
         } else
             *nm++ = c;
-    return;
 }
 
 /*-----------------------------------------------------------------*

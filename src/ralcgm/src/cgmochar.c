@@ -893,7 +893,6 @@ void CGMOchar(FILE *stream, Code c, Long *pi, Float *pr, char *pc) {
             break;
     }
 
-    return;
 }
 
 /****************************************************** MOCchkatt ******/
@@ -1228,7 +1227,6 @@ static void MOCchkatt(Code type) {
             break;
     }
 
-    return;
 }
 
 /****************************************************** MOCattrib ******/
@@ -1438,7 +1436,6 @@ static void MOCattrib(Code code) {
             break;
     }
 
-    return;
 }
 
 /****************************************************** MOCcint ********/
@@ -1456,7 +1453,6 @@ static void MOCcint(Code code, Int n, Long *var1, Long *var2) {
             *var1++ = *var2++;
         }
     }
-    return;
 }
 
 /****************************************************** MOCcenum *******/
@@ -1474,7 +1470,6 @@ static void MOCcenum(Code code, int n, Enum *var1, Enum *var2) {
             *var1++ = *var2++;
         }
     }
-    return;
 }
 
 /****************************************************** MOCcreal *******/
@@ -1485,7 +1480,6 @@ static void MOCcreal(Code code, Float *var1, Float *var2, Enum r) {
         MOCreal((Double) *var2, r, null);
         *var1 = *var2;
     }
-    return;
 }
 
 /****************************************************** MOCrectc *******/
@@ -1522,7 +1516,6 @@ static void MOCrectc(Code code, struct rect *var1, struct rect *var2) {
             PUTVDC ((*var2).b.y.real);
         }
     }
-    return;
 }
 
 /****************************************************** MOCccol ********/
@@ -1549,7 +1542,6 @@ static void MOCccol(Code code, int n, struct colour *var1,
                       curchar.col_prec);
         }
     }
-    return;
 }
 
 /****************************************************** MOCvdc *********/
@@ -1563,8 +1555,6 @@ static void MOCvdc(int n, Long *pi, Float *pr) {
     else
         for (j = ZERO; j < n; j++)
             PUTINT (*pi++);
-
-    return;
 }
 
 /****************************************************** MOCpoints ******/
@@ -1604,7 +1594,6 @@ static void MOCpoints(Long n, Long *pi, Float *pr, Enum set) {
             if (set) PUTINT (*pi++);
         }
     }
-    return;
 }
 
 /****************************************************** MOCreal ********/
@@ -1675,8 +1664,6 @@ static void MOCreal(Double x, Enum type, Prec *ptlist) {
     if (present) PUTINT (expnt);
 
     if (mantissa && (ptlist != NULL)) *ptlist = expnt;
-
-    return;
 }
 
 /****************************************************** MOCinteger *****/
@@ -1709,8 +1696,6 @@ static void MOCinteger(Long intval, Logical present, Logical allowed) {
 
     /*  Reverse bits to buffer  */
     for (i = j; i >= ZERO; i--) MOCout(hex[i]);
-
-    return;
 }
 
 /****************************************************** MOCstring ******/
@@ -1728,8 +1713,6 @@ static void MOCstring(register char *s) {
 #endif
 
     MOCout(st_term);
-
-    return;
 }
 
 /****************************************************** MOCcells *******/
@@ -1987,7 +1970,6 @@ static void MOCcells(register Long n, register Long *pi,
 #endif
     }
 
-    return;
 }
 
 /****************************************************** MOCdircol ******/
@@ -2018,7 +2000,6 @@ static void MOCdircol(Posint r, Posint g, Posint b, Prec prec) {
         c = c | ((r >> i) & 1) << 2 | ((g >> i) & 1) << 1 | (b >> i) & 1;
         MOCout(c);
     }
-    return;
 }
 
 /****************************************************** MOCcoldef ******/
@@ -2051,7 +2032,6 @@ static void MOCcoldef(void)
                   curchar.max_rgb.blue,
                   curchar.col_prec);
     }
-    return;
 }
 
 /****************************************************** MOCout *********/
@@ -2125,5 +2105,4 @@ static void MOCout(Code hex) {
         }
     }
 
-    return;
 }

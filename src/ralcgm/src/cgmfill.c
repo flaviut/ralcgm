@@ -85,7 +85,7 @@ static void FILtrap(Int, Trapezoid *);
 /* Number of points allocated for fill area processing */
 static Long cgmmaxpts = MAXPTS;
 
-static void (*fill_func)();
+static void (*fill_func)(long i, Point ptr[4]);
 
 #endif  /* SIMPLEFILL */
 
@@ -321,7 +321,6 @@ void FILarea(Long np, Long *pi, Float *pr, Enum set, Logical cont,
         FREE (edgevis);
     }
 
-    return;
 }
 
 
@@ -1880,7 +1879,6 @@ static void FILtrap(Int nt, Trapezoid *trap) {
         fill_func((Long) 4, p);
     }
 
-    return;
 }
 
 #endif
