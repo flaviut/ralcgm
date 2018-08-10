@@ -30,10 +30,10 @@
 
 /*  Include all files on which this is dependent.  */
 #include "cgmtypes.h"
-#include "../../ralcgm/include/cgmstruc.h"
-#include "../../ralcgm/include/cgmelem.h"
+#include "cgmstruc.h"
+#include "cgmelem.h"
 #include "cgmpar.h"
-#include "../../ralcgm/include/cgmatt.h"
+#include "cgmatt.h"
 
 /* Enumerated types for supported font methods */
 #define HDW       (Enum) 1                       /* Hardware */
@@ -105,21 +105,6 @@ double TXTgheight(Textitem *);
 
 void TXTxform(Point, Tmatrix);
 
-#ifdef POSTSCRIPT   /* Conditionally declare font details functions */
-
-void PSgetfd(Textitem *);
-
-#endif
-#ifdef BEZIER
-
-void BEZgetfd(Textitem *);
-
-#endif
-#ifdef HERSHEY
-
-void HERgetfd(Textitem *);
-
-#endif
 
 
 #endif   /* end of cgmtext.h */

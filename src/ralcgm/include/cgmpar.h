@@ -40,10 +40,6 @@
 
 /* Give values to other Output drivers */
 
-#ifdef POSTSCRIPT
-#undef POSTSCRIPT
-#define  POSTSCRIPT (Enum) 21
-#endif
 
 /*  CGM profiles allowed  */
 

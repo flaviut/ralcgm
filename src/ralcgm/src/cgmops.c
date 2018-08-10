@@ -2853,20 +2853,6 @@ static void PStxtdraw(Textitem *list, Point txtp) {
             PSOUT "%f %f %f setrgbcolor\n", red, green, blue);
 
             switch (txtlp->text_method) {
-#ifdef HERSHEY
-                case HER:
-                    PSOUT "gsave    %% Start of Hershey string\n");
-                    HERtext(txtlp, txtp, PSHERtext);
-                    PSOUT "grestore %% End of Hershey string\n");
-                    break;
-#endif
-#ifdef BEZIER
-                case BEZ:
-                    PSOUT "gsave    %% Start of Bezier string\n");
-                    BEZtext(txtlp, &PStextatt, txtp, PSBEZtext);
-                    PSOUT "grestore %% End of Bezier string\n");
-                    break;
-#endif
 #ifdef TEX
                 case TEX:
                     /* No routine yet */

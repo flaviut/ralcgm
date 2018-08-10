@@ -23,13 +23,13 @@ add_executable(ralcgm
         src/cgmher.c
         src/cgmtext.c
         src/cgmfont.c
-        $<TARGET_OBJECTS:ralcgm_common>
+        src/cgmfile.c
+        src/cgmerr.c
         )
 
 target_include_directories(ralcgm PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
-        $<TARGET_PROPERTY:ralcgm_common,INCLUDE_DIRECTORIES>
         )
 target_link_libraries(ralcgm m)
 

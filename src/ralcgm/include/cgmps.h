@@ -51,12 +51,6 @@
 /*  PostScript prefered Text methods */
 
 static Enum PSprefmeth[] = {PS,
-#ifdef BEZIER
-                            BEZ,
-#endif
-#ifdef HERSHEY
-                            HER,
-#endif
                             (Enum) 0};
 
 /*

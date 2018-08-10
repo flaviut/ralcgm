@@ -92,10 +92,6 @@ static const struct cgmdrivers drivers[] = {
         "TEXT", 3, CLEAR_TEXT,
         "BINARY", 1, BINARY,
 
-#ifdef POSTSCRIPT
-        "PS", 1, POSTSCRIPT,
-        "POSTSCRIPT", 4, POSTSCRIPT,
-#endif
 
         "NONE", 0, NONE
 };

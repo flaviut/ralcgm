@@ -417,12 +417,6 @@ Enum *type;
               strcpy(ext,"bin");
               *type = BINARY;
               break;
-#ifdef POSTSCRIPT
-           case 'P':
-              strcpy(ext,"ps");
-              *type = POSTSCRIPT;
-              break;
-#endif
            case 'T':
               strcpy(ext,"txt");
               *type = CLEAR_TEXT;

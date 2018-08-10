@@ -31,9 +31,9 @@
 
 
 
-#include "cgmmach.h"
-#include "cgmpar.h"
-#include "cgmerr.h"
+#include "../include/cgmmach.h"
+#include "../include/cgmpar.h"
+#include "../include/cgmerr.h"
 
 #define ERRMESS         (void) fprintf(cgmerr,
 

@@ -96,10 +96,6 @@
 
 /*  Define if font system needed */
 
-#ifdef POSTSCRIPT
-#define FONTSYSTEM
-#else
-#endif
 
 #ifndef FIXED_BUFFER  /* Use variable communications Area by default */
 #define VAR_BUFFER

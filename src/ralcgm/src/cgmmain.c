@@ -181,13 +181,6 @@ extern void CGMObin(FILE *, Code, long *, float *, char *);
 
 extern void CGMstframe(void);
 
-#ifdef POSTSCRIPT
-
-extern void CGMOps(FILE *, Code, long *, float *, char *);
-
-extern void PSoptions(char *);
-
-#endif
 
 extern FILE *CGMfopen(char *, char, Enum);
 
@@ -375,11 +368,6 @@ main(int argc, char **argv) {
 
 /*  Old driver options - kept for compatability */
 
-#ifdef POSTSCRIPT
-                        case 'P':
-                            cgmdriver = POSTSCRIPT;
-                            break;
-#endif
                         case 'O':   /* Driver dependent options */
                             if (CGMgetarg(pa, len, argv, s, FALSE)) {
                                 n++;
@@ -462,16 +450,6 @@ main(int argc, char **argv) {
 
 
 
-#ifdef POSTSCRIPT
-    if (cgmdriver == POSTSCRIPT) {
-        char *env;
-
-        env = (char *) getenv("CGMPSOPT");
-        if (env != NULL) strcpy(dev_options, env);
-        if (Options) strcat(dev_options, user_options);
-        PSoptions(dev_options);
-    }
-#endif  /* POSTSCRIPT */
 
 
 
@@ -645,21 +623,6 @@ main(int argc, char **argv) {
             break;
 
 
-#ifdef POSTSCRIPT
-        case POSTSCRIPT:   /*  Postscript Output  */
-#ifdef NOSTDOUT
-            outfilename = TRUE;
-            if ( !outsuffix)
-#else
-            if (!outsuffix && outfilename)
-#endif
-            {
-                strcpy(cgmofile, cgmroot);
-                strcat(cgmofile, FILESEP);
-                strcat(cgmofile, "ps");
-            }
-            break;
-#endif
 
 
         case CLEAR_TEXT:   /*  Clear Text Output  */
@@ -710,11 +673,6 @@ main(int argc, char **argv) {
             case CHARACTER:
                 OUTMESS "Character Encoding");
                 break;
-#ifdef POSTSCRIPT
-            case POSTSCRIPT:
-                OUTMESS "Postscript file");
-                break;
-#endif
 
             case CLEAR_TEXT:
             default:
@@ -909,11 +867,6 @@ void CGMocode(Code c) {
             CGMObin(cgmo, c, pint, preal, str);
             break;
 
-#ifdef POSTSCRIPT
-        case POSTSCRIPT:
-            CGMOps(cgmo, c, pint, preal, str);
-            break;
-#endif
 
         default:
             exit(CGMerror("CGMoutput", ERR_NOCODE, FATAL, NULLSTR));

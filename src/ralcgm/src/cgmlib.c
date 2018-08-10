@@ -51,9 +51,6 @@ void cgminit(Enum, char *);
 
 void CGMconvert_points(int, Point *, long *, float *, Enum *);
 
-#ifdef POSTSCRIPT
-extern void CGMOps ( FILE*, Code, long*, float*, char* );
-#endif
 
 
 
@@ -102,11 +99,6 @@ void cgminit(Enum type, char *filename) {
         case CLEAR_TEXT:
             cgmdriver = CLEAR_TEXT;
             break;
-#ifdef POSTSCRIPT
-        case POSTSCRIPT:
-            cgmdriver = POSTSCRIPT;
-            break;
-#endif
         default:
             sprintf(mess, "(type: %d)", type);
             exit(CGMerror("cgminit", ERR_INVOUT, FATAL, mess));
@@ -142,11 +134,6 @@ void CGMout(Code c, long *pi, float *pf, char *pc) {
             CGMOtext(cgmo, c, pi, pf, pc);
             break;
 
-#ifdef POSTSCRIPT
-        case POSTSCRIPT:
-           CGMOps( cgmo, c, pi, pf, pc );
-           break;
-#endif
 
 
         default:

@@ -41,10 +41,10 @@
 
 
 
-#include "cgmmach.h"
-#include "cgmpar.h"
-#include "cgmerr.h"
-#include "cgmfile.h"
+#include "../include/cgmmach.h"
+#include "../include/cgmpar.h"
+#include "../include/cgmerr.h"
+#include "../include/cgmfile.h"
 
 /********************************************************* CGMpath ***/
 

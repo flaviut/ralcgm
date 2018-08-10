@@ -81,12 +81,6 @@ static char *func = "CGMXXX", emess[48];
 /*  Text methods available */
 
 static Enum Text_method[] = {
-#ifdef BEZIER
-        BEZ,
-#endif
-#ifdef HERSHEY
-        HER,
-#endif
         HDW,
         (Enum) 0};
 
@@ -623,16 +617,6 @@ void XXXtext(Textitem *txt) {
     TXTalign(txt, txtpos, TXTgwidth(txt), TXTgheight(txt));
     while (curtxt != NULL) {
         switch (curtxt->text_method) {
-#ifdef HERSHEY
-            case HER:
-               HERtext( curtxt, txtpos, XXXtxtline );
-               break;
-#endif
-#ifdef BEZIER
-            case BEZ:
-               BEZtext( curtxt, &xxxtxt, txtpos, XXXtxtfill );
-               break;
-#endif
 #ifdef TEX
             case TEX:
                break;

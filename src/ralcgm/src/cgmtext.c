@@ -238,21 +238,6 @@ Textitem *TXTaccinf(long num, char *str, struct textatt *ta,
     (void) fprintf(stderr, "Font method: %d\n", new->text_method);
 #endif
     switch (new->text_method) {
-#ifdef HERSHEY
-        case HER:
-            HERgetfd(new);
-            break;
-#endif
-#ifdef BEZIER
-        case BEZ:
-            BEZgetfd(new);
-            break;
-#endif
-#ifdef POSTSCRIPT
-        case PS:
-            PSgetfd(new);
-            break;
-#endif
 #ifdef TEX
         case TEX:
             /* awaiting decision */
@@ -1503,21 +1488,6 @@ static Textitem *clip_text(Textitem *txtlist, double rwidth, double rheight, int
 
 static void font_load(Textitem *txtlist) {
     switch (txtlist->text_method) {
-#ifdef HERSHEY
-        case HER:
-            HERgetfd(txtlist);
-            break;
-#endif
-#ifdef BEZIER
-        case BEZ:
-            BEZgetfd(txtlist);
-            break;
-#endif
-#ifdef POSTSCRIPT
-        case PS:
-            PSgetfd(txtlist);
-            break;
-#endif
 #ifdef TEX
         case TEX:
             /* awaiting decision */
