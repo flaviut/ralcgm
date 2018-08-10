@@ -311,7 +311,7 @@ static void CGMfrsave(Code code)
     if (start_frame == NULL) {
         max_frame = NFRAME;
         start_frame = (struct data_frame *)
-                MALLOC(max_frame, sizeof(struct data_frame));
+                calloc(max_frame, sizeof(struct data_frame));
     }
 
 /* if we have reached the maximum get more space */
@@ -319,7 +319,7 @@ static void CGMfrsave(Code code)
         p = start_frame;
         max_frame += NFRAME;
         start_frame = (struct data_frame *)
-                MALLOC(max_frame, sizeof(struct data_frame));
+                calloc(max_frame, sizeof(struct data_frame));
         for (i = 0; i < n_frame; i++) start_frame[i] = p[i];
         FREE(p);
     }
@@ -357,7 +357,7 @@ static void CGMmfsave(void)
         pm = start_meta;
         max_meta += NMETA;
         start_meta = (struct data_frame *)
-                MALLOC(max_meta, sizeof(struct data_frame));
+                calloc(max_meta, sizeof(struct data_frame));
         for (i = 0; i < n_meta; i++) start_meta[i] = pm[i];
         FREE(pm);
     }
@@ -383,7 +383,7 @@ void CGMstframe(void)
     if (start_meta == NULL) {
         max_meta = NMETA;
         start_meta = (struct data_frame *)
-                MALLOC(max_meta, sizeof(struct data_frame));
+                calloc(max_meta, sizeof(struct data_frame));
 /* Use start_pos as the struct is machine dependent */
         fgetpos(cgmi, &start_pos);
         start_meta[0].disk_addr = start_pos;

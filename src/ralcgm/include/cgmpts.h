@@ -41,14 +41,14 @@ void
         PTSfree(void),
 
 /* Get points from driver arguments */
-        PTSget(Long, Long *, Float *, Point *, Enum *),
+        PTSget(Long, Long *, float *, Point *, Enum *),
 
 /* Clip and Output a polyline using device line drawing function */
         PTSlineclip(Long, Point *, Rect,
                     void (*)(Long, Point *)),  /* linedraw function */
 
 /* Clip and Output a polymarker using device line drawing function */
-        PTSmarker(Long, Point *, Float, Markeratt *, Enum,
+        PTSmarker(Long, Point *, float, Markeratt *, Enum,
                   void (*)(Long, Point *)),  /* linedraw function */
 
 /* Get VDC extent */
@@ -56,6 +56,6 @@ void
 
 Point *
 /* Get points from arguments, store them and return pointer to store */
-PTSlist(Long, Long *, Float *, Enum **);
+PTSlist(Long, Long *, float *, Enum **);
 
 #endif /* CGMPTS_H */

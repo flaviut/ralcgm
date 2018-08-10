@@ -109,7 +109,7 @@ void CELLfill(Long ncells, Long *pi, Tmatrix celtrans,
 
 /****************************************************** CELLparget *****/
 
-void CELLparget(Long *pi, Float *pr,
+void CELLparget(Long *pi, float *pr,
                 Point *p, Point *q, Point *r,
                 Int *nx, Int *ny, Int *lp) {
     if (cur.vdc_type == REAL) {

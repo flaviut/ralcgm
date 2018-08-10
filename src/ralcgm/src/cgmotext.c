@@ -18,7 +18,7 @@
  * Arguments:     stream   FILE structure for output file
  *                c        CGM element code (character form)
  *                pi       Pointer to 'Long' Communications buffer
- *                pr       Pointer to 'Float' Communications buffer
+ *                pr       Pointer to 'float' Communications buffer
  *                str      Pointer to 'char' Communications buffer
  *
  * Maintenance Log:
@@ -34,7 +34,7 @@
  *                 Change Cell array format
  *  16 Aug 90 RTP  Add error handler routines
  *   6 Sep 90 RTP  Change internal routines to static
- *   4 Oct 90 RTP  Use typedefs Int, Long,Float etc
+ *   4 Oct 90 RTP  Use typedefs Int, Long,float etc
  *  15 Mar 91 RTP  Change cgmstate to Enum type
  *  14 May 91 RTP  Add ANSI declarations
  *   2 Aug 91 RTP  Add SCCS id
@@ -88,7 +88,7 @@ static char *func = "CGMotext", mess[40];
 
 /****************************************************** CGMOtext *******/
 
-void CGMOtext(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
+void CGMOtext(FILE *stream, Code c, Long *pi, float *pr, char *str) {
     static Logical first = TRUE, first_pic = TRUE;
     static Prec loc_prec;
     static Long nx, ny;
@@ -196,8 +196,8 @@ void CGMOtext(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
 
 /*  set decimal places and number of elements per line 'k' */
 
-                    prec = (Prec) ((loc_prec ? (Double) loc_prec
-                                             : (Double) cur.col_bits) * LOG2) + 1;
+                    prec = (Prec) ((loc_prec ? (double) loc_prec
+                                             : (double) cur.col_bits) * LOG2) + 1;
                     if (prec < 2) prec = 2;
                     if (cur.color_mode == INDEXED) k = 80L / (prec + 1);
                     else k = 80L / (3 * prec + 5);
@@ -333,8 +333,8 @@ void CGMOtext(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
                     curtext.real_digits = 1.0 +
                                           (cur.real_bits - cur.real_places) * LOG2;
                     rp = (cur.real_places < 0 ? 1.0 - cur.real_places * LOG2 : 0);
-                    TEXTOUT " %.*f, %.*f,", rp, (Double) curtext.min_real,
-                            rp, (Double) curtext.max_real);
+                    TEXTOUT " %.*f, %.*f,", rp, (double) curtext.min_real,
+                            rp, (double) curtext.max_real);
                     TEXTOUT " %d", curtext.real_digits);
                     TEXTOUT " %% %d binary bits %%", cur.real_bits);
                     break;
@@ -459,7 +459,7 @@ STD96MULTIBYTE/COMPLETECODE", (Enum) *pi++);
                 case SCALEMODE:         /*  Scaling Mode   */
                     MOTprcode(SCALEMODE);
                     MOTenum("abstract/metric", cur.scale_mode);
-                    TEXTOUT ", %.*f", rp, (Double) cur.scale_factor);
+                    TEXTOUT ", %.*f", rp, (double) cur.scale_factor);
                     break;
 
                 case COLRMODE:         /*  Colour Selection Mode */
@@ -954,7 +954,7 @@ edgetype/edgewidth/edgecolr", (Enum) *pi++);
 
 /******************************************************* MOTpoints *****/
 
-static void MOTpoints(Long n, Long *pi, Float *pr, Enum set) {
+static void MOTpoints(Long n, Long *pi, float *pr, Enum set) {
     register Long i, k, no;
     register int prec;
 
@@ -991,7 +991,7 @@ static void MOTpoints(Long n, Long *pi, Float *pr, Enum set) {
 
 /******************************************************* MOTvdc ********/
 
-static void MOTvdc(int n, Long *pi, Float *pr) {
+static void MOTvdc(int n, Long *pi, float *pr) {
     register Long j, k, no;
     register Prec prec;
 

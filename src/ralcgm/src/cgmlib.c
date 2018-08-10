@@ -70,14 +70,14 @@ char *cgmofile;
 void cgminit(Enum type, char *filename) {
 
     cgmerr = stderr;
-    cgmofile = (char *) MALLOC(NAMELGTH + EXTLGTH + LFILEDEF + 3, sizeof(char));;
+    cgmofile = (char *) calloc(NAMELGTH + EXTLGTH + LFILEDEF + 3, sizeof(char));;
 
 #ifdef VAR_BUFFER
-    pint = (long *) MALLOC( ARRAY_MAX, sizeof(long) );
+    pint = (long *) calloc( ARRAY_MAX, sizeof(long) );
     pimax = pint + ARRAY_MAX;
-    preal = (float *) MALLOC( ARRAY_MAX, sizeof(float) );
+    preal = (float *) calloc( ARRAY_MAX, sizeof(float) );
     prmax = preal + ARRAY_MAX;
-    str = (char *) MALLOC( STRING_MAX, sizeof(char) );
+    str = (char *) calloc( STRING_MAX, sizeof(char) );
     strmax = str + STRING_MAX;
     if ( pint == NULL || preal == NULL || str == NULL )
     {

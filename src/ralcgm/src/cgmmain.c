@@ -245,10 +245,10 @@ main(int argc, char **argv) {
 
 /*   Create memory for standard files */
 
-    cgmroot = (char *) MALLOC(MAXFLSIZE, sizeof(char));
-    cgmin = (char *) MALLOC(MAXFLSIZE, sizeof(char));
-    cgmofile = (char *) MALLOC(MAXFLSIZE, sizeof(char));
-    cgmefile = (char *) MALLOC(MAXFLSIZE, sizeof(char));
+    cgmroot = (char *) calloc(MAXFLSIZE, sizeof(char));
+    cgmin = (char *) calloc(MAXFLSIZE, sizeof(char));
+    cgmofile = (char *) calloc(MAXFLSIZE, sizeof(char));
+    cgmefile = (char *) calloc(MAXFLSIZE, sizeof(char));
 
 /* Set up default filenames */
     strcpy(cgmin, "-");
@@ -737,11 +737,11 @@ main(int argc, char **argv) {
     /*  Define initial buffers for dynamic allocation */
 
 #ifdef VAR_BUFFER
-    pint = (long *) MALLOC (ARRAY_MAX, sizeof(long));
+    pint = (long *) calloc(ARRAY_MAX, sizeof(long));
     pimax = pint + ARRAY_MAX;
-    preal = (float *) MALLOC (ARRAY_MAX, sizeof(float));
+    preal = (float *) calloc(ARRAY_MAX, sizeof(float));
     prmax = preal + ARRAY_MAX;
-    str = (char *) MALLOC (STRING_MAX, sizeof(char));
+    str = (char *) calloc(STRING_MAX, sizeof(char));
     strmax = str + STRING_MAX;
     if (pint == NULL || preal == NULL || str == NULL) {
         exit(CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));

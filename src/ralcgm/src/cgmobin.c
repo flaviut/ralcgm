@@ -20,7 +20,7 @@
  *   7 Nov 89 RTP  Correct function Arguments for lint
  *   5 Jan 90 RTP  Basic working version created
  *  20 Jan 90 RTP  Add Colour Tables
- *                 Floating Point Numbers
+ *                 floating Point Numbers
  *  23 Jan 90 RTP  Add Cell Array and Pattern Representation
  *  21 Mar 90 RTP  Save parmlen before BEGMFDEFAULTS
  *  13 Aug 90 RTP  Correct cell array handling over buffers
@@ -29,8 +29,8 @@
  *  19 Sep 90 RTP  Remove unused variables and clear lint problems
  *                 Add message at BEGPIC if cgmverbose set
  *                 Correct brackets in REALSIZE & VDCSIZE
- *   4 Oct 90 RTP  Use typedefs Int, Long and Float
- *   3 Dec 90 RTP  Change MOBreal parameter to Double
+ *   4 Oct 90 RTP  Use typedefs Int, Long and float
+ *   3 Dec 90 RTP  Change MOBreal parameter to double
  *  15 Mar 91 RTP  Change cgmstate to Enum type
  *   2 May 91 RTP  Change test in Direct colour cell arrays to || instead
  *                 of && when checking if same colour
@@ -56,14 +56,14 @@ static FILE *cgmob;
 
 /* declare internal functions */
 
-void CGMObin(FILE *stream, Code c, Long *pi, Float *pr, char *str);
+void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str);
 
 static void MOBopcode(Code, Long),
         MOBint(Long, Prec, Enum),
-        MOBreal(Double, Enum, Enum),
+        MOBreal(double, Enum, Enum),
         MOBcolour(struct colour *, Enum),
-        MOBvdc(Int, Long *, Float *),
-        MOBpointlist(Long, Long *, Float *, Enum),
+        MOBvdc(Int, Long *, float *),
+        MOBpointlist(Long, Long *, float *, Enum),
         MOBclist(Long, Long *, Prec, Enum, Prec),
         MOBbits(Posint, Prec, Long *),
         MOBstring(char *),
@@ -108,11 +108,11 @@ static void MOBopcode(Code, Long),
 #define PUTBYTE(x)    MOBout( (Posint) x, (Prec) 1 )
 #define PUTWORD(x)    MOBout( (Posint) x, (Prec) 2 )
 #define PUTINT(x)     MOBint( (Long) x, curbin.int_prec, SIGNED )
-#define PUTREAL(x)    MOBreal ( (Double)x, curbin.real_type, REAL )
+#define PUTREAL(x)    MOBreal ( (double)x, curbin.real_type, REAL )
 #define PUTINDEX(x)   MOBint( (Long) x, curbin.index_prec, SIGNED )
 #define PUTENUM(x)    MOBint( (Long) x, ENUMERATED, SIGNED )
 #define PUTINTVDC(x)  MOBint( (Long) x, curbin.vdcint_prec, SIGNED )
-#define PUTREALVDC(x) MOBreal( (Double)x, curbin.vdc_type, VDC )
+#define PUTREALVDC(x) MOBreal( (double)x, curbin.vdc_type, VDC )
 
 /* Local Variables */
 
@@ -129,7 +129,7 @@ static char *func = "CGMobin", mess[40];
 
 /********************************************************* CGMObin *****/
 
-void CGMObin(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
+void CGMObin(FILE *stream, Code c, Long *pi, float *pr, char *str) {
     register Long j, n, num;
     Code major;
     Long parmlen = ZERO;
@@ -606,7 +606,7 @@ void CGMObin(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
                     parmlen = ENUMSIZE + REALSIZE;
                     MOBopcode(c, parmlen);
                     PUTENUM (cur.scale_mode);
-                    MOBreal((Double) cur.scale_factor, FLOATING, REAL);
+                    MOBreal((double) cur.scale_factor, FLOATING, REAL);
                     break;
 
                 case COLRMODE: /* Colour Selection Mode */
@@ -1394,7 +1394,7 @@ static void MOBcolour(struct colour *col, Enum type) {
 
 /******************************************************** MOBvdc *******/
 
-static void MOBvdc(Int n, Long *pi, Float *pr) {
+static void MOBvdc(Int n, Long *pi, float *pr) {
     Int i;
 
 #ifdef DEBUG
@@ -1413,7 +1413,7 @@ static void MOBvdc(Int n, Long *pi, Float *pr) {
 
 /******************************************************** MOBpointlist */
 
-static void MOBpointlist(Long n, Long *pi, Float *pr, Enum set) {
+static void MOBpointlist(Long n, Long *pi, float *pr, Enum set) {
     Int i;
 
 #ifdef DEBUG
@@ -1435,16 +1435,16 @@ static void MOBpointlist(Long n, Long *pi, Float *pr, Enum set) {
 
 /******************************************************** MOBreal ******/
 
-static void MOBreal(Double x, Enum real_type, Enum real_or_vdc) {
+static void MOBreal(double x, Enum real_type, Enum real_or_vdc) {
     Posint whole, exponent, neg;
-    Posint64 fract;
+    uint64_t fract;
     Prec prec;
-    Double f;
+    double f;
 
 #ifdef DEBUG
     DMESS "Real: %lg ", x);
     if (real_type == FIXED ) DMESS "(Fixed Point)");
-    else                     DMESS "(Floating Point)");
+    else                     DMESS "(floating Point)");
 #endif
 
     neg = (x < 0.0) << 15;
@@ -1453,7 +1453,7 @@ static void MOBreal(Double x, Enum real_type, Enum real_or_vdc) {
         prec = (real_or_vdc == VDC ? curbin.vdc_whole
                                    : curbin.real_whole);
         whole = (Posint) (neg ? -((floor(x))) : x);
-        fract = (Posint64) ((neg ? x + (Double) whole : x - (Double) whole)
+        fract = (uint64_t) ((neg ? x + (double) whole : x - (double) whole)
                             * (1L << prec - 2) * 4.0);
 
 #ifdef DEBUG
@@ -1471,14 +1471,14 @@ static void MOBreal(Double x, Enum real_type, Enum real_or_vdc) {
             PUTWORD(fract);
         }
     } else {
-/*  IEEE Floating point reals */
+/*  IEEE floating point reals */
 
         prec = (real_or_vdc == VDC ? curbin.vdc_whole + curbin.vdc_fraction
                                    : curbin.real_whole + curbin.real_fraction);
         prec = (prec == 64 ? 12 : 9);
         f = (neg ? -x : x);
 
-        if (f < (Double) (real_or_vdc == VDC ? cur.vdcmin : cur.realmin)) {
+        if (f < (double) (real_or_vdc == VDC ? cur.vdcmin : cur.realmin)) {
             exponent = ZERO;
             fract = ZERO;
         } else {
@@ -1487,7 +1487,7 @@ static void MOBreal(Double x, Enum real_type, Enum real_or_vdc) {
 
             exponent = (prec == 12 ? 1023 : 127);
 
-            if (f <= 1.0 / (Double) (prec - 1)) {
+            if (f <= 1.0 / (double) (prec - 1)) {
                 exponent = ZERO;
             } else {
                 while (f >= 2.0) {
@@ -1499,7 +1499,7 @@ static void MOBreal(Double x, Enum real_type, Enum real_or_vdc) {
                     exponent--;
                 }
             }
-            fract = (Posint64) ((f - 1.0) * (Double) (1L << (prec == 12 ? 52 : 23)));
+            fract = (uint64_t) ((f - 1.0) * (double) (1L << (prec == 12 ? 52 : 23)));
         }
 
 #ifdef DEBUG

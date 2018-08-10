@@ -82,7 +82,7 @@ typedef struct {
 /* The first (highest) Peak in the edge table */
 typedef struct {
     Edge *first, *second, *left, *right;
-    Float left_slope, right_slope;
+    float left_slope, right_slope;
 } Hipeak;
 
 
@@ -101,7 +101,7 @@ static char trigger[20] = "No Trapezoid";  /* Trapezoid trigger */
 static char *func = "CGMtrap";
 
 /* Minimum difference (used by TZEQUAL) */
-static Float mindiff;
+static float mindiff;
 
 /* Other statics */
 static Edge *etab;    /* Pointer to edge table */
@@ -142,7 +142,7 @@ static Logical
         horiz_edge_rm(Int *),
 
 /* Extract highest trapezoid from edge table */
-        trap_extract(Float, Trapezoid *);
+        trap_extract(float, Trapezoid *);
 
 
 #ifdef DEBUG
@@ -152,7 +152,7 @@ static void et_diagnose();
 
 /***************************************************** TRPfill ********/
 
-void TRPfill(Polygonset *pset, Int numtz, Float ytol,
+void TRPfill(Polygonset *pset, Int numtz, float ytol,
              void (*trpdraw)(Int, Trapezoid *)) {
     Trapezoid *trap;       /* Trapezoid array */
     Int i;                 /* Loop indices (never reffered to) */
@@ -161,8 +161,8 @@ void TRPfill(Polygonset *pset, Int numtz, Float ytol,
     Polygonset *clipped,   /* Clipped Polygon(set) */
             copy;       /* Copy of polygon set */
     Rect cl;         /* Clipping Rectangle */
-    Float rytol;           /* Reciprocal of Y-Coord tolerance */
-    Float lasttop;         /* Top of last trapezoid (Y-coord) */
+    float rytol;           /* Reciprocal of Y-Coord tolerance */
+    float lasttop;         /* Top of last trapezoid (Y-coord) */
     Logical found;         /* True if trapezoid found */
     Logical toluse;        /* True if Y-coord tolerance is in use */
     Long maxdo;            /* Maximum number of trapezoids extracted */
@@ -201,13 +201,13 @@ void TRPfill(Polygonset *pset, Int numtz, Float ytol,
         DMESS "TRPfill: No clipping needed. Copy of polygon(set) used.\n");
 #endif
         copy.n = pset->n;
-        copy.pts = (Point *) MALLOC(pset->n, sizeof(Point));
+        copy.pts = (Point *) calloc(pset->n, sizeof(Point));
         if (copy.pts == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- pts"));
         for (i = 0; i < pset->n; i++) copy.pts[i] = pset->pts[i];
 
         if (pset->eofl != NULL) { /* Make copy of edge-out flags too */
-            copy.eofl = (Enum *) MALLOC(pset->n, sizeof(Enum));
+            copy.eofl = (Enum *) calloc(pset->n, sizeof(Enum));
             if (copy.eofl == NULL)
                 exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- flags"));
             for (i = 0; i < pset->n; i++) copy.eofl[i] = pset->eofl[i];
@@ -232,7 +232,7 @@ void TRPfill(Polygonset *pset, Int numtz, Float ytol,
 #endif
 
         /* Make space for the trapezoids */
-        trap = (Trapezoid *) MALLOC(numtz, sizeof(Trapezoid));
+        trap = (Trapezoid *) calloc(numtz, sizeof(Trapezoid));
         if (trap == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL,
                                 "- too many trapezoids to store"));
@@ -341,7 +341,7 @@ static Logical edge_cross(Edge *le, Edge *re)
  */
 {
     Logical left_horiz, right_horiz;  /* True if edge is horizontal */
-    Float left_slope, right_slope;   /* Slopes of edge */
+    float left_slope, right_slope;   /* Slopes of edge */
     Logical cross;                    /* True if edges cross */
 
 #ifdef DEBUG_FULL
@@ -514,7 +514,7 @@ static Edge *edge_table(Polygonset *pset)
 #endif
 
     /* Make space for edge table */
-    etab = (Edge *) MALLOC(pset->n + 1, sizeof(Edge));
+    etab = (Edge *) calloc(pset->n + 1, sizeof(Edge));
     if (etab == NULL)
         exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- edge table"));
 
@@ -747,11 +747,11 @@ static Hipeak *hi_peak()
  */
 {
     Edge *side[2];             /* The sides of the peak */
-    Float slope[2];            /* The slopes of the sides */
+    float slope[2];            /* The slopes of the sides */
     Int removed;               /* Number of horizontal edges removed */
     Logical side0_side1;       /* Side 0 is left of side 1 */
     Index i;                   /* Loop index */
-    Float depth;               /* Depth of edge (end level difference) */
+    float depth;               /* Depth of edge (end level difference) */
 
 #ifdef DEBUG_FULL
     DMESS "\nhi_peak start");
@@ -839,7 +839,7 @@ static Logical horiz_edge_rm(Int *rm) {
     Edge *edge;                /* current edge */
     Point *bot;                /* Bottom end of edge */
     Index i, j1, j2;           /* Loop indices */
-    Float top_y;               /* Level of top */
+    float top_y;               /* Level of top */
     Int nslope = 0;              /* Number of sloping edges found */
     Int npeak = 0;               /* Number of peaks found */
     Logical pkreset = FALSE;     /* True if peak has been reset */
@@ -1068,7 +1068,7 @@ static void touching_peak(Peakedge *lp, Peakedge *rp, Enum *pass)
 }
 
 /***************************************************** trap_extract ****/
-static Logical trap_extract(Float ymin, Trapezoid *tz) {
+static Logical trap_extract(float ymin, Trapezoid *tz) {
     Hipeak *hpeak;             /* The highest peak */
     Long n_old, n_new;          /* Number of edges in old & new table */
     Edge old[4];                /* Copy of first 4 edges of old table */
@@ -1078,8 +1078,8 @@ static Logical trap_extract(Float ymin, Trapezoid *tz) {
     Logical base_ends_off;      /* Ends of prov' trap' base off */
     Logical base_cross;         /* Base of prov' trap' is crossing */
     Index i, j;                 /* Loop indices */
-    Float depth;                /* Depth below top of prov' trap' */
-    Float tzleft, tzright;      /* Possible ends of prov' trap' base */
+    float depth;                /* Depth below top of prov' trap' */
+    float tzleft, tzright;      /* Possible ends of prov' trap' base */
     Logical possible;           /* Possible edge, not eliminated */
     Logical peak_change;        /* Peak vertex change flag */
     Logical found;              /* Trapezoid found and edge table
@@ -1220,11 +1220,11 @@ static Logical trap_extract(Float ymin, Trapezoid *tz) {
 
     {
         Edge *side;    /* Current side of provisional trapezoid */
-        Float *slope;   /* Slope of current side of prov' trap' */
+        float *slope;   /* Slope of current side of prov' trap' */
         Edge *e1, *e2; /* 1st & 2nd edges */
         Edge *eleft,   /* Left edge */
                 *eright;  /* Right edge */
-        Float tzend;    /* Possible end of prov' trap' base */
+        float tzend;    /* Possible end of prov' trap' base */
         Logical cross;    /* True if edges cross */
 
         /* Temporarily remove the peak from the edge table */

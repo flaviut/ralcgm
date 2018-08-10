@@ -31,6 +31,7 @@
 /*  C Library routines needed in standard include files */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
@@ -83,15 +84,6 @@
 #ifndef Long
 #define Long    long
 #endif
-#ifndef Float
-#define Float   float
-#endif
-#ifndef Double
-#define Double  double
-#endif
-#ifndef Posint64
-#define Posint64 unsigned long
-#endif
 
 /* Define macros for some maths routines which may cause problems */
 
@@ -101,9 +93,6 @@
 #ifndef FABS
 #define FABS(x)  fabs( (double) (x) )
 #endif
-#ifndef MALLOC
-#define MALLOC(n, s)   malloc( (size_t) ((n)*(s)) )
-#endif
 
 /*  Define if font system needed */
 
@@ -111,14 +100,6 @@
 #define FONTSYSTEM
 #else
 #endif
-
-#ifndef MALLOCH    /*  prototype 'malloc' calls if no 'malloc.h' */
-#define MALLOCH
-extern void *malloc (size_t);
-extern void *calloc (size_t, size_t);
-extern void *realloc (void *, size_t);
-extern void free(void *);
-#endif  /*  MALLOCH */
 
 #ifndef FIXED_BUFFER  /* Use variable communications Area by default */
 #define VAR_BUFFER
@@ -152,7 +133,7 @@ extern void free(void *);
 #define DEFMOVIE      FALSE
 #endif
 
-#ifndef DEFDOUBLE    /*  Default Double buffer mode */
+#ifndef DEFDOUBLE    /*  Default double buffer mode */
 #define DEFDOUBLE     FALSE
 #endif
 

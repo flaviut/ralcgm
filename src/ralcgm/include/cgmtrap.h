@@ -32,7 +32,7 @@ typedef struct {
 
 void
 /* Fill Polygon(set) by trapezoid decomposition */
-TRPfill(Polygonset *, Int, Float, void (*)(Int, Trapezoid *));
+TRPfill(Polygonset *, Int, float, void (*)(Int, Trapezoid *));
 
 
 #endif /* CGMTRAP_H */

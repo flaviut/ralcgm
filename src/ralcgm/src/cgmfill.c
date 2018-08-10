@@ -98,7 +98,7 @@ static char *func = "FILarea", mess[40];
 
 /**************************************************** FILarea **********/
 
-void FILarea(Long np, Long *pi, Float *pr, Enum set, Logical cont,
+void FILarea(Long np, Long *pi, float *pr, Enum set, Logical cont,
              void (*fill_convex)(Long, Point *),
              void (*draw_edge)(Long, Point *, Enum *)) {
     register Long j, k;
@@ -117,11 +117,11 @@ void FILarea(Long np, Long *pi, Float *pr, Enum set, Logical cont,
     if (!cont) {  /* First set of points, allocate space */
         start = 0;
         polset.n = abs(np);
-        polset.pts = (Point *) MALLOC(polset.n, sizeof(Point));
+        polset.pts = (Point *) calloc(polset.n, sizeof(Point));
         if (polset.pts == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
         if (set == SET) {  /* Edge-out flags needed */
-            polset.eofl = (Enum *) MALLOC(polset.n, sizeof(Enum));
+            polset.eofl = (Enum *) calloc(polset.n, sizeof(Enum));
             if (polset.eofl == NULL)
                 exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
         }
@@ -156,11 +156,11 @@ void FILarea(Long np, Long *pi, Float *pr, Enum set, Logical cont,
 
 /*  Allocate memory for points and edge types */
 
-    pt0 = pt = (Point *) MALLOC((2 * np + 1), sizeof(Point));
+    pt0 = pt = (Point *) calloc((2 * np + 1), sizeof(Point));
     if (set) {
-        edgeflag = (Long *) MALLOC((2 * np + 1), sizeof(Long));
+        edgeflag = (Long *) calloc((2 * np + 1), sizeof(Long));
         nomem += (edgeflag == NULL);
-        edgevis = (Enum *) MALLOC((2 * np + 1), sizeof(Enum));
+        edgevis = (Enum *) calloc((2 * np + 1), sizeof(Enum));
         nomem += (edgevis == NULL);
         if (nomem) {
             (void) sprintf(mess, "(for fill area set processing)");
@@ -328,7 +328,7 @@ void FILarea(Long np, Long *pi, Float *pr, Enum set, Logical cont,
 
 Enum FILpolycheck(Long np, Point *pt) {
     register Long i, j;
-    register Float xprod, diff;
+    register float xprod, diff;
     register Long pos = 0, neg = 0;
     register Long changes, sign;
 
@@ -435,7 +435,7 @@ static void FILmonotone ( Long np, Point *pt, Enum type,
       Point last, current, next;
    } left, right;
    Point xint;
-   Float grad, dx, dy;
+   float grad, dx, dy;
    Logical leftpt, rightpt, lastpt = FALSE;
    Long nlp = ZERO, nrp = ZERO, initcurve;
    Logical curveleft, curveright, coline, extra = FALSE;;
@@ -452,8 +452,8 @@ static void FILmonotone ( Long np, Point *pt, Enum type,
 
 /* Allocate memory for chained points list and working points list */
 
-   lp0 = (Int *) MALLOC( 2*np,sizeof( Int ) );
-   pl = (Point *) MALLOC( np+1, sizeof( Point ) );
+   lp0 = (Int *) calloc( 2*np,sizeof( Int ) );
+   pl = (Point *) calloc( np+1, sizeof( Point ) );
    if ( lp0 == NULL || pl == NULL )
    {
       (void) sprintf ( mess, "(for fill area processing)");
@@ -895,7 +895,7 @@ static void FILcomplex ( Long np, Point *pt, Long *edgeflag,
            edgecross, edgeupdate;
 
    Point xt0[4], *xt;
-   Float xl, xr, yt, xp, yp, xpn, ypn, gl, gr;
+   float xl, xr, yt, xp, yp, xpn, ypn, gl, gr;
 
    struct aet
    {
@@ -903,7 +903,7 @@ static void FILcomplex ( Long np, Point *pt, Long *edgeflag,
             left, right,      /* next left and right points */
             lt, lb,           /* left top and bottom points */
             rt, rb;           /* right top and bottom points */
-      Float dxl, dyl,         /* left differences in x and y (top - bottom) */
+      float dxl, dyl,         /* left differences in x and y (top - bottom) */
             dxr, dyr;         /* right differences in x and y   "   " */
    } *ael0, *ael, *aelx;
 
@@ -932,14 +932,14 @@ static void FILcomplex ( Long np, Point *pt, Long *edgeflag,
 
 /*  Allocate memory for points index and edge list  */
 
-   ip = (Int *) MALLOC( npts,sizeof( Int ) );
+   ip = (Int *) calloc( npts,sizeof( Int ) );
    nomem = ( ip == NULL);
    maxel = np/2 + 1;
 
-   ael0 = (struct aet *) MALLOC ( maxel, sizeof (struct aet) );
+   ael0 = (struct aet *) calloc( maxel, sizeof (struct aet) );
    nomem += ( ael0 == NULL );
 
-   edge0 = (Int *) MALLOC ( maxel, sizeof( Int ) );
+   edge0 = (Int *) calloc( maxel, sizeof( Int ) );
    nomem += ( edge0 == NULL );
 
 #ifdef DEBUG_FULL
@@ -1644,7 +1644,7 @@ static void FILcomplex ( Long np, Point *pt, Long *edgeflag,
          int edges, *edge1, *edge2;
          Long p0, *p1, *p2;
          struct aet *e1, *e2;
-         Float gl1, gl2, gr1, gr2,
+         float gl1, gl2, gr1, gr2,
                px0, *px1, *px2;
          Logical left1, right1, left2, right2;
 

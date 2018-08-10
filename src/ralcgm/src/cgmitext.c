@@ -36,7 +36,7 @@
  *  13 Aug 90 RTP  Add variable buffer routines
  *  16 Aug 90 RTP  Add error handler routine
  *   6 Sep 90 RTP  Change internal routines to static
- *   4 Oct 90 RTP  Use typedefs Int, Long and Float
+ *   4 Oct 90 RTP  Use typedefs Int, Long and float
  *   2 Nov 90 RTP  Add line no to error messages
  *                 Prevent EOF if NONOPs in Pic body
  *  11 Feb 91 RTP  Add ( void ) to ANSI prototypes
@@ -79,7 +79,7 @@ void CGMItext(void);
 static void MITexternal(Code),
         MITgettoken(char *),
         MITstring(char *),
-        MITvdc(int, Long *, Float *),
+        MITvdc(int, Long *, float *),
         MITcol(struct colour *c, Enum type);
 
 static Code MITmfdesc(Code c),
@@ -90,7 +90,7 @@ static Code MITmfdesc(Code c),
         MITdecode(char *);
 
 static Long MITcells(Long *pi, Long nx, Enum mode),
-        MITpoints(Long *pi, Float *pr, Enum set);
+        MITpoints(Long *pi, float *pr, Enum set);
 
 static Enum MITenum(char *);
 
@@ -171,7 +171,7 @@ static Code MITmfdesc(Code code)
     while (NEXTCODE(code) != BEGPIC) {
         register Long i, j, *pi = pint + 1;
         unsigned Long max, n;
-        Float f;
+        float f;
 
         c = ZERO;
         miterror = FALSE;
@@ -482,7 +482,7 @@ static Code MITpbody(Code code, Logical single) {
     while (TRUE) {
         Logical cont_list = FALSE;
         register Long i, n, j, *pi = pint + 1;
-        register Float f, *pr = preal;
+        register float f, *pr = preal;
         Long max, nx;
 
         NEXTCODE (code);
@@ -1261,7 +1261,7 @@ static Long MITint(void)
 
 /**************************************************** MITreal **********/
 
-static Double MITreal(void)
+static double MITreal(void)
 
 /*  Convert next token to Real number  */
 
@@ -1270,7 +1270,7 @@ static Double MITreal(void)
 
     MITgettoken(s);
 
-    return (Double) atof(s);
+    return (double) atof(s);
 }
 
 /**************************************************** MITenum **********/
@@ -1325,7 +1325,7 @@ static void MITcol(struct colour *col, Enum type) {
 
 /**************************************************** MITvdc ***********/
 
-static void MITvdc(Int n, Long *pi, Float *pr) {
+static void MITvdc(Int n, Long *pi, float *pr) {
     register Long i;
 
     if (cur.vdc_type == REAL) {
@@ -1359,14 +1359,14 @@ static void MITstring(char *s) {
 
 /**************************************************** MITpoints ********/
 
-static Long MITpoints(Long *pi, Float *pr, Enum set) {
+static Long MITpoints(Long *pi, float *pr, Enum set) {
     register Long i, *pmax;
-    register Float *pmaxreal;
+    register float *pmaxreal;
     register Long n = ZERO;
-    register Float x;
+    register float x;
     static Logical first = TRUE;
     static Long ix, iy;
-    static Float xx, yy;
+    static float xx, yy;
 
     if (first) {
         pmax = pimax - 4;

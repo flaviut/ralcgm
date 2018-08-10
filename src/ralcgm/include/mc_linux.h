@@ -18,8 +18,5 @@
 #define NAMELGTH  32
 #define EXTLGTH    8
 
-#define Posint64 unsigned long long
-#define MALLOCH
-
 #include <stdlib.h>
 

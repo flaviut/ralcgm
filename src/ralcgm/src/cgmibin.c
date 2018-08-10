@@ -109,10 +109,10 @@ extern FILE *cgmi;
 
 /*  Constants for real conversions */
 
-#define TWO16 (Double) (1L<<16)       /* 65536.0 */
-#define TWO32 (Double) (TWO16*TWO16)  /* 4294967296.0 */
-#define TWO23 (Double) (1L<<23)       /*  8388608 */
-#define TWO52 (Double) (TWO23*(1L<<29))
+#define TWO16 (double) (1L<<16)       /* 65536.0 */
+#define TWO32 (double) (TWO16*TWO16)  /* 4294967296.0 */
+#define TWO23 (double) (1L<<23)       /*  8388608 */
+#define TWO52 (double) (TWO23*(1L<<29))
 
 /*  Routines in this Module */
 
@@ -125,18 +125,18 @@ static Code MIBmfdesc(Code),
 static void MIBtext(Code),
         MIBexternal(Code),
         MIBstring(char *),
-        MIBvdc(Int, Long *, Float *),
+        MIBvdc(Int, Long *, float *),
         MIBclist(Long *pi, Long n, Prec prec, Enum type),
         MIBcolour(struct colour *c, Enum mode);
 
 static Code MIBopcode(void),
         MIBcichar(Code class, Code id);
 
-static Double MIBreal(Enum type, Prec bits);
+static double MIBreal(Enum type, Prec bits);
 
 static Long MIBint(Prec p, Enum type),
         MIBbits(Prec, Prec *),
-        MIBpointlist(Long *pi, Float *pr, Logical set);
+        MIBpointlist(Long *pi, float *pr, Logical set);
 
 static Code MIBnextbyte(void);
 
@@ -471,7 +471,7 @@ static Code MIBpbody(Code code, Logical single)
         static Long nx, ny;
         static Prec locprec;
 
-        Float *pr = preal;
+        float *pr = preal;
         struct colour col;
 
         c = NONOP;
@@ -1150,7 +1150,7 @@ static void MIBstring(char *s1)
 
 /******************************************************* MIBpointlist */
 
-static Long MIBpointlist(Long *pi, Float *pr, Logical set)
+static Long MIBpointlist(Long *pi, float *pr, Logical set)
 
 /* Get a list of points */
 
@@ -1158,7 +1158,7 @@ static Long MIBpointlist(Long *pi, Float *pr, Logical set)
     register Long i;
     static Logical first = TRUE;
     Long *pmax;
-    Float *pmaxreal;
+    float *pmaxreal;
 
     if (first) {
 /*  Set maximum pointer values */
@@ -1207,7 +1207,7 @@ static Long MIBpointlist(Long *pi, Float *pr, Logical set)
 
 /******************************************************* MIBvdc ******/
 
-static void MIBvdc(Int n, Long *pi, Float *pr)
+static void MIBvdc(Int n, Long *pi, float *pr)
 
 /* Get n VDC values starting at array index i */
 
@@ -1345,14 +1345,14 @@ static Code MIBcichar(Code class, Code id)
 
 /******************************************************* MIBreal *****/
 
-static Double MIBreal(Enum real_type, Prec real_prec)
+static double MIBreal(Enum real_type, Prec real_prec)
 
 /* Get a real value */
 
 {
     static Logical first = TRUE;
-    static Double ptab[2 * NPOWER + 1];
-    register Double num, *power2 = ptab + NPOWER;
+    static double ptab[2 * NPOWER + 1];
+    register double num, *power2 = ptab + NPOWER;
     register Long whole, mantissa;
     register Posint fract;
     register int byte, sign, exponent;
@@ -1385,19 +1385,19 @@ static Double MIBreal(Enum real_type, Prec real_prec)
             fract += (Posint) MIBnextbyte();
             fract <<= BYTE;
             fract += (Posint) MIBnextbyte();
-            if (sign) num = (Double) whole - (Double) fract / TWO32;
-            else num = (Double) whole + (Double) fract / TWO32;
+            if (sign) num = (double) whole - (double) fract / TWO32;
+            else num = (double) whole + (double) fract / TWO32;
         } else {
 /*  Fixed point 32-bit  */
             whole += (Long) MIBnextbyte();
             fract = (Posint) MIBnextbyte() << BYTE;
             fract += (Posint) MIBnextbyte();
-            if (sign) num = (Double) whole - (Double) fract / TWO16;
-            else num = (Double) whole + (Double) fract / TWO16;
+            if (sign) num = (double) whole - (double) fract / TWO16;
+            else num = (double) whole + (double) fract / TWO16;
         }
     } else {
         if (real_prec == 64) {
-/*  IEEE Floating point 64-bit */
+/*  IEEE floating point 64-bit */
             exponent = (byte & 0x7F) << 4;
             byte = MIBnextbyte();
             exponent += (byte & 0xF0) >> 4;
@@ -1414,17 +1414,17 @@ static Double MIBreal(Enum real_type, Prec real_prec)
             mantissa <<= BYTE;
             mantissa += (Long) MIBnextbyte();
             if (exponent) {
-                num = 1.0 + (Double) mantissa / TWO52;
+                num = 1.0 + (double) mantissa / TWO52;
                 exponent -= 1023;
             } else if (mantissa) {
-                num = (Double) mantissa / TWO52;
+                num = (double) mantissa / TWO52;
                 exponent = -1022;
             } else {
                 exponent = 0;
                 num = 0;
             }
         } else {
-/*  IEEE Floating point 32-bit */
+/*  IEEE floating point 32-bit */
             exponent = (byte & 0x7F) << 1;
             byte = MIBnextbyte();
             exponent += (byte & 0x80) >> 7;
@@ -1433,10 +1433,10 @@ static Double MIBreal(Enum real_type, Prec real_prec)
             mantissa <<= BYTE;
             mantissa += (Long) MIBnextbyte();
             if (exponent) {
-                num = 1.0 + (Double) mantissa / TWO23;
+                num = 1.0 + (double) mantissa / TWO23;
                 exponent -= 127;
             } else if (mantissa) {
-                num = (Double) mantissa / TWO23;
+                num = (double) mantissa / TWO23;
                 exponent = -126;
             } else {
                 exponent = 0;
@@ -1459,7 +1459,7 @@ static Double MIBreal(Enum real_type, Prec real_prec)
     if ( real_type == FIXED )
        DMESS "Fixed point real (%d/%d):", whole, fract);
     else
-       DMESS "Floating point real (0x%x/%d):", mantissa, exponent);
+       DMESS "floating point real (0x%x/%d):", mantissa, exponent);
     DMESS " %f\n", (sign ? -num : num));
 #endif
 

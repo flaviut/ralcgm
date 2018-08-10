@@ -40,32 +40,32 @@
 #include "cgmxxx.h"
 
 
-void CGMOxxx(Code, Long *, Float *, char *),
+void CGMOxxx(Code, Long *, float *, char *),
         XXXinit(void),
         XXXclose(void),
         XXXnewpic(char *name),
         XXXmenu(void),
         XXXattrib(Code type),
-        XXXline(Int n, Long *pi, Float *pr, Enum set),
-        XXXmarker(Int, Long *, Float *),
+        XXXline(Int n, Long *pi, float *pr, Enum set),
+        XXXmarker(Int, Long *, float *),
         XXXtext(char *),
         XXXcells(Int, Long *),
-        XXXgdp(Code type, Long *pi, Float *pr, Enum close),
+        XXXgdp(Code type, Long *pi, float *pr, Enum close),
         XXXfill(Int, Lpoint *),
         XXXedge(Int n, Lpoint *pt, Enum *edgeflag);
 
 /*  CGM Utilities    */
 
-extern void GDPcentre(Point *cen, Float *rad, Float *ang,
+extern void GDPcentre(Point *cen, float *rad, float *ang,
                       Point a, Point b, Point c),
-        GDParc(Point cen, Float rad,
-               Point a, Point b, Float *ang, Point *c, Point *d),
-        GDPcircle(Point cen, Float rad, Float ang, Point a,
-                  Float rat, Long *np, LPOINT(pt), Enum cl),
+        GDParc(Point cen, float rad,
+               Point a, Point b, float *ang, Point *c, Point *d),
+        GDPcircle(Point cen, float rad, float ang, Point a,
+                  float rat, Long *np, LPOINT(pt), Enum cl),
         GDPellipse(Point cen, Point cdp1, Point cdp2, Point a, Point b,
-                   Float rat, Long *np, LPOINT(pt), Enum cl);
+                   float rat, Long *np, LPOINT(pt), Enum cl);
 
-extern void CGMfill(Long n, Long *pi, Float *pr, LPOINT(pl), Enum set);
+extern void CGMfill(Long n, Long *pi, float *pr, LPOINT(pl), Enum set);
 
 /*   Direct colour calculation */
 
@@ -91,7 +91,7 @@ static Enum Text_method[] = {
         (Enum) 0};
 
 /**************************************************** CGMOxxx **********/
-void CGMOxxx(Code c, Long *pi, Float *pr, char *str) {
+void CGMOxxx(Code c, Long *pi, float *pr, char *str) {
     static Logical first = TRUE;
     register Long n, i, j, num;
     Code major;
@@ -604,13 +604,13 @@ void XXXclose(void)
 
 /***************************************************** XXXline *********/
 
-void XXXline(Int n, Long *pi, Float *pr, Enum set) {
+void XXXline(Int n, Long *pi, float *pr, Enum set) {
     return;
 }
 
 /***************************************************** XXXmarker *******/
 
-void XXXmarker(Int n, Long *pi, Float *pr) {
+void XXXmarker(Int n, Long *pi, float *pr) {
     return;
 }
 
@@ -656,11 +656,11 @@ void XXXcells(Int num, Long *pi) {
 
 /***************************************************** XXXgdp **********/
 
-void XXXgdp(Code type, Long *pi, Float *pr, Enum close) {
+void XXXgdp(Code type, Long *pi, float *pr, Enum close) {
     Long j, np;
     Logical fill, edge, GKSgdp, isarc, centreknown = FALSE;
     Point p1, p2, p3, p4, p5;
-    Float rad, ang, ang1, ang2, wvrat;
+    float rad, ang, ang1, ang2, wvrat;
     Point centre, cdp1, cdp2;
     Lpoint *pt = localpts;
 

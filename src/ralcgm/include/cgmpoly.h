@@ -41,7 +41,7 @@ typedef struct {
     Int *inoth;    /* Crossing at Other end of clipped section */
     Int *outoth;   /* .. at Other end of clip induced section */
     Enum *cl;       /* Clip status of crossings (See below) */
-    Float *xy;       /* Signifacant Coordinates */
+    float *xy;       /* Signifacant Coordinates */
     Int *ord;      /* Order of crossings on clip rectangle */
     Logical *clock;  /* True, if clockwise on clip induced sect' */
 } Clipcross;
@@ -92,7 +92,7 @@ typedef struct sectlist {
 
 void
 /* Get data into a polygon set structure */
-        POLget(Long, Long *, Float *, Logical, Logical, Polygonset *),
+        POLget(Long, Long *, float *, Logical, Logical, Polygonset *),
 
 /* Draw edges of a polygon set */
         POLedge(Polygonset *, Rect *, void(*)(long, Point *)),

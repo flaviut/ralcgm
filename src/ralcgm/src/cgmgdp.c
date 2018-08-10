@@ -25,7 +25,7 @@
  *  12 Sep 90 RTP  Change all Point parameters to pointers
  *  12 Nov 90 RTP  Change close flag to be PIE or CHORD
  *                 do not assume close is non-zero
- *   3 Dec 90 RTP  Change float parameters to Double
+ *   3 Dec 90 RTP  Change float parameters to double
  *  14 Dec 90 RTP  Replace 'sqrt' and 'fabs' by macros SQRT and FABS
  *  11 Feb 91 RTP  Make sure number of points != 0
  *  14 May 91 RTP  Add ANSI declarations
@@ -35,7 +35,7 @@
  *                 a RAL GKS GDP to those for a CGM primitive.
  *   8 Oct 92 KEVP Updated and improved comments.
  *  10 Feb 94 RTP  Remove macros and get from cgmout.h
- *  14 Sep 94 KEVP Make all angles Double precision instead of float
+ *  14 Sep 94 KEVP Make all angles double precision instead of float
  *                           (needed for sin and cos to work on PC Borland C)
  *  22 Sep 94 KEVP In GDPcentre, move test for full circle BEFORE the test
  *                            for collinearity. This enables full circles to drawn despite
@@ -52,7 +52,7 @@
 
 /********************************************************* GDPcentre ***/
 
-void GDPcentre(Point *cen, Double *rad, Double *ang,
+void GDPcentre(Point *cen, double *rad, double *ang,
                Point *a, Point *b, Point *c) {
     register float x, y, xab, yab, xac, yac, xbc, ybc, det;
 
@@ -106,9 +106,9 @@ void GDPcentre(Point *cen, Double *rad, Double *ang,
 
 /********************************************************* GDParc ******/
 
-void GDParc(Point *centre, Double rad,
-            Point *a, Point *b, Double *ang, Point *c, Point *d) {
-    register Double ang1, ang2;
+void GDParc(Point *centre, double rad,
+            Point *a, Point *b, double *ang, Point *c, Point *d) {
+    register double ang1, ang2;
 
 #ifdef DEBUG
     DMESS " GDParc: centre: (%f,%f) start (%f,%f) end (%f,%f)\n",
@@ -135,8 +135,8 @@ void GDParc(Point *centre, Double rad,
 
 /********************************************************* GDPcircle ***/
 
-void GDPcircle(Point *centre, Double rad, Double angle,
-               Point *a, Double rat,
+void GDPcircle(Point *centre, double rad, double angle,
+               Point *a, double rat,
                Long *np, LPOINT(pt), Enum close)
 
 /*
@@ -147,7 +147,7 @@ void GDPcircle(Point *centre, Double rad, Double angle,
 
 {
     register long j;
-    register Double theta1, dtheta, ang;
+    register double theta1, dtheta, ang;
 
 #ifdef DEBUG
     DMESS "GDPcircle: centre (%f,%f) rad %g angle %g\n",
@@ -203,7 +203,7 @@ void GDPcircle(Point *centre, Double rad, Double angle,
 /********************************************************* GDPellipse **/
 
 void GDPellipse(Point *centre, Point *cdp1, Point *cdp2,
-                Point *d1, Point *d2, Double rat,
+                Point *d1, Point *d2, double rat,
                 Long *np, LPOINT(pt), Enum close)
 
 /*
@@ -216,7 +216,7 @@ void GDPellipse(Point *centre, Point *cdp1, Point *cdp2,
 
 {
     register long j;
-    register Double theta1, theta2, dtheta, ang;
+    register double theta1, theta2, dtheta, ang;
     Point p1, p2;
     float maxcd, a, b, c, d, det;
 
@@ -377,15 +377,15 @@ End of Algorithm */
             circular = FALSE;   /* True, if circular */
     Point cdv1, cdv2;           /* CDP Vectors */
     Point stv, onv, env;        /* Vectors to GDP points */
-    Float radius;               /* CGM radius */
-    Float cdvl1, cdvl2;         /* CPD Vector Lengths */
-    Double prodmin;             /* Minimum non-zero product */
-    Double det, invdet;         /* Determinant and its inverse */
+    float radius;               /* CGM radius */
+    float cdvl1, cdvl2;         /* CPD Vector Lengths */
+    double prodmin;             /* Minimum non-zero product */
+    double det, invdet;         /* Determinant and its inverse */
     Point bux, buy;             /* Backtransformed unit vectors */
     Point bst, bon, ben;        /* Backtransformed Points */
     Point bonv;                 /* Backtransformed radius vector */
     Point bcentre;              /* Backtransformed centre */
-    Double bradius, junk;       /* Backtransformed Radius & Junk*/
+    double bradius, junk;       /* Backtransformed Radius & Junk*/
 
 #ifdef DEBUG
     DMESS " GDPcgm: GDP type %d\n",gdp);

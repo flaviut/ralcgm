@@ -71,7 +71,7 @@
 #define SAFEB(index) (index < 1 ? 0 : index > nb ? 0 : index - 1)
 #define SAFEC(index) (index < 0 ? 1 : index > nc ? 0 : index)
 #define COLRFACT(x, col) ( (Posint) (x.col * \
-           (Float)(cur.max_rgb.col-cur.min_rgb.col) + cur.min_rgb.col ) )
+           (float)(cur.max_rgb.col-cur.min_rgb.col) + cur.min_rgb.col ) )
 
 /* Internal static routine */
 static void set_shared(int, Sharedatt *);

@@ -27,16 +27,16 @@
 
 void
 /* Find centre given three points  */
-        GDPcentre(Point *cen, Double *rad, Double *ang,
+        GDPcentre(Point *cen, double *rad, double *ang,
                   Point *a, Point *b, Point *c),
 
 /* Generate points for circular arc */
-        GDParc(Point *cen, Double rad, Point *a, Point *b,
-               Double *ang, Point *c, Point *d),
+        GDParc(Point *cen, double rad, Point *a, Point *b,
+               double *ang, Point *c, Point *d),
 
 /* Generate points for elliptical arc */
-        GDPcircle(Point *cen, Double rad, Double ang, Point *a,
-                  Double rat, long *np, LPOINT(pt), Enum close),
+        GDPcircle(Point *cen, double rad, double ang, Point *a,
+                  double rat, long *np, LPOINT(pt), Enum close),
 
 /* Convert GDP specification to CGM circle or ellipse primitive */
         GDPcgm(Index gdp, Point *pt, Code *type, Enum *close),
@@ -44,6 +44,6 @@ void
 /* Gives start and end point of circular arc */
         GDPellipse(Point *cen, Point *cdp1, Point *cdp2,
                    Point *a, Point *b,
-                   Double rat, long *np, LPOINT(pt), Enum close);
+                   double rat, long *np, LPOINT(pt), Enum close);
 
 #endif /* CGMGDP_H */

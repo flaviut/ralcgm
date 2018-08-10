@@ -335,13 +335,13 @@ void FNTflist(long *inthead, long *ints, char *string, struct cgmfont *list) {
         the space for the pointers to the substrings.
     */
 
-    pms = (char *) MALLOC (1, l + 1);
+    pms = (char *) calloc(1, l + 1);
     if (pms == (char *) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "flist (name list)");
         exit(0);         /* redundant, as CGMerror will do it  */
     }
 
-    list->names = (char **) MALLOC(list->count, sizeof(ps));
+    list->names = (char **) calloc(list->count, sizeof(ps));
     if (list->names == (char **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "flist (structure)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -381,19 +381,19 @@ void FNTclist(long *inthead, long *ints, char *string, struct cgmcset *list) {
         the space for the pointers to the substrings.
     */
 
-    pms = (char *) MALLOC (1, l + 1);
+    pms = (char *) calloc(1, l + 1);
     if (pms == (char *) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "clist (name list)");
         exit(0);         /* redundant, as CGMerror will do it  */
     }
 
-    list->types = (int *) MALLOC(list->count, sizeof(int));
+    list->types = (int *) calloc(list->count, sizeof(int));
     if (list->types == (int *) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "clist (type list)");
         exit(0);         /* redundant, as CGMerror will do it  */
     }
 
-    list->names = (char **) MALLOC(list->count, sizeof(ps));
+    list->names = (char **) calloc(list->count, sizeof(ps));
     if (list->names == (char **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "clist (structure)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -1517,7 +1517,7 @@ static void proc_csets(void)
         */
 
         ncsets++;
-        csp = (struct isocharset *) MALLOC(1, sizeof(cs));
+        csp = (struct isocharset *) calloc(1, sizeof(cs));
         if (csp == (struct isocharset *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                             "ISO charset (structure)");
@@ -1525,7 +1525,7 @@ static void proc_csets(void)
         }
         *csp = cs;
 #ifdef CSETNAMES
-        csp->name = (char *) MALLOC (1, strlen(name) + 1);
+        csp->name = (char *) calloc(1, strlen(name) + 1);
         if (csp->name == (char *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "ISO charset (name)");
             exit(0);         /* redundant, as CGMerror will do it  */
@@ -1553,7 +1553,7 @@ static void proc_csets(void)
         to the isocharset structures so that they can be accessed
         quickly.  */
 
-    csets = (struct isocharset **) MALLOC(ncsets, sizeof(protocs));
+    csets = (struct isocharset **) calloc(ncsets, sizeof(protocs));
     if (csets == (struct isocharset **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "ISO charset (list)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -1604,14 +1604,14 @@ static void proc_csets(void)
         */
 
         nfsets++;
-        fsp = (struct fudgecset *) MALLOC(1, sizeof(fs));
+        fsp = (struct fudgecset *) calloc(1, sizeof(fs));
         if (fsp == (struct fudgecset *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                             "fudge charset (structure)");
             exit(0);         /* redundant, as CGMerror will do it  */
         }
         *fsp = fs;
-        fsp->name = (char *) MALLOC (1, strlen(name) + 1);
+        fsp->name = (char *) calloc(1, strlen(name) + 1);
         if (fsp->name == (char *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "fudge charset (name)");
             exit(0);         /* redundant, as CGMerror will do it  */
@@ -1634,7 +1634,7 @@ static void proc_csets(void)
         to the isocharset structures so that they can be accessed
         quickly.  */
 
-    fsets = (struct fudgecset **) MALLOC(nfsets, sizeof(protofs));
+    fsets = (struct fudgecset **) calloc(nfsets, sizeof(protofs));
     if (fsets == (struct fudgecset **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "fudge charset (list)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -1732,13 +1732,13 @@ static void proc_families(void) {
         */
 
         nfamilies++;
-        famp = (struct family *) MALLOC(1, sizeof(fam));
+        famp = (struct family *) calloc(1, sizeof(fam));
         if (famp == (struct family *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "family (structure)");
             exit(0);         /* redundant, as CGMerror will do it  */
         }
         *famp = fam;
-        famp->name = (char *) MALLOC (1, strlen(name) + 1);
+        famp->name = (char *) calloc(1, strlen(name) + 1);
         if (famp->name == (char *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "family (name)");
             exit(0);         /* redundant, as CGMerror will do it  */
@@ -1763,7 +1763,7 @@ static void proc_families(void) {
         to the family structures so that they can be accessed
         quickly.  */
 
-    families = (struct family **) MALLOC(nfamilies, sizeof(protofam));
+    families = (struct family **) calloc(nfamilies, sizeof(protofam));
     if (families == (struct family **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "family (list)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -1851,14 +1851,14 @@ static void proc_aliases(void) {
                        famp->number,famp->name);
 #endif
                 if (number == famp->number) {
-                    aliasp = (struct alias *) MALLOC(1, sizeof(alias));
+                    aliasp = (struct alias *) calloc(1, sizeof(alias));
                     if (aliasp == (struct alias *) NULL) {
                         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                                         "alias (structure)");
                         exit(0);         /* redundant, as CGMerror will do it  */
                     }
                     naliases++;
-                    aliasp->name = (char *) MALLOC (1, strlen(name) + 1);
+                    aliasp->name = (char *) calloc(1, strlen(name) + 1);
                     if (aliasp->name == (char *) NULL) {
                         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "alias (name)");
                         exit(0);         /* redundant, as CGMerror will do it  */
@@ -1892,7 +1892,7 @@ static void proc_aliases(void) {
          */
 
         if (naliases > 0) {
-            aliases = (struct alias **) MALLOC(naliases, sizeof(aliasp));
+            aliases = (struct alias **) calloc(naliases, sizeof(aliasp));
             if (aliases == (struct alias **) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "alias (list)");
                 exit(0);         /* redundant, as CGMerror will do it  */
@@ -1993,14 +1993,14 @@ static void proc_sfonts(void) {
                                 sfont.variant.propwidth,
                                 sfont.variant.structure);
 #endif
-            sfont.fontname = (char *) MALLOC(1, strlen(name) + 1);
+            sfont.fontname = (char *) calloc(1, strlen(name) + 1);
             if (sfont.fontname == (char *) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "special font (name)");
                 exit(0);         /* redundant, as CGMerror will do it  */
             }
             strcpy(sfont.fontname, name);
 
-            sfontp = (struct font *) MALLOC(1, sizeof(sfont));
+            sfontp = (struct font *) calloc(1, sizeof(sfont));
             if (sfontp == (struct font *) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                                 "special font (structure)");
@@ -2019,7 +2019,7 @@ static void proc_sfonts(void) {
          */
 
         if (nsfonts > 0) {
-            sfonts = (struct font **) MALLOC(nsfonts, sizeof(sfontp));
+            sfonts = (struct font **) calloc(nsfonts, sizeof(sfontp));
             if (sfonts == (struct font **) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "special font (list)");
                 exit(0);         /* redundant, as CGMerror will do it  */
@@ -2086,13 +2086,13 @@ static void proc_sources(void) {
         */
 
         nsources++;
-        srcp = (struct source *) MALLOC(1, sizeof(src));
+        srcp = (struct source *) calloc(1, sizeof(src));
         if (srcp == (struct source *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "source (structure)");
             exit(0);         /* redundant, as CGMerror will do it  */
         }
         *srcp = src;
-        srcp->name = (char *) MALLOC (1, strlen(name) + 1);
+        srcp->name = (char *) calloc(1, strlen(name) + 1);
         if (srcp->name == (char *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "source (name)");
             exit(0);         /* redundant, as CGMerror will do it  */
@@ -2109,7 +2109,7 @@ static void proc_sources(void) {
      |  to the source structures so that they can be accessed quickly.
      */
 
-    sources = (struct source **) MALLOC(nsources, sizeof(protosrc));
+    sources = (struct source **) calloc(nsources, sizeof(protosrc));
     if (sources == (struct source **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "source (list)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -2180,7 +2180,7 @@ static void proc_designs(void) {
             n == 3; in all cases we take a copy of the name.
         */
 
-        holdname = (char *) MALLOC (1, strlen(name) + 1);
+        holdname = (char *) calloc(1, strlen(name) + 1);
         if (holdname == (char *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "design (name)");
             exit(0);         /* redundant, as CGMerror will do it  */
@@ -2197,7 +2197,7 @@ static void proc_designs(void) {
                 break;
 
             case 3:
-                desp = (struct design *) MALLOC(1, sizeof(des));
+                desp = (struct design *) calloc(1, sizeof(des));
                 if (desp == (struct design *) NULL) {
                     (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                                     "design (structure)");
@@ -2231,7 +2231,7 @@ static void proc_designs(void) {
      |  to the design structures so that they can be accessed quickly.
      */
 
-    designs = (struct design **) MALLOC(ndesigns, sizeof(protodes));
+    designs = (struct design **) calloc(ndesigns, sizeof(protodes));
     if (designs == (struct design **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "design (list)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -2390,14 +2390,14 @@ static void proc_reqs(void) {
              */
 
             nrfonts++;
-            rfontp = (struct font *) MALLOC(1, sizeof(rfont));
+            rfontp = (struct font *) calloc(1, sizeof(rfont));
             if (rfontp == (struct font *) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                                 "requestable font (structure)");
                 exit(0);         /* redundant, as CGMerror will do it  */
             }
             *rfontp = rfont;
-            rfontp->fontname = (char *) MALLOC (1, strlen(fn) + 1);
+            rfontp->fontname = (char *) calloc(1, strlen(fn) + 1);
             if (rfontp->fontname == (char *) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                                 "requestable font (name)");
@@ -2416,7 +2416,7 @@ static void proc_reqs(void) {
      |  to all the (permanent) isofont structures.
      */
 
-    rfonts = (struct font **) MALLOC(nrfonts, sizeof(rfontp));
+    rfonts = (struct font **) calloc(nrfonts, sizeof(rfontp));
     if (rfonts == (struct font **) NULL) {
         (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "requestable font (list)");
         exit(0);         /* redundant, as CGMerror will do it  */
@@ -2511,7 +2511,7 @@ static void proc_methods(void) {
          */
 
         nmfonts[method] = 0;
-        mname[method] = (char *) MALLOC (1, strlen(methtitle) + 1);
+        mname[method] = (char *) calloc(1, strlen(methtitle) + 1);
         if (mname[method] == (char *) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL, "method (name)");
             exit(0);         /* redundant, as CGMerror will do it  */
@@ -2666,14 +2666,14 @@ static void proc_methods(void) {
              |  the (temporary) pointer list.
              */
 
-            f.fontname = (char *) MALLOC (1, strlen(fn) + 1);
+            f.fontname = (char *) calloc(1, strlen(fn) + 1);
             if (f.fontname == (char *) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                                 "available font (name)");
                 exit(0);         /* redundant, as CGMerror will do it  */
             }
             strcpy(f.fontname, fn);
-            pf = (struct isofont *) MALLOC(1, sizeof(f));
+            pf = (struct isofont *) calloc(1, sizeof(f));
             if (pf == (struct isofont *) NULL) {
                 (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                                 "available font (structure)");
@@ -2693,7 +2693,7 @@ static void proc_methods(void) {
          */
 
         mfonts[method] = pp = (struct isofont **)
-                MALLOC(nmfonts[method], sizeof(isofontp));
+                calloc(nmfonts[method], sizeof(isofontp));
         if (pp == (struct isofont **) NULL) {
             (void) CGMerror(func, ERR_NOFNTSPACE, FATAL,
                             "available font (list)");

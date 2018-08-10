@@ -157,7 +157,7 @@ Textitem *TXTaccinf(long num, char *str, struct textatt *ta,
     Logical string_error = FALSE; /* Flag to prevent repeated error messages */
 
     /* Get memory for this item's structure */
-    new = (Textitem *) MALLOC(1, sizeof(Textitem));
+    new = (Textitem *) calloc(1, sizeof(Textitem));
 
     /* Exit if insufficient memory */
     if (new == NULL)
@@ -179,7 +179,7 @@ Textitem *TXTaccinf(long num, char *str, struct textatt *ta,
     }
 
     /* Allocate memory for and store the string. */
-    new->str = (char *) MALLOC (1, (strlen(str) + 1));
+    new->str = (char *) calloc(1, (strlen(str) + 1));
 
     /* Exit if insufficient memory */
     if (new->str == NULL)
@@ -568,7 +568,7 @@ void TXTalign(Textitem *txtlist, Point txtp, double horext, double vertext)
 /* Now work out the origin of each character and in every string. */
     txtlp = txtlist;
     while (txtlp) {
-        txtlp->origin = (Point *) MALLOC (strlen(txtlp->str), sizeof(Point));
+        txtlp->origin = (Point *) calloc(strlen(txtlp->str), sizeof(Point));
         i = 0;
         for (cp = txtlp->str; *cp != '\0'; cp++) {
             switch (curatt.text_path) {
@@ -1079,7 +1079,7 @@ Textitem *TXTrestrict(Textitem *txtlist, double rwidth, double rheight, struct t
 /* Allocate enough memory to contain the array of 'res_text' structures.
 */
 
-    item = (Restxt_item *) MALLOC(items, sizeof(struct res_text));
+    item = (Restxt_item *) calloc(items, sizeof(struct res_text));
 
 /* Now initialize the structure to contains two things, a pointer to the
    substring and a flag as to whether it is already at it's minimum size.
@@ -1271,7 +1271,7 @@ Textitem *TXTcopy(Textitem *txtlist) {
     tail = NULL;
 
     while (txtlist != NULL) {
-        new = (Textitem *) MALLOC(1, sizeof(Textitem));
+        new = (Textitem *) calloc(1, sizeof(Textitem));
 
         if (new == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
@@ -1284,7 +1284,7 @@ Textitem *TXTcopy(Textitem *txtlist) {
 /* Reserve memory for, and copy, the string pointed to by
    this Textitem.
 */
-        new->str = (char *) MALLOC (1, (strlen(txtlist->str) + 1));
+        new->str = (char *) calloc(1, (strlen(txtlist->str) + 1));
         if (new->str == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
 

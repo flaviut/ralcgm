@@ -26,7 +26,7 @@
 
 void
 /* Get cell array parameters from driver argument list */
-        CELLparget(Long *, Float *, Point *, Point *, Point *,
+        CELLparget(Long *, float *, Point *, Point *, Point *,
                    Int *, Int *, Int *),
 
 /* Get cell array transformation */

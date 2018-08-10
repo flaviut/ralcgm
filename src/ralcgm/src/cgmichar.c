@@ -47,7 +47,7 @@
  *   9 Sep 90 RTP  Change parameters in FNT*list to include
  *                 number of strings
  *  19 Sep 90 RTP  Remove unused variables and clear lint problems
- *   4 Oct 90 RTP  Change typedefs to Int, Long and Float
+ *   4 Oct 90 RTP  Change typedefs to Int, Long and float
  *  30 Oct 90 RTP  Add check for RAL-GKS 1.11 CGMs
  *  15 Mar 91 RTP  Change cgmstate to Enum type
  *  14 May 91 RTP  Add ANSI declarations
@@ -91,7 +91,7 @@ void CGMIchar(void);
 
 static void MICexternal(Code),
         MICstring(char *),
-        MICvdc(Int, Long *, Float *);
+        MICvdc(Int, Long *, float *);
 
 static Code MICmfdesc(Code c),
         MICpdesc(Code c, Logical single),
@@ -105,7 +105,7 @@ static Long MICint(Code byte, Logical allowed, Logical *present),
                Enum type, Prec prec),
         MICcells(Code *c, Long *pi, Long nx, Long ny,
                  Enum mode, Prec prec),
-        MICpoints(Code *c, Long *pi, Float *pr, Logical set),
+        MICpoints(Code *c, Long *pi, float *pr, Logical set),
         MICbit(Code *byte, Code *bit, Prec prec);
 
 static double MICreal(Code byte, Prec defexp, Prec *points, Prec allowed);
@@ -295,7 +295,7 @@ static Code MICmfdesc(Code code)
                 if (abs(curichar.real.min) < sizeof(long) << 3) {
                     cur.realmin = (curichar.real.min < ZERO ?
                                    1.0 / (1L << (-curichar.real.min)) :
-                                   (Float) (1L << curichar.real.min));
+                                   (float) (1L << curichar.real.min));
                 } else cur.realmin = pow((double) 2, (double) curichar.real.min);
                 if (curichar.real.prec < sizeof(long))
                     cur.max_real = (float) (1L << curichar.real.prec) - 1;
@@ -524,7 +524,7 @@ static Code MICpbody(Code code, Logical single) {
 
     while (NEXTCODE(code)) {
         register Long n, *pi = pint + 1;
-        Float *pr = preal;
+        float *pr = preal;
 
         c = ZERO;
         micerror = FALSE;
@@ -843,7 +843,7 @@ static Code MICpbody(Code code, Logical single) {
                 if (abs(curichar.vdc.min) <= sizeof(long) << 3) {
                     cur.vdcmin = (curichar.vdc.min < ZERO ?
                                   1.0 / (1L << -curichar.vdc.min) :
-                                  (Float) (1L << curichar.vdc.min));
+                                  (float) (1L << curichar.vdc.min));
                 } else cur.vdcmin = pow((double) 2, (double) curichar.vdc.min);
                 if (curichar.vdc.prec <= sizeof(long))
                     cur.max_vdc = ((Long) 1L << curichar.vdc.prec) - 1;
@@ -1133,12 +1133,12 @@ static void MICstring(char *s1) {
 
 /****************************************************** MICpoints ******/
 
-static Long MICpoints(Code *code, Long *pi, Float *pr, Logical set) {
+static Long MICpoints(Code *code, Long *pi, float *pr, Logical set) {
     register Long n = ZERO, j;
     static Long ix, iy, *pmax;
     static Prec exp_x, exp_y;
     static Logical first = TRUE;
-    static Float *pmaxreal;
+    static float *pmaxreal;
     static double xx, yy;
     Code byte = ZERO;
 
@@ -1209,7 +1209,7 @@ static Long MICpoints(Code *code, Long *pi, Float *pr, Logical set) {
 
 /****************************************************** MICvdc *********/
 
-static void MICvdc(Int n, Long *pi, Float *pr) {
+static void MICvdc(Int n, Long *pi, float *pr) {
     register Long j;
 
     for (j = ZERO; j < n; j++) {

@@ -91,7 +91,7 @@ static Logical goes_over(Point *end1, Point *end2, Point *test);
    polygon(set) boundary over clipping rectangle boundary */
 static void
 /* Add a clip a induced vertex */
-        xing_addclin(Enum *, Float *, Rect *, Int, Point *),
+        xing_addclin(Enum *, float *, Rect *, Int, Point *),
 
 /* Count things useful for clipping a polygon set */
         xing_count(Polygonset *, Rect *, Int *, Int *),
@@ -104,7 +104,7 @@ static void
         xing_free(Clipcross *),
 
 /* Sort crossings of polygon set boundary over clipping boundary */
-        xing_sort(Int, Enum *, Float *, Int *);
+        xing_sort(Int, Enum *, float *, Int *);
 
 static Xcursor
 /* Move Xcursor to the next pair of crossing */
@@ -116,7 +116,7 @@ static Xcursor
 
 /************************************************** POLget ***********/
 
-void POLget(Long np, Long *pi, Float *pr, Logical set,
+void POLget(Long np, Long *pi, float *pr, Logical set,
             Logical cont, Polygonset *pset) {
     static Long start;               /* Starting place */
     static char *func = "POLget";    /* Function Name */
@@ -125,11 +125,11 @@ void POLget(Long np, Long *pi, Float *pr, Logical set,
     if (!cont) {  /* First set of points, allocate space */
         start = 0;
         pset->n = abs(np);
-        pset->pts = (Point *) MALLOC(pset->n, sizeof(Point));
+        pset->pts = (Point *) calloc(pset->n, sizeof(Point));
         if (pset->pts == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
         if (set) {  /* Edge-out flags needed */
-            pset->eofl = (Enum *) MALLOC(pset->n, sizeof(Enum));
+            pset->eofl = (Enum *) calloc(pset->n, sizeof(Enum));
             if (pset->eofl == NULL)
                 exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
         } else pset->eofl = NULL;
@@ -628,7 +628,7 @@ static Logical goes_over(Point *end1, Point *end2, Point *test)
 }
 
 /************************************************** xing_addclin ********/
-static void xing_addclin(Enum *cls, Float *xy, Rect *cl, Int index,
+static void xing_addclin(Enum *cls, float *xy, Rect *cl, Int index,
                          Point *freept) {
 
     switch (*(cls + index)) {
@@ -1034,7 +1034,7 @@ static Xcursor *xing_start(Int ncross, Index *in, Index *out,
 }
 
 /************************************************** xing_sort *******/
-static void xing_sort(Int ncross, Enum *cls, Float *xy, Int *ord)
+static void xing_sort(Int ncross, Enum *cls, float *xy, Int *ord)
 
 /* ALGORITHM
 
@@ -1059,7 +1059,7 @@ crossing (which is assumed sorted).
     Int *jcr, jcross;    /* Crossing at 'jcross' */
     Int *mcr, mcross;    /* Earliest unsorted crossing */
     Enum *em, *ej;      /* Clip status for 'mcross' and 'jcross' */
-    Float *rm, *rj;      /* Signicant coord for 'mcross' or 'jcross' */
+    float *rm, *rj;      /* Signicant coord for 'mcross' or 'jcross' */
 
     /* Initialise Ordering (as order of crossing indices) */
     for (icross = 0; icross < ncross; icross++) *(ord + icross) = icross;
@@ -1126,7 +1126,7 @@ Sectlist *POLclip_sl(Polygonset *pset, Rect *cl) {
     Index *indin,
             *indout;       /* Indices of current Inner and Outer ends */
     Enum *cls;           /* Current Clip Status */
-    Float *xy;           /* Current Signicant Coordinate */
+    float *xy;           /* Current Signicant Coordinate */
     Int *pol, *oth;      /* Current Polygon and Other crossing */
     Point *in, *out;     /* Current Inner and Outer ends */
     Int ntop;            /* Number of crossings at top */
@@ -1226,10 +1226,10 @@ the clipping rectange as shown below.
          boundary by a polygon boundary: deal with these */
 
         /* Allocate space for crossing edges and clip stati */
-        cross.in = (Index *) MALLOC(ncross, sizeof(Index));
-        cross.out = (Index *) MALLOC(ncross, sizeof(Index));
-        if (polyset) cross.pol = (Int *) MALLOC(ncross, sizeof(Int));
-        cross.cl = (Enum *) MALLOC(ncross, sizeof(Enum));
+        cross.in = (Index *) calloc(ncross, sizeof(Index));
+        cross.out = (Index *) calloc(ncross, sizeof(Index));
+        if (polyset) cross.pol = (Int *) calloc(ncross, sizeof(Int));
+        cross.cl = (Enum *) calloc(ncross, sizeof(Enum));
         if ((cross.in == NULL) ||
             (cross.out == NULL) ||
             (polyset && (cross.pol == NULL)) ||
@@ -1241,7 +1241,7 @@ the clipping rectange as shown below.
                   cross.in, cross.out, cross.pol, cross.cl);
 
         /* Allocate space for significant coordinates */
-        cross.xy = (Float *) MALLOC(ncross, sizeof(Float));
+        cross.xy = (float *) calloc(ncross, sizeof(float));
         if (cross.xy == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- clip coords"));
 
@@ -1315,7 +1315,7 @@ the clipping rectange as shown below.
         }   /* End of for() */
 
         /* Allocate space to ordering of crossings */
-        cross.ord = (Int *) MALLOC(ncross, sizeof(Int));
+        cross.ord = (Int *) calloc(ncross, sizeof(Int));
         if (cross.ord == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- orderings"));
 
@@ -1394,7 +1394,7 @@ the clipping rectange as shown below.
 
         /* Identify the crossings at the other ends of
       each clipped section */
-        cross.inoth = (Int *) MALLOC(ncross, sizeof(Int));
+        cross.inoth = (Int *) calloc(ncross, sizeof(Int));
         if (cross.inoth == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- other ends in"));
         /* Prepare for First polygon */
@@ -1446,8 +1446,8 @@ the clipping rectange as shown below.
 
 
         /* Identify the crossings at the other end of clip induced sections */
-        cross.outoth = (Int *) MALLOC(ncross, sizeof(Int));
-        cross.clock = (Logical *) MALLOC(ncross, sizeof(Logical));
+        cross.outoth = (Int *) calloc(ncross, sizeof(Int));
+        cross.clock = (Logical *) calloc(ncross, sizeof(Logical));
         if ((cross.outoth == NULL) || (cross.clock == NULL))
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- other ends out"));
         if (earlin) join = -1; else join = 1;
@@ -1846,13 +1846,13 @@ Sectlist *POLgrow_sl(Sectlist *ps, Int npoly, Int nsect, Int npts)
 #endif
 
     if (ps == NULL) {  /* No section list supplied - create one */
-        ps = (Sectlist *) MALLOC(1, sizeof(Sectlist));
+        ps = (Sectlist *) calloc(1, sizeof(Sectlist));
         if (ps == NULL) {
             CGMerror(func, ERR_NOMEMPSL, ERROR, "- section list");
             return NULL;
         }
         /* Create sections */
-        ps->first = (Section *) MALLOC(nsect, sizeof(Section));
+        ps->first = (Section *) calloc(nsect, sizeof(Section));
         if (ps->first == NULL) {
             CGMerror(func, ERR_NOMEMPSL, ERROR, "- sections");
             FREE(ps);
@@ -1861,7 +1861,7 @@ Sectlist *POLgrow_sl(Sectlist *ps, Int npoly, Int nsect, Int npts)
         ps->vacant = ps->first;
         ps->msect = nsect;
         /* Create polygons */
-        ps->poly = (Section **) MALLOC(npoly + 1, sizeof(Section *));
+        ps->poly = (Section **) calloc(npoly + 1, sizeof(Section *));
         if (ps->poly == NULL) {
             CGMerror(func, ERR_NOMEMPSL, ERROR, "- polygons");
             POLfree_sl(ps);
@@ -1871,7 +1871,7 @@ Sectlist *POLgrow_sl(Sectlist *ps, Int npoly, Int nsect, Int npts)
         ps->mpoly = npoly;
         /* Create new points, if requested */
         if (npts > 0) {
-            ps->newpts = (Point *) MALLOC(npts, sizeof(Point));
+            ps->newpts = (Point *) calloc(npts, sizeof(Point));
             if (ps->newpts == NULL) {
                 CGMerror(func, ERR_NOMEMPSL, ERROR, "- new points");
                 POLfree_sl(ps);
@@ -1977,8 +1977,8 @@ void POLinjoin_sl(Sectlist *ps,
     Scursor b1;      /* Initial Scursor for  polygon */
     Scursor na, nb;  /* Scursors for the Closest pair of vertices */
     Point d;         /* Difference vector */
-    Float sqdist;    /* Minimum Squared distance */
-    Float cursqdist; /* Current Squared distance */
+    float sqdist;    /* Minimum Squared distance */
+    float cursqdist; /* Current Squared distance */
     Index i, j;       /* Loop indices not used inside loop */
 
     /* Find closest pair of vertices */
@@ -2382,12 +2382,12 @@ Polygonset *POLpts_sl(Sectlist *ps, Polygonset *space) {
 
     /* Make sure there is enough space for them */
     if ((space == NULL) || (np > space->n)) {  /* Insufficent space supplied, make space here */
-        pset.pts = (Point *) MALLOC(np, sizeof(Point));
+        pset.pts = (Point *) calloc(np, sizeof(Point));
         if (pset.pts == NULL) {
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- vertices"));
         }
         if (ps->npoly > 1) {  /* More than one polygon, used edge-out flags */
-            pset.eofl = (Enum *) MALLOC(np, sizeof(Enum));
+            pset.eofl = (Enum *) calloc(np, sizeof(Enum));
             if (pset.eofl == NULL) {
                 exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, "- flags"));
             }

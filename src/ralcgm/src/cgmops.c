@@ -176,14 +176,14 @@ static void PSpoints(long n, long *ip, float *fp, Enum set,
         PSattrib(Code),
         PSfill(Enum, Enum),
         PSedge(void),
-        PScellarray(Long *, Float *, Long, Logical),
+        PScellarray(Long *, float *, Long, Logical),
         PSins_coltab(void),
         PSins_pattab(int i, int d1, int d2, int d3, int d4,
                      int d5, int d6, int d7, int d8),
-        PSellipse(Long *, Float *),
-        PSarcctr(Long *, Float *, Enum),
-        PSelarc(Long *, Float *, Enum),
-        PSpset(long, Long *, Float *, Logical),
+        PSellipse(Long *, float *),
+        PSarcctr(Long *, float *, Enum),
+        PSelarc(Long *, float *, Enum),
+        PSpset(long, Long *, float *, Logical),
         PSpattable(long, Long *, Logical),
         PStxtdraw(Textitem *, Point),
         PStext(Textitem *, Point),
@@ -195,7 +195,7 @@ static void PSpoints(long n, long *ip, float *fp, Enum set,
         PSendpsfile(),
         PSstktext(int n, Point *pt, Tmatrix mat,
                   int methodfg, int newchar),
-        PStrapfill(Long, Long *, Float *, Enum, Logical);
+        PStrapfill(Long, Long *, float *, Enum, Logical);
 
 static Enum PSarcref(PS_arcref *, double, double, double,
                      double, double, double);
@@ -205,7 +205,7 @@ static int PScoltab(long *, long);
 static char *PSalias(char *),
         *PSmfname();
 
-static Logical PSdodecomp(Long, Long *, Float *, Enum);
+static Logical PSdodecomp(Long, Long *, float *, Enum);
 
 void PSLINEfunc(Long, Point *);
 
@@ -267,7 +267,7 @@ static Int tzno;                /* Number of trapezoids per line */
 ********************************************************************/
 
 
-void CGMOps(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
+void CGMOps(FILE *stream, Code c, Long *pi, float *pr, char *str) {
     static Logical cont_list = FALSE;
     static char *func = "CGMops";
     char mess[80];
@@ -596,7 +596,7 @@ void CGMOps(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
                     PSins_coltab();
                     /* install default pattern table  */
                     PSpat_table = (PS_pattabtype *)
-                            MALLOC(5, sizeof(PS_pattabtype));
+                            calloc(5, sizeof(PS_pattabtype));
                     PSins_pattab(0, 0x3c, 0x3c, 0xc3, 0xc3, 0xc3, 0xc3, 0x3c, 0x3c);
                     PSins_pattab(1, 0xd1, 0xe3, 0xc5, 0x88, 0x5c, 0x3e, 0x1d, 0x88);
                     PSins_pattab(2, 0x3e, 0x41, 0x80, 0x80, 0xe3, 0x14, 0x08, 0x08);
@@ -1035,7 +1035,7 @@ void PSgetfd(Textitem *thisitem) {
 
             /* First time allocate space space for ftnames, later reallocate */
             if (i == 0)
-                ftnames = (char **) MALLOC (1, sizeof(char *));
+                ftnames = (char **) calloc(1, sizeof(char *));
             else
                 ftnames = (char **)
                         realloc((char *) ftnames, (size_t) (sizeof(char *) * (i + 1)));
@@ -1044,7 +1044,7 @@ void PSgetfd(Textitem *thisitem) {
                 exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
             else {
                 /* Allocate memory for one font name */
-                ftnames[i] = (char *) MALLOC (1, 80);
+                ftnames[i] = (char *) calloc(1, 80);
                 if (!ftnames[i])
                     exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
             }
@@ -1175,7 +1175,7 @@ void PSoptions(char *opts) {
 ********************************************************************/
 
 
-static void PSpoints(long n, Long *pi, Float *pr, Enum set,
+static void PSpoints(long n, Long *pi, float *pr, Enum set,
                      char *str1, char *str2) {
     register long i, k, no;
     float xmin, xmax, ymin, ymax;
@@ -1936,7 +1936,7 @@ static void PSins_pattab(int i, int d1, int d2, int d3, int d4,
     PSpat_table[i].nx = 8;
     PSpat_table[i].ny = 8;
     PSpat_table[i].prec = 10;
-    PSpat_table[i].pathead = (float *) MALLOC (8 * 8 * 3, sizeof(float));
+    PSpat_table[i].pathead = (float *) calloc(8 * 8 * 3, sizeof(float));
     pii = PSpat_table[i].pathead;
     for (k = 7; k >= 0; k--)
         for (j = 7; j >= 0; j--) {
@@ -2150,7 +2150,7 @@ static Enum PSarcref(PS_arcref *ref, double xa, double ya,
 *     None.
 *********************************************************************/
 
-static void PSarcctr(Long *pi, Float *pr, Enum closed) {
+static void PSarcctr(Long *pi, float *pr, Enum closed) {
     double xao, yao, xco, yco;
     PS_arcref arcref;
 
@@ -2234,7 +2234,7 @@ static void PSarcctr(Long *pi, Float *pr, Enum closed) {
 *     None.
 *********************************************************************/
 
-static void PSellipse(Long *pi, Float *pr) {
+static void PSellipse(Long *pi, float *pr) {
     double modua, modub, sina, cosa, sinb, cosb, refx, refy, det;
     double save1x, save1y, save2x, save2y;
 
@@ -2372,7 +2372,7 @@ static void PSellipse(Long *pi, Float *pr) {
 *     None.
 *********************************************************************/
 
-static void PSelarc(Long *pi, Float *pr, Enum closed) {
+static void PSelarc(Long *pi, float *pr, Enum closed) {
     double cdp1x, cdp1y, cdp2x, cdp2y, refx, refy;
     double stx, sty, enx, eny; /* start x,y and end x,y */
     double modua, modub, sina, cosa, sinb, cosb;
@@ -2550,7 +2550,7 @@ static void PSelarc(Long *pi, Float *pr, Enum closed) {
 *     None.
 *********************************************************************/
 
-static void PScellarray(Long *pi, Float *pr, Long num, Logical cont_list) {
+static void PScellarray(Long *pi, float *pr, Long num, Logical cont_list) {
     int nx, ny, idx, j, k;
     float xa, ya, xb, yb, xd, yd, r, g, b;
     double modua, modub, sina, cosa, sinb, cosb;
@@ -2654,7 +2654,7 @@ static void PScellarray(Long *pi, Float *pr, Long num, Logical cont_list) {
 *********************************************************************/
 
 
-static void PSpset(Long n, Long *pi, Float *pr, Logical cont) {
+static void PSpset(Long n, Long *pi, float *pr, Logical cont) {
     static Polygonset polset;  /* The polygonset */
     static Long start;         /* Starting place */
     static char *func = "PSpset";  /* Function name */
@@ -2663,10 +2663,10 @@ static void PSpset(Long n, Long *pi, Float *pr, Logical cont) {
     if (!cont) {  /* First set of points, allocate space */
         start = 0;
         polset.n = abs(n);
-        polset.pts = (Point *) MALLOC(polset.n, sizeof(Point));
+        polset.pts = (Point *) calloc(polset.n, sizeof(Point));
         if (polset.pts == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
-        polset.eofl = (Enum *) MALLOC(polset.n, sizeof(Enum));
+        polset.eofl = (Enum *) calloc(polset.n, sizeof(Enum));
         if (polset.eofl == NULL)
             exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
     } else {  /* Additional set of points, reallocate */
@@ -2772,7 +2772,7 @@ static void PSpattable(Long n, Long *pi, Logical cont) {
         PSpat_table[i].nx = nx;
         PSpat_table[i].ny = ny;
         PSpat_table[i].prec = loc_prec;
-        PSpat_table[i].pathead = (float *) MALLOC(nx * ny * 3, sizeof(float));
+        PSpat_table[i].pathead = (float *) calloc(nx * ny * 3, sizeof(float));
         if (cur.color_mode == INDEXED)
             PSpat_table[i].pathead[0] = INDPATTERN;
         patdatidx = 0;
@@ -3047,7 +3047,7 @@ static void PSstktext(int n, Point *pt, Tmatrix mat,
 
 /****************************************************** PStrapfill ****/
 
-static void PStrapfill(Long np, Long *pi, Float *pr,
+static void PStrapfill(Long np, Long *pi, float *pr,
                        Enum set, Logical cont) {
     static Polygonset polset;  /* The polygonset */
     Int tzdec_all;             /* Length of numbers in trapezoids */
@@ -3119,7 +3119,7 @@ void PSLINEfunc(Long np, Point *pt) {
 
 /****************************************************** PSdodecomp ****/
 
-static Logical PSdodecomp(Long np, Long *pi, Float *pr, Enum set) {
+static Logical PSdodecomp(Long np, Long *pi, float *pr, Enum set) {
     Point *vtx;  /* The vertices */
     Int nsx;     /* Number of self intersections */
 
@@ -3251,7 +3251,7 @@ static char *PSalias(char *longname) {
     char *shortname, *func = "PSalias";
 
     /* Allocate memory for the aliased fontname, gets freed in calling routine*/
-    shortname = (char *) MALLOC (1, (NAMELGTH + strlen(FILESEP) + EXTLGTH + 1));
+    shortname = (char *) calloc(1, (NAMELGTH + strlen(FILESEP) + EXTLGTH + 1));
     if (shortname == NULL)
         /* Exit on the spot if malloc failed */
         exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
@@ -3615,7 +3615,7 @@ static char *PSmfname(void) {
         PUTMSG "Input file contains multiple metafiles;\n");
         PUTMSG "The following files have been created for PS output...\n");
         PUTMSG "\t%s\n", cgmofile);
-        fname = (char *) MALLOC (1, sizeof(char) * (strlen(cgmofile) +
+        fname = (char *) calloc(1, sizeof(char) * (strlen(cgmofile) +
                                                     EXTLGTH + strlen(FILESEP)));
 
         if (!fname)

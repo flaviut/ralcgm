@@ -88,7 +88,7 @@ void PTSfree() {
 
 /****************************************************** PTSget *****/
 
-void PTSget(Long np, Long *pi, Float *pr, Point *pt, Enum *fl)
+void PTSget(Long np, Long *pi, float *pr, Point *pt, Enum *fl)
 
 /* COMMENTS
    This utility is ideal for POLYGON and POLYGONSET for other primitives
@@ -121,8 +121,8 @@ void PTSget(Long np, Long *pi, Float *pr, Point *pt, Enum *fl)
         } else       /* Integer VDCs */
         {
             for (curpt = pt; curpt < limit; curpt++) {
-                curpt->x = (Float) *pi++;
-                curpt->y = (Float) *pi++;
+                curpt->x = (float) *pi++;
+                curpt->y = (float) *pi++;
             }
         }
     } else {    /* Polygon Set Points List */
@@ -136,8 +136,8 @@ void PTSget(Long np, Long *pi, Float *pr, Point *pt, Enum *fl)
         } else                      /* Integer VDCs */
         {
             for (curpt = pt, curfl = fl; curpt < limit; curpt++, curfl++) {
-                curpt->x = (Float) *pi++;
-                curpt->y = (Float) *pi++;
+                curpt->x = (float) *pi++;
+                curpt->y = (float) *pi++;
                 *curfl = *pi++;
             }
         }
@@ -155,28 +155,28 @@ void PTSclipget(Enum *clipind, Rect *cliprect) {
     /* Get rectangle */
     if (cur.clip_ind == ON) {                         /* Clipping */
         if (cur.vdc_type == REAL) {
-            cliprect->left = (Float) cur.clip_rect.a.x.real;
-            cliprect->right = (Float) cur.clip_rect.b.x.real;
-            cliprect->top = (Float) cur.clip_rect.b.y.real;
-            cliprect->bot = (Float) cur.clip_rect.a.y.real;
+            cliprect->left = (float) cur.clip_rect.a.x.real;
+            cliprect->right = (float) cur.clip_rect.b.x.real;
+            cliprect->top = (float) cur.clip_rect.b.y.real;
+            cliprect->bot = (float) cur.clip_rect.a.y.real;
         } else {
-            cliprect->left = (Float) cur.clip_rect.a.x.intr;
-            cliprect->right = (Float) cur.clip_rect.b.x.intr;
-            cliprect->top = (Float) cur.clip_rect.b.y.intr;
-            cliprect->bot = (Float) cur.clip_rect.a.y.intr;
+            cliprect->left = (float) cur.clip_rect.a.x.intr;
+            cliprect->right = (float) cur.clip_rect.b.x.intr;
+            cliprect->top = (float) cur.clip_rect.b.y.intr;
+            cliprect->bot = (float) cur.clip_rect.a.y.intr;
         }
     } else  /* cur.clip_ind == OFF */
     {                     /* Not clipping, output current VDC extent */
         if (cur.vdc_type == REAL) {
-            cliprect->left = (Float) cur.vdc_extent.a.x.real;
-            cliprect->right = (Float) cur.vdc_extent.b.x.real;
-            cliprect->top = (Float) cur.vdc_extent.b.y.real;
-            cliprect->bot = (Float) cur.vdc_extent.a.y.real;
+            cliprect->left = (float) cur.vdc_extent.a.x.real;
+            cliprect->right = (float) cur.vdc_extent.b.x.real;
+            cliprect->top = (float) cur.vdc_extent.b.y.real;
+            cliprect->bot = (float) cur.vdc_extent.a.y.real;
         } else {
-            cliprect->left = (Float) cur.vdc_extent.a.x.intr;
-            cliprect->right = (Float) cur.vdc_extent.b.x.intr;
-            cliprect->top = (Float) cur.vdc_extent.b.y.intr;
-            cliprect->bot = (Float) cur.vdc_extent.a.y.intr;
+            cliprect->left = (float) cur.vdc_extent.a.x.intr;
+            cliprect->right = (float) cur.vdc_extent.b.x.intr;
+            cliprect->top = (float) cur.vdc_extent.b.y.intr;
+            cliprect->bot = (float) cur.vdc_extent.a.y.intr;
         }
     }
 
@@ -429,7 +429,7 @@ void PTSlineclip(Long np, Point *pt, Rect cl,
 
 /****************************************************** PTSlist ****/
 
-Point *PTSlist(Long np, Long *pi, Float *pr, Enum **fl)
+Point *PTSlist(Long np, Long *pi, float *pr, Enum **fl)
 
 /* NOTE much of the code here is duplicated in PTSget */
 {
@@ -446,7 +446,7 @@ Point *PTSlist(Long np, Long *pi, Float *pr, Enum **fl)
     if (np > NSTATPTS) {   /* Static store is insufficient, use dynamic */
         if (np > ndynpts) {  /* Current allocation is insufficient, free and make new */
             if (dynpts != NULL) FREE(dynpts);
-            dynpts = (Point *) MALLOC(np, sizeof(Point));
+            dynpts = (Point *) calloc(np, sizeof(Point));
             if (dynpts == NULL) {
                 exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
             }
@@ -466,7 +466,7 @@ Point *PTSlist(Long np, Long *pi, Float *pr, Enum **fl)
         if (np > NSTATPTS) {   /* Static store is insufficient, use dynamic */
             if (np > ndynfls) {  /* Current dynation is insufficient, free and make new */
                 if (dynfls != NULL) FREE(dynfls);
-                dynfls = (Enum *) MALLOC(np, sizeof(Enum));
+                dynfls = (Enum *) calloc(np, sizeof(Enum));
                 if (dynfls == NULL) {
                     exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
                 }
@@ -512,8 +512,8 @@ Point *PTSlist(Long np, Long *pi, Float *pr, Enum **fl)
         } else                      /* Integer VDCs */
         {
             for (curpt = pt1, curfl = *fl; curpt < limit; curpt++, curfl++) {
-                curpt->x = (Float) *pi++;
-                curpt->y = (Float) *pi++;
+                curpt->x = (float) *pi++;
+                curpt->y = (float) *pi++;
                 *curfl = *pi++;
             }
         }
@@ -523,7 +523,7 @@ Point *PTSlist(Long np, Long *pi, Float *pr, Enum **fl)
 
 /****************************************************** PTSmarker ****/
 
-void PTSmarker(Long nmk, Point *pt, Float nomsize, Markeratt *ma,
+void PTSmarker(Long nmk, Point *pt, float nomsize, Markeratt *ma,
                Enum clipind,
                void (*linefunc)(Long, Point *))
 
@@ -542,7 +542,7 @@ void PTSmarker(Long nmk, Point *pt, Float nomsize, Markeratt *ma,
 {
     Long i;
     Int j, k;    /* For loop variables. Not used inside loop */
-    Double msize;       /* Actual markersize (halved) */
+    double msize;       /* Actual markersize (halved) */
     Point *mkcen;       /* Current Marker Position */
     Point tpt;
     Int nmkl, nlp;      /* Number Markerlines and Points in Markerline */
@@ -557,9 +557,9 @@ void PTSmarker(Long nmk, Point *pt, Float nomsize, Markeratt *ma,
 
     /* Find the actual marker size (halved) in VDC units */
     if (ma->sizemode == ABSOLUTE) {  /* Marker size absolute ( VDC units ) */
-        msize = (Double) (0.5 * ma->size);
+        msize = (double) (0.5 * ma->size);
     } else {  /* Marker size scaled ( units of nominal size ) */
-        msize = (Double) (0.5 * nomsize * ma->size);
+        msize = (double) (0.5 * nomsize * ma->size);
     }
 
     /* Initialise Marker Definition Array */
@@ -737,9 +737,9 @@ void PTSvdcextget(Rect *vdcxt) {
         vdcxt->bot = cur.vdc_extent.a.y.real;
         vdcxt->top = cur.vdc_extent.b.y.real;
     } else {
-        vdcxt->left = (Float) cur.vdc_extent.a.x.intr;
-        vdcxt->right = (Float) cur.vdc_extent.b.x.intr;
-        vdcxt->bot = (Float) cur.vdc_extent.a.y.intr;
-        vdcxt->top = (Float) cur.vdc_extent.b.y.intr;
+        vdcxt->left = (float) cur.vdc_extent.a.x.intr;
+        vdcxt->right = (float) cur.vdc_extent.b.x.intr;
+        vdcxt->bot = (float) cur.vdc_extent.a.y.intr;
+        vdcxt->top = (float) cur.vdc_extent.b.y.intr;
     }
 }

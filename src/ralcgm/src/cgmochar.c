@@ -38,7 +38,7 @@
  *   6 Sep 90 RTP  Change internal routines to static
  *  19 Sep 90 RTP  Remove unused variables and clear lint problems
  *                 Add message at BEGPIC if cgmverbose set
- *   4 Oct 90 RTP  Change types to Int, Long, Float etc
+ *   4 Oct 90 RTP  Change types to Int, Long, float etc
  *  14 Dec 90 RTP  Replace 'sqrt' and 'fabs' by macros SQRT and FABS
  *  21 Jan 90 RTP  Correct problem with Runlength Bitstream colour list
  *  22 Jan 90 RTP  Change algorithm for determining optimum colour list
@@ -67,18 +67,18 @@ static FILE *cgmoc;
 
 /*  declare void internal functions  */
 
-void CGMOchar(FILE *, Code, Long *, Float *, char *);
+void CGMOchar(FILE *, Code, Long *, float *, char *);
 
 static void MOCchkatt(Code type),
         MOCcint(Code, Int, Long *, Long *),
         MOCcenum(Code, Int, Enum *, Enum *),
-        MOCcreal(Code c, Float *v1, Float *v2, Enum prec),
+        MOCcreal(Code c, float *v1, float *v2, Enum prec),
         MOCccol(Code, Int, struct colour *, struct colour *),
         MOCrectc(Code, struct rect *, struct rect *),
-        MOCvdc(Int, Long *, Float *),
-        MOCpoints(Long n, Long *pi, Float *pr, Enum set),
+        MOCvdc(Int, Long *, float *),
+        MOCpoints(Long n, Long *pi, float *pr, Enum set),
         MOCattrib(Code),
-        MOCreal(Double x, Enum type, Prec *prec),
+        MOCreal(double x, Enum type, Prec *prec),
         MOCinteger(Long intval, Logical present, Logical allowed),
         MOCcells(Long n, Long *pi, Enum mode, Prec prec),
         MOCstring(char *),
@@ -107,12 +107,12 @@ static char *func = "CGMochar", mess[40];
 #define NEWATTRIB(x)  ( oldatt.x = curatt.x )
 #define ATTDIFF(x)    ( oldatt.x != curatt.x )
 #define PUTINT(x)     ( MOCinteger( (Long) x, FALSE, FALSE) )
-#define PUTREAL(x)  ( MOCreal( (Double)(x), REAL, (Prec *) NULL) )
-#define PUTVDC(x)   ( MOCreal( (Double)(x), VDC, (Prec *) NULL) )
+#define PUTREAL(x)  ( MOCreal( (double)(x), REAL, (Prec *) NULL) )
+#define PUTVDC(x)   ( MOCreal( (double)(x), VDC, (Prec *) NULL) )
 
 /***************************************************** CGMOchar ********/
 
-void CGMOchar(FILE *stream, Code c, Long *pi, Float *pr, char *pc) {
+void CGMOchar(FILE *stream, Code c, Long *pi, float *pr, char *pc) {
     static Logical first = TRUE, first_pic = TRUE;
     static Prec loc_prec;
     static Long pic_num = ZERO;
@@ -1474,10 +1474,10 @@ static void MOCcenum(Code code, int n, Enum *var1, Enum *var2) {
 
 /****************************************************** MOCcreal *******/
 
-static void MOCcreal(Code code, Float *var1, Float *var2, Enum r) {
+static void MOCcreal(Code code, float *var1, float *var2, Enum r) {
     if (FABS(*var1 - *var2) > (r == REAL ? cur.realmin : cur.vdcmin)) {
         MOCout(code);
-        MOCreal((Double) *var2, r, null);
+        MOCreal((double) *var2, r, null);
         *var1 = *var2;
     }
 }
@@ -1546,7 +1546,7 @@ static void MOCccol(Code code, int n, struct colour *var1,
 
 /****************************************************** MOCvdc *********/
 
-static void MOCvdc(int n, Long *pi, Float *pr) {
+static void MOCvdc(int n, Long *pi, float *pr) {
     register Long j;
 
     if (cur.vdc_type == REAL)
@@ -1559,11 +1559,11 @@ static void MOCvdc(int n, Long *pi, Float *pr) {
 
 /****************************************************** MOCpoints ******/
 
-static void MOCpoints(Long n, Long *pi, Float *pr, Enum set) {
+static void MOCpoints(Long n, Long *pi, float *pr, Enum set) {
     static Logical first = TRUE;
     static Long ix, iy;
     static Long exp_x, exp_y;
-    static Float xx, yy;
+    static float xx, yy;
     register Long i;
 
     if (first) {
@@ -1580,9 +1580,9 @@ static void MOCpoints(Long n, Long *pi, Float *pr, Enum set) {
     if (cur.vdc_type == REAL) {
         for (i = 0; i < n; i++) {
             xx += *pr -= xx;
-            MOCreal((Double) *pr++, VDC, &exp_x);
+            MOCreal((double) *pr++, VDC, &exp_x);
             yy += *pr -= yy;
-            MOCreal((Double) *pr++, VDC, &exp_y);
+            MOCreal((double) *pr++, VDC, &exp_y);
             if (set) PUTINT (*pi++);
         }
     } else {
@@ -1598,29 +1598,29 @@ static void MOCpoints(Long n, Long *pi, Float *pr, Enum set) {
 
 /****************************************************** MOCreal ********/
 
-static void MOCreal(Double x, Enum type, Prec *ptlist) {
+static void MOCreal(double x, Enum type, Prec *ptlist) {
     register Long def_exp, mantissa, expnt;
-    register Double y, realmin, prec;
+    register double y, realmin, prec;
     register Logical present = ZERO, expald;
 
     if (type == REAL) {
         def_exp = curchar.real.defexp;
-        realmin = (Double) cur.realmin;
-        prec = (Double) ((1L << curchar.real.prec) - 1);
-        prec = (Double) (curchar.real.prec > 0 ? (1L << curchar.real.prec) - 1
+        realmin = (double) cur.realmin;
+        prec = (double) ((1L << curchar.real.prec) - 1);
+        prec = (double) (curchar.real.prec > 0 ? (1L << curchar.real.prec) - 1
                                                : 1.0 / ((1L << -curchar.real.prec) - 1));
         expald = (curchar.real.expald == ALLOWED);
     } else {
         def_exp = curchar.vdc.defexp;
-        realmin = (Double) cur.vdcmin;
-        prec = (Double) (curchar.vdc.prec > 0 ? (1L << curchar.vdc.prec) - 1
+        realmin = (double) cur.vdcmin;
+        prec = (double) (curchar.vdc.prec > 0 ? (1L << curchar.vdc.prec) - 1
                                               : 1.0 / ((1L << -curchar.vdc.prec) - 1));
         expald = (curchar.vdc.expald == ALLOWED);
     }
 
     if (ptlist != NULL) def_exp = *ptlist;
 
-    y = (Double) (x > 0 ? x : -x);
+    y = (double) (x > 0 ? x : -x);
     expnt = ZERO;
 
     if (y < realmin) {
@@ -1629,11 +1629,11 @@ static void MOCreal(Double x, Enum type, Prec *ptlist) {
         if (expald) /* if Exponent allowed */
         {
             while (y >= prec) {
-                y /= (Double) 2.0;
+                y /= (double) 2.0;
                 expnt++;
             }
             while (y < prec) {
-                y *= (Double) 2.0;
+                y *= (double) 2.0;
                 expnt--;
             }
             mantissa = y;
@@ -1647,11 +1647,11 @@ static void MOCreal(Double x, Enum type, Prec *ptlist) {
             present = (expnt != def_exp);
         } else {
             while (expnt < def_exp) {
-                y /= (Double) 2.0;
+                y /= (double) 2.0;
                 expnt++;
             }
             while (expnt > def_exp) {
-                y *= (Double) 2.0;
+                y *= (double) 2.0;
                 expnt--;
             }
             mantissa = y;

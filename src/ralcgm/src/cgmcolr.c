@@ -64,7 +64,7 @@ void COLRput(Long nc, Long *pi) {
         } else {
             newlen = INITLEN;
         }
-        colour_table = (Colrtab *) MALLOC(newlen, sizeof(Colrtab));
+        colour_table = (Colrtab *) calloc(newlen, sizeof(Colrtab));
         ncol_fixed = 0L;
         ncol_defined = 0L;
         ncol_max = newlen;

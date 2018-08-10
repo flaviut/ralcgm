@@ -23,7 +23,7 @@
 #define CGMFILL_H
 
 /* Main Fill Area routine  */
-void FILarea(Long, Long *, Float *, Enum, Logical,
+void FILarea(Long, Long *, float *, Enum, Logical,
              void (*)(Long, Point *),
              void (*)(Long, Point *, Enum *));
 
