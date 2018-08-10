@@ -13,10 +13,7 @@ add_executable(ralcgm
         src/cgmerr.c
         )
 
-target_include_directories(ralcgm PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        )
+target_include_directories(ralcgm PRIVATE include)
 target_link_libraries(ralcgm m)
 
 install(TARGETS ralcgm DESTINATION bin)
