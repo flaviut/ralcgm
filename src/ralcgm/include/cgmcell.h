@@ -26,16 +26,16 @@
 
 void
 /* Get cell array parameters from driver argument list */
-      CELLparget( Long *, Float *, Point *, Point *, Point *,
-                  Int *, Int *, Int * ),
+        CELLparget(Long *, Float *, Point *, Point *, Point *,
+                   Int *, Int *, Int *),
 
 /* Get cell array transformation */
-      CELLtran ( Point, Point , Point , Int , Int , Tmatrix ),
+        CELLtran(Point, Point, Point, Int, Int, Tmatrix),
 
 /* Draw cell array using the device fill function */
-      CELLfill ( Long, Long *, Tmatrix, Int , Int , Int *,
+        CELLfill(Long, Long *, Tmatrix, Int, Int, Int *,
                  void (*)(Index, RGBcolour, Code),      /* Set colour */
-                 void (*)(Int, Point*, Tmatrix, Int) ); /* linedraw */
+                 void (*)(Int, Point *, Tmatrix, Int)); /* linedraw */
 
 
 #endif /* CGMCELL_H */

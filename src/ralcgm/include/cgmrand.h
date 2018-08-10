@@ -24,8 +24,9 @@
 
 /*  CGM Utilities in File  */
 
-   Code CGMframe( Code );
-   void CGMstframe( void );
+Code CGMframe(Code);
+
+void CGMstframe(void);
 
 
 #endif /* CGMRAND_H */

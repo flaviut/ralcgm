@@ -48,7 +48,7 @@ static Long cgmmaxpts = MAXPTS;
 
 /* Macros for common Maths functions  */
 
-#define CLIPCODE(x,xmin,xmax) (((x>xmax)<<1)|(x<xmin))
+#define CLIPCODE(x, xmin, xmax) (((x>xmax)<<1)|(x<xmin))
 /* Values of Clipcode */
 #define CLIPNO    (Enum) 0
 #define CLIPMIN   (Enum) 1
@@ -63,9 +63,9 @@ static Long cgmmaxpts = MAXPTS;
 #define CLIPDRAW  (Enum) 1
 #define NODRAW    (Enum) 2
 /* Clip function */
-#define ECLIP(y1,y2,x1,x2,xm) y1+(xm-x1)*(y2-y1)/(x2-x1)
+#define ECLIP(y1, y2, x1, x2, xm) y1+(xm-x1)*(y2-y1)/(x2-x1)
 /* Clockwise function for 3 points */
-#define CLOCK(a,b,c) ( ((b)->x - (a)->x)*((c)->y - (a)->y)\
+#define CLOCK(a, b, c) ( ((b)->x - (a)->x)*((c)->y - (a)->y)\
                      > ((c)->x - (a)->x)*((b)->y - (a)->y) )
 
 /* Parameters for Marker utilities */
@@ -74,190 +74,174 @@ static Long cgmmaxpts = MAXPTS;
 #define MLMAX 9
 
 /* statics for CGM Colour table */
-static Long      num_colours = 0L;    /* length of colour table */
+static Long num_colours = 0L;    /* length of colour table */
 static RGBcolour *colour_table;       /* colour table */
-static Logical   *colour_defd;        /* colour defined flags */
+static Logical *colour_defd;        /* colour defined flags */
 
 /****************************************************** GRAcross *******/
 
-Logical GRAcross ( Point *a, Point *b, Point *c, Point *d,
-                   Logical *coline, Point *pt )
-
-{
-   register double det, grad;
-   double x1, x2, x3, x4;
+Logical GRAcross(Point *a, Point *b, Point *c, Point *d,
+                 Logical *coline, Point *pt) {
+    register double det, grad;
+    double x1, x2, x3, x4;
 
 #ifdef DEBUG1
-   DMESS "GRAcross: (%.4f,%.4f) (%.4f,%.4f) (%.4f,%.4f) (%.4f,%.4f)\n",
-                       a->x, a->y, b->x, b->y, c->x, c->y, d->x, d->y);
+    DMESS "GRAcross: (%.4f,%.4f) (%.4f,%.4f) (%.4f,%.4f) (%.4f,%.4f)\n",
+                        a->x, a->y, b->x, b->y, c->x, c->y, d->x, d->y);
 #endif
 
 /* First check if opposite cross products have same signs */
 
-   x1 = XPROD ( a, c, a, d);
-   x2 = XPROD ( b, c, b, d);
-   if ( (x1 < 0.0 && x2 < 0.0) || (x1 > 0.0 && x2 > 0.0) ) return FALSE;
-   x3 = XPROD ( c, a, c, b);
-   x4 = XPROD ( d, a, d, b);
-   if ( (x3 < 0.0 && x4 < 0.0) || (x3 > 0.0 && x4 > 0.0) ) return FALSE;
+    x1 = XPROD (a, c, a, d);
+    x2 = XPROD (b, c, b, d);
+    if ((x1 < 0.0 && x2 < 0.0) || (x1 > 0.0 && x2 > 0.0)) return FALSE;
+    x3 = XPROD (c, a, c, b);
+    x4 = XPROD (d, a, d, b);
+    if ((x3 < 0.0 && x4 < 0.0) || (x3 > 0.0 && x4 > 0.0)) return FALSE;
 
 /*  intersect - find intersection point */
 
-   det = XPROD ( c, d, a, b );
+    det = XPROD (c, d, a, b);
 
-   if ( FABS(det) < 0.5*cur.vdcmin*cur.vdcmin ) /* lines are colinear */
-   {
+    if (FABS(det) < 0.5 * cur.vdcmin * cur.vdcmin) /* lines are colinear */
+    {
 /*  check if they are distinct */
 
-      if ( (a->x < c->x && a->x < d->x && b->x < c->x && b->x < d->x ) ||
-           (a->x > c->x && a->x > d->x && b->x > c->x && b->x > d->x ) ||
-           (a->y < c->y && a->y < d->y && b->y < c->y && b->y < d->y ) ||
-           (a->y > c->y && a->y > d->y && b->y > c->y && b->y > d->y ) )
-                 return FALSE;
+        if ((a->x < c->x && a->x < d->x && b->x < c->x && b->x < d->x) ||
+            (a->x > c->x && a->x > d->x && b->x > c->x && b->x > d->x) ||
+            (a->y < c->y && a->y < d->y && b->y < c->y && b->y < d->y) ||
+            (a->y > c->y && a->y > d->y && b->y > c->y && b->y > d->y))
+            return FALSE;
 
 /*  Check if end points are the same  */
 
-      if ( PEQUAL ( a, c ) || PEQUAL ( a, d ) )
-      {
-         *pt = *a;
-         return TRUE;
-      }
+        if (PEQUAL (a, c) || PEQUAL (a, d)) {
+            *pt = *a;
+            return TRUE;
+        }
 
-      if ( PEQUAL ( b, c ) || PEQUAL ( b, d ) )
-      {
-         *pt = *b;
-         return TRUE;
-      }
-      pt->x = a->x + b->x + c->x + d->x / 4.0;
-      pt->y = a->y + b->y + c->y + d->y / 4.0;
+        if (PEQUAL (b, c) || PEQUAL (b, d)) {
+            *pt = *b;
+            return TRUE;
+        }
+        pt->x = a->x + b->x + c->x + d->x / 4.0;
+        pt->y = a->y + b->y + c->y + d->y / 4.0;
 #ifdef DEBUG
-      DMESS " Lines are colinear and overlapping ");
+        DMESS " Lines are colinear and overlapping ");
 #endif
-      *coline = TRUE;
-      return TRUE;
-   }
-   *coline = FALSE;
+        *coline = TRUE;
+        return TRUE;
+    }
+    *coline = FALSE;
 
-   grad = XPROD ( a, b, a, c ) / det;
-   pt->x = c->x + (d->x - c->x) * grad;
-   pt->y = c->y + (d->y - c->y) * grad;
+    grad = XPROD (a, b, a, c) / det;
+    pt->x = c->x + (d->x - c->x) * grad;
+    pt->y = c->y + (d->y - c->y) * grad;
 
-   return TRUE;
+    return TRUE;
 }
 
 /****************************************************** GRAinsect ******/
 
-Logical GRAinsect ( Long np, Long *nip, Point *pt, Enum *edgeflag )
-
-{
-   Long register i, j, m, n, npts = np;
-   Logical coline, set;
-   Point pi;
+Logical GRAinsect(Long np, Long *nip, Point *pt, Enum *edgeflag) {
+    Long register i, j, m, n, npts = np;
+    Logical coline, set;
+    Point pi;
 
 #ifdef DEBUG2
-   DMESS "GRAinsect: %d points\n", np );
+    DMESS "GRAinsect: %d points\n", np );
 #endif
 
-   set = ( edgeflag != NULL);
+    set = (edgeflag != NULL);
 
-   for ( *nip = i = 0; i < np - 1; i++ )
-   {
-      for ( j = m = i+1; j < np; j++ )
-      {
-         n = j + 1;
+    for (*nip = i = 0; i < np - 1; i++) {
+        for (j = m = i + 1; j < np; j++) {
+            n = j + 1;
 
-         if ( set )
-         {
-            if ( edgeflag[i] > 0 ) m = edgeflag[i] - 1;
-            if ( edgeflag[j] > 0 ) n = edgeflag[j] - 1;
-         }
-         else if ( n == np ) n = 0;
+            if (set) {
+                if (edgeflag[i] > 0) m = edgeflag[i] - 1;
+                if (edgeflag[j] > 0) n = edgeflag[j] - 1;
+            } else if (n == np) n = 0;
 
 /* Ignore if any end points coincide */
 
-         if ( i == j || i == n || m == j || m == n ) continue;
+            if (i == j || i == n || m == j || m == n) continue;
 
 /* Ignore if line intersects at either end  */
 
-         if ( PEQUAL(&pt[i], &pt[j]) || PEQUAL(&pt[i], &pt[n]) ||
-              PEQUAL(&pt[m], &pt[j]) || PEQUAL(&pt[m], &pt[n]) ) continue;
+            if (PEQUAL(&pt[i], &pt[j]) || PEQUAL(&pt[i], &pt[n]) ||
+                PEQUAL(&pt[m], &pt[j]) || PEQUAL(&pt[m], &pt[n]))
+                continue;
 
-         if ( GRAcross( &pt[i], &pt[m], &pt[j], &pt[n], &coline, &pi ) &&
-              ! coline )
-         {
-            npts++; (*nip)++;
-            if ( npts >= cgmmaxpts )
-            {
-               (void) CGMerror ( "GRAinsect", ERR_BIGINTS, ERROR, NULLSTR);
-               *nip = 0;
-               return TRUE;
-            }
-            pt[npts] = pi;
+            if (GRAcross(&pt[i], &pt[m], &pt[j], &pt[n], &coline, &pi) &&
+                !coline) {
+                npts++;
+                (*nip)++;
+                if (npts >= cgmmaxpts) {
+                    (void) CGMerror("GRAinsect", ERR_BIGINTS, ERROR, NULLSTR);
+                    *nip = 0;
+                    return TRUE;
+                }
+                pt[npts] = pi;
 #ifdef DEBUG1
-   DMESS "   Points %d/%d & %d/%d Intersect", i, m, j, n );
-   DMESS "   Add Point: %d (%f,%f)\n", npts, pi.x, pi.y );
+                DMESS "   Points %d/%d & %d/%d Intersect", i, m, j, n );
+                DMESS "   Add Point: %d (%f,%f)\n", npts, pi.x, pi.y );
 #endif
-         }
-      }
+            }
+        }
 
 /*  prevent finding intersection of first and second line */
 
 /*
       if ( ! i ) k++;
 */
-   }
+    }
 
-   return ( npts > np );
+    return (npts > np);
 }
 
 /****************************************************** GRAsort ********/
 
-void GRAsort ( Long np, Point *pt, Int *po )
-{
-   register Long i, k, t, incr;
-   register Int *px = po;
+void GRAsort(Long np, Point *pt, Int *po) {
+    register Long i, k, t, incr;
+    register Int *px = po;
 
 #ifdef DEBUG
-   Long exch = 0, comp = 0;
+    Long exch = 0, comp = 0;
 
-   DMESS "GRAsort: %d points", np);
+    DMESS "GRAsort: %d points", np);
 #endif
 
 /*  Preload index with current points  */
 
-   for ( i = 0; i < np; ) *px++ = i++;
+    for (i = 0; i < np;) *px++ = i++;
 
-   for ( incr = np>>1; incr > 0; incr >>= 1 )
-   {
-      for ( i = incr; i < np; i++ )
-      {
-         px = po + i - incr;
-         while ( px >= po )
-         {
-            t = *px;
-            k = *(px + incr);
+    for (incr = np >> 1; incr > 0; incr >>= 1) {
+        for (i = incr; i < np; i++) {
+            px = po + i - incr;
+            while (px >= po) {
+                t = *px;
+                k = *(px + incr);
 #ifdef DEBUG
-            comp++;
+                comp++;
 #endif
 
 /*  Sort condition y descending and x ascending  */
 
-            if ( ( pt[t].y < pt[k].y ) ||
-                   ( VEQUAL(pt[t].y, pt[k].y) && pt[t].x > pt[k].x ) )
-            {
+                if ((pt[t].y < pt[k].y) ||
+                    (VEQUAL(pt[t].y, pt[k].y) && pt[t].x > pt[k].x)) {
 #ifdef DEBUG
-               exch++;
+                    exch++;
 #endif
-               *px = k;
-               *(px+incr) = t;
-               px -= incr;
+                    *px = k;
+                    *(px + incr) = t;
+                    px -= incr;
+                } else break;
             }
-            else break;
-         }
-      }
-   }
+        }
+    }
 #ifdef DEBUG
-   DMESS "  %d comparisons  %d exchanges\n", comp, exch);
+    DMESS "  %d comparisons  %d exchanges\n", comp, exch);
 #endif
-   return;
+    return;
 }

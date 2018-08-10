@@ -22,12 +22,12 @@
 #ifndef CGMUFONT_H
 #define CGMUFONT_H
 
-     /*  Include the file that is needed before this one.  */
+/*  Include the file that is needed before this one.  */
 
 #include "cgmtext.h"
 #include "cgmfont.h"
 
-     /*  Declarations for where things are held.  */
+/*  Declarations for where things are held.  */
 
 #define ONDISK FALSE
 #define INMEMORY TRUE
@@ -41,192 +41,173 @@
 
 #define SRCNAMES
 
-     /*  Declare the possible values for the posture value  */
+/*  Declare the possible values for the posture value  */
 
-enum f_postures
-   {
-     P_NA,                            /* not applicable  */
-     P_UPRIGHT,
-     P_OBLIQUE,
-     P_BSOBLIQUE,
-     P_ITALIC,
-     P_BSITALIC,
-     P_OTHER
-   };
+enum f_postures {
+    P_NA,                            /* not applicable  */
+    P_UPRIGHT,
+    P_OBLIQUE,
+    P_BSOBLIQUE,
+    P_ITALIC,
+    P_BSITALIC,
+    P_OTHER
+};
 
-     /*  Declare the possible values for the weight value  */
+/*  Declare the possible values for the weight value  */
 
-enum f_weights
-   {
-     W_NA,
-     W_ULTRALIGHT,
-     W_EXTRALIGHT,
-     W_LIGHT,
-     W_SEMILIGHT,
-     W_MEDIUM,
-     W_SEMIBOLD,
-     W_BOLD,
-     W_EXTRABOLD,
-     W_ULTRABOLD
-   };
+enum f_weights {
+    W_NA,
+    W_ULTRALIGHT,
+    W_EXTRALIGHT,
+    W_LIGHT,
+    W_SEMILIGHT,
+    W_MEDIUM,
+    W_SEMIBOLD,
+    W_BOLD,
+    W_EXTRABOLD,
+    W_ULTRABOLD
+};
 
-     /*  Declare the possible values for the propwidth value  */
+/*  Declare the possible values for the propwidth value  */
 
-enum f_propwidths
-   {
-     X_NA,
-     X_ULTRACONDENSED,
-     X_EXTRACONDENSED,
-     X_CONDENSED,
-     X_SEMICONDENSED,
-     X_MEDIUM,
-     X_SEMIEXPANDED,
-     X_EXPANDED,
-     X_EXTRAEXPANDED,
-     X_ULTRAEXPANDED
-   };
+enum f_propwidths {
+    X_NA,
+    X_ULTRACONDENSED,
+    X_EXTRACONDENSED,
+    X_CONDENSED,
+    X_SEMICONDENSED,
+    X_MEDIUM,
+    X_SEMIEXPANDED,
+    X_EXPANDED,
+    X_EXTRAEXPANDED,
+    X_ULTRAEXPANDED
+};
 
-     /*  Declare the possible values for the structure value  */
+/*  Declare the possible values for the structure value  */
 
-enum f_structures
-   {
-     S_NA,
-     S_SOLID,
-     S_OUTLINE
-   };
+enum f_structures {
+    S_NA,
+    S_SOLID,
+    S_OUTLINE
+};
 
-     /*  Data held about each ISO character set, as read from the
-         "isosets.d" data file.
-     */
+/*  Data held about each ISO character set, as read from the
+    "isosets.d" data file.
+*/
 
-struct isocharset
-{
-     int registration,            /*  ISO registration number  */
-         sublow, subhigh,         /*  lower and upper limits of subcode  */
-         setsize;                 /*  size of character set (94 or 96) */
-     char escseq[6];              /*  escape sequence, eg "4/2"  */
-     int fudge;                   /*  gross character set classification  */
+struct isocharset {
+    int registration,            /*  ISO registration number  */
+            sublow, subhigh,         /*  lower and upper limits of subcode  */
+            setsize;                 /*  size of character set (94 or 96) */
+    char escseq[6];              /*  escape sequence, eg "4/2"  */
+    int fudge;                   /*  gross character set classification  */
 #ifdef CSETNAMES
-     char *name;                  /*  optional name  */
+    char *name;                  /*  optional name  */
 #endif
-   };
+};
 
-struct fudgecset
-   {
-     int number;
-     char *name;
-   };
+struct fudgecset {
+    int number;
+    char *name;
+};
 
-     /*  Data structures that finally build up into an ISO font definition */
+/*  Data structures that finally build up into an ISO font definition */
 
-     /*  First the ISO standard format for a date.  */
+/*  First the ISO standard format for a date.  */
 
-struct iso8824
-   {
-     int year, month, day;
-   };
+struct iso8824 {
+    int year, month, day;
+};
 
-     /*  Now the data version  */
+/*  Now the data version  */
 
-struct isodataversion
-   {
-     int major, minor;
-     struct iso8824 timestamp;
-   };
+struct isodataversion {
+    int major, minor;
+    struct iso8824 timestamp;
+};
 
-     /*  Now the font design group values  */
+/*  Now the font design group values  */
 
-struct isodsngroup
-   {
-     int class, subclass, group;
-   };
+struct isodsngroup {
+    int class, subclass, group;
+};
 
-     /*  Now the variants attributes that group together  */
+/*  Now the variants attributes that group together  */
 
-struct isovariant
-   {
-     enum f_postures posture;
-     enum f_weights weight;
-     enum f_propwidths propwidth;
-     enum f_structures structure;
-   };
+struct isovariant {
+    enum f_postures posture;
+    enum f_weights weight;
+    enum f_propwidths propwidth;
+    enum f_structures structure;
+};
 
-     /*  Now the full font description  */
+/*  Now the full font description  */
 
-struct isofont
-   {
-     char *fontname;
-     Index fontid;
-     struct isodataversion dataversion;
-     int standardversion;
-     struct source *dsnsource;
-     char *fontfamily;
-     int familyid;
-     struct isovariant variant;
-     struct isodsngroup dsngroup;
-     int glyphcount, *glyphs;
-     Index cset;
-     long dsnsize, minsize, maxsize;
-   };
+struct isofont {
+    char *fontname;
+    Index fontid;
+    struct isodataversion dataversion;
+    int standardversion;
+    struct source *dsnsource;
+    char *fontfamily;
+    int familyid;
+    struct isovariant variant;
+    struct isodsngroup dsngroup;
+    int glyphcount, *glyphs;
+    Index cset;
+    long dsnsize, minsize, maxsize;
+};
 
-     /*  Description of a font family  */
+/*  Description of a font family  */
 
-struct family
-   {
-     char *name;
-     int number;
-     struct isodsngroup dsngroup;
-   };
+struct family {
+    char *name;
+    int number;
+    struct isodsngroup dsngroup;
+};
 
-struct alias
-   {
-     char *name;
-     struct family *realfamily;
-   };
+struct alias {
+    char *name;
+    struct family *realfamily;
+};
 
-struct font
-   {
-     char *fontname;
-     int fontid;
-     int familyid;
-     struct isovariant variant;
-     struct isodsngroup dsngroup;
-     Index cset;
-   };
+struct font {
+    char *fontname;
+    int fontid;
+    int familyid;
+    struct isovariant variant;
+    struct isodsngroup dsngroup;
+    Index cset;
+};
 
-struct source
-   {
-     char *name;
-     int number;
-   };
+struct source {
+    char *name;
+    int number;
+};
 
-struct design
-   {
-     char *classname, *subclassname, *groupname;
-     struct isodsngroup dsngroup;
-   };
+struct design {
+    char *classname, *subclassname, *groupname;
+    struct isodsngroup dsngroup;
+};
 
-struct modifier
-   {
-     int value;
-     char *name;
-   };
+struct modifier {
+    int value;
+    char *name;
+};
 
-struct xfnames
-   {
-      struct xfnames *next;    /* pointer to next name */
-      struct xfnames *prev;    /* pointer to previous name */
-      struct isofont *isobits; /* isofont info for this font */
-   };
+struct xfnames {
+    struct xfnames *next;    /* pointer to next name */
+    struct xfnames *prev;    /* pointer to previous name */
+    struct isofont *isobits; /* isofont info for this font */
+};
 typedef struct xfnames FNTXnames;
 
-struct xfont_list
-   {
-      char *gen_name;              /* generic font name */
-      int  num_siz;                /* number of sizes for font */
-      FNTXnames *names;            /* list of font names */
-      struct xfont_list *pnext;     /* pointer to next generic font */
-   };
+struct xfont_list {
+    char *gen_name;              /* generic font name */
+    int num_siz;                /* number of sizes for font */
+    FNTXnames *names;            /* list of font names */
+    struct xfont_list *pnext;     /* pointer to next generic font */
+};
 typedef struct xfont_list FNTXfont_list;
 
 #endif /* End of CGMUFONT_H */

@@ -26,7 +26,7 @@
  */
 
 
-     /*  The following #define's may be system-dependent  */
+/*  The following #define's may be system-dependent  */
 
 #define MaxExp      50     /*  number of coordinates in 1 character */
 #define MaxFonts    25     /*  maximum number of fonts */
@@ -36,53 +36,47 @@
 #define DefHerFnt  101     /*  Default Hershey font if we cant find the
                                required one, should never happen!!!  */
 
-typedef enum
-{
+typedef enum {
     HerCLOSED,
     HerOPEN
 } HerSTATE;
 
-typedef struct herdir
-{
+typedef struct herdir {
     Index number;                     /*  reference number of font  */
 
     char name[MAXFNSIZE],           /*  name of the font  */
-         filename[MAXFLSIZE];       /*  name of file holding font  */
+            filename[MAXFLSIZE];       /*  name of file holding font  */
 } HerDir;
 
-typedef struct herfont
-{
+typedef struct herfont {
     Index number;                   /*  reference number of font  */
 
     int charids,                    /*  number of character definitions  */
-        defs;                       /*  no. of points in font def */
+            defs;                       /*  no. of points in font def */
 
     float top,                      /*  top line y value  */
-          cap,                      /*  cap line y value  */
-          bottom,                   /*  bottom line y value  */
-          width,                    /*  average width ?  */
-          height;                   /*  derived height parameter  */
+            cap,                      /*  cap line y value  */
+            bottom,                   /*  bottom line y value  */
+            width,                    /*  average width ?  */
+            height;                   /*  derived height parameter  */
 } HerFont;
 
-typedef struct herchar
-{
+typedef struct herchar {
     int location,                   /*  start point in character definition  */
-        numcomp;                    /*  number of components in character  */
+            numcomp;                    /*  number of components in character  */
 
-  SignChar centre;                  /*  position of centre  */
+    SignChar centre;                  /*  position of centre  */
 
-  unsigned char width;              /*  character width  */
+    unsigned char width;              /*  character width  */
 } HerChar;
 
 
-typedef struct herdef
-{
-    huge SignChar x,y;                   /*  x and y coordinates of a point  */
+typedef struct herdef {
+    huge SignChar x, y;                   /*  x and y coordinates of a point  */
 } HerDef;
 
 
-typedef struct herflist
-{
+typedef struct herflist {
     HerFont *hfont;                 /*  font details for this font  */
     HerChar *hchar;                 /*  character details for this font  */
     HerDef *hdef;                   /*  character definitions for this font  */
@@ -92,43 +86,43 @@ typedef struct herflist
 } HerFlist;
 
 
-static HerChar  *H_char=NULL;              /*  descriptors of current chars  */
+static HerChar *H_char = NULL;              /*  descriptors of current chars  */
 
 static char *herext = "her",
-            *srcext = "hfs",
-            *binext = "hfb";
+        *srcext = "hfs",
+        *binext = "hfb";
 
 #ifndef GENHER_C
 
-static HerSTATE  H_state = HerCLOSED;      /*  Hershey system state  */
+static HerSTATE H_state = HerCLOSED;      /*  Hershey system state  */
 
-static int       H_numfonts = 0;           /*  number of fonts read from directory  */
+static int H_numfonts = 0;           /*  number of fonts read from directory  */
 
-static HerDir   *H_dir=NULL;               /*  descriptions of all fonts  */
+static HerDir *H_dir = NULL;               /*  descriptions of all fonts  */
 
-static HerFont  *H_font=NULL;              /*  descriptor for current font  */
+static HerFont *H_font = NULL;              /*  descriptor for current font  */
 
-static HerFlist *H_fontlist=NULL;          /*  list of fonts in memory  */
+static HerFlist *H_fontlist = NULL;          /*  list of fonts in memory  */
 
-static HerDef   *H_def=NULL;               /*  Hershey definitions of ditto  */
+static HerDef *H_def = NULL;               /*  Hershey definitions of ditto  */
 
-     /*
-      |  Include user include for user callable function definitions
-      */
+/*
+ |  Include user include for user callable function definitions
+ */
 
 #include "cgmher.h"
 
-     /*
-      |  The following routines are internal, so do not need to have
-      |  their names modified to the HERxxx notation.
-      */
+/*
+ |  The following routines are internal, so do not need to have
+ |  their names modified to the HERxxx notation.
+ */
 
 
-static void HerOpen( void ),
-            HerDraw( int, Tmatrix,
-                   void (*)(int, Point *, Tmatrix, int));
+static void HerOpen(void),
+        HerDraw(int, Tmatrix,
+                void (*)(int, Point *, Tmatrix, int));
 
-static int  HerLoad( Index );
+static int HerLoad(Index);
 
 
 #endif

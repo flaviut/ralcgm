@@ -26,149 +26,153 @@
 #include "cgmtypes.h"
 
 struct sharedatt {
-     Index       auxindex;
-     RGBcolour   aux;
-     Enum        colmode,
-                 transparency;
-     float       xgrain,
-                 ygrain;
+    Index auxindex;
+    RGBcolour aux;
+    Enum colmode,
+            transparency;
+    float xgrain,
+            ygrain;
 };
 
 typedef struct sharedatt Sharedatt;
 
 struct lineatt {
-     Index       type;
-     float       width;
-     Enum        widthmode;
-     Index       colindex;
-     RGBcolour   col;
-     Sharedatt  *shared;
+    Index type;
+    float width;
+    Enum widthmode;
+    Index colindex;
+    RGBcolour col;
+    Sharedatt *shared;
 };
 
 typedef struct lineatt Lineatt;
 
 struct markeratt {
-     Index       type;
-     float       size;
-     Enum        sizemode;
-     Index       colindex;
-     RGBcolour   col;
-     Sharedatt  *shared;
+    Index type;
+    float size;
+    Enum sizemode;
+    Index colindex;
+    RGBcolour col;
+    Sharedatt *shared;
 };
 
 typedef struct markeratt Markeratt;
 
 struct textatt {
-     int         fontcount;             /*  environmental variables  */
-     char      **fontlist;
-     int         csetcount;
-     char      **csetlist;
-     Enum        csetannouncer;
+    int fontcount;             /*  environmental variables  */
+    char **fontlist;
+    int csetcount;
+    char **csetlist;
+    Enum csetannouncer;
 
-     Index       fontindex;             /*  bundleable attributes  */
-     Enum        precision;
-     float       expansion;
-     float       spacing;
-     Index       colindex;
-     RGBcolour   col;
+    Index fontindex;             /*  bundleable attributes  */
+    Enum precision;
+    float expansion;
+    float spacing;
+    Index colindex;
+    RGBcolour col;
 
-     float       height;                /*  device-independent variables  */
-     float       xup,
-                 yup,
-                 xbase,
-                 ybase;
-     Enum        path;
-     Enum        halign,
-                 valign;
-     float       hcont,
-                 vcont;
-     Index       csindex,
-                 acsindex;
-     Sharedatt  *shared;
+    float height;                /*  device-independent variables  */
+    float xup,
+            yup,
+            xbase,
+            ybase;
+    Enum path;
+    Enum halign,
+            valign;
+    float hcont,
+            vcont;
+    Index csindex,
+            acsindex;
+    Sharedatt *shared;
 };
 
 typedef struct textatt Textatt;
 
 struct fillatt {
-     Index       style;
-     Index       colindex;
-     RGBcolour   col;
-     Index       hatch,
-                 pattern;
-     Sharedatt  *shared;
+    Index style;
+    Index colindex;
+    RGBcolour col;
+    Index hatch,
+            pattern;
+    Sharedatt *shared;
 };
 
 typedef struct fillatt Fillatt;
 
 struct edgeatt {
-     Index       type;
-     float       width;
-     Enum        widthmode;
-     Index       colindex;
-     RGBcolour   col;
-     Sharedatt  *shared;
+    Index type;
+    float width;
+    Enum widthmode;
+    Index colindex;
+    RGBcolour col;
+    Sharedatt *shared;
 };
 
 typedef struct edgeatt Edgeatt;
 
 struct linebundle {
-     Index   type;
-     float   width;
-     Index   colindex;
-     Colourentry col;
+    Index type;
+    float width;
+    Index colindex;
+    Colourentry col;
 };
 
 typedef struct linebundle Linebundle;
 
 struct markerbundle {
-     Index   type;
-     float   size;
-     Index   colindex;
-     Colourentry col;
+    Index type;
+    float size;
+    Index colindex;
+    Colourentry col;
 };
 
 typedef struct markerbundle Markerbundle;
 
 struct textbundle {
-     Index   font;
-     Enum    precision;
-     float   expansion;
-     float   spacing;
-     Index   colindex;
-     Colourentry col;
+    Index font;
+    Enum precision;
+    float expansion;
+    float spacing;
+    Index colindex;
+    Colourentry col;
 };
 
 typedef struct textbundle Textbundle;
 
 struct fillbundle {
-     Index   style;
-     Index   pattern;
-     Index   hatch;
-     Index   colindex;
-     Colourentry col;
+    Index style;
+    Index pattern;
+    Index hatch;
+    Index colindex;
+    Colourentry col;
 };
 
 typedef struct fillbundle Fillbundle;
 
 struct edgebundle {
-     Index   type;
-     float   width;
-     Index   colindex;
-     Colourentry col;
+    Index type;
+    float width;
+    Index colindex;
+    Colourentry col;
 };
 
 typedef struct edgebundle Edgebundle;
 
 void ATTline(int, struct linebundle *,
-                    int, struct lineatt *);
+             int, struct lineatt *);
+
 void ATTmarker(int, struct markerbundle *,
-                    int, struct markeratt *);
+               int, struct markeratt *);
+
 void ATTtext(int, struct textbundle *,
-                    int, struct textatt *);
+             int, struct textatt *);
+
 void ATTfill(int, struct fillbundle *,
-                    int, struct fillatt *);
+             int, struct fillatt *);
+
 void ATTedge(int, struct edgebundle *,
-                    int, struct edgeatt *);
+             int, struct edgeatt *);
 
 
 #endif   /*  end of cgmatt.h */

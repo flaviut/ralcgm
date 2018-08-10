@@ -71,20 +71,21 @@
 #ifndef SIMPLEFILL
 
 /* Fill a Horizontally Convex Polygon  */
-   static void FILmonotone( Long, Point*, Enum,
-                            void (*)( Long, Point* ) );
+static void FILmonotone(Long, Point *, Enum,
+                        void (*)(Long, Point *));
 
 /* Break down a Complex Polygon into trapeziums */
-   static void FILcomplex( Long, Point*, Enum*,
-                           void (*)( Long, Point* ) );
+static void FILcomplex(Long, Point *, Enum *,
+                       void (*)(Long, Point *));
 
 /* Convert trapeziums into polygons */
-   static void FILtrap( Int, Trapezoid* );
+static void FILtrap(Int, Trapezoid *);
 
 
 /* Number of points allocated for fill area processing */
-   static Long cgmmaxpts = MAXPTS;
-   static void (*fill_func)();
+static Long cgmmaxpts = MAXPTS;
+
+static void (*fill_func)();
 
 #endif  /* SIMPLEFILL */
 
@@ -92,272 +93,245 @@
 
 #include "cgmgraph.h"
 
-static char *func="FILarea", mess[40];
+static char *func = "FILarea", mess[40];
 
-
+
 /**************************************************** FILarea **********/
 
-void FILarea ( Long np, Long *pi, Float *pr, Enum set, Logical cont,
-               void (*fill_convex)( Long, Point* ),
-               void (*draw_edge)( Long, Point*, Enum* ) )
-{
-   register Long j, k;
-   Logical newedge, nomem = FALSE, localpoint = FALSE;
-   Enum *edgevis=NULL;
-   Long *edgeflag=NULL;
-   Int firstpt;
-   Point *pt, *pt0;
-   static Polygonset polset;  /* The polygonset */
-   static Long start;         /* Starting place */
-   Rect clip;                 /* Clipping rectangle or VDC extent */
+void FILarea(Long np, Long *pi, Float *pr, Enum set, Logical cont,
+             void (*fill_convex)(Long, Point *),
+             void (*draw_edge)(Long, Point *, Enum *)) {
+    register Long j, k;
+    Logical newedge, nomem = FALSE, localpoint = FALSE;
+    Enum *edgevis = NULL;
+    Long *edgeflag = NULL;
+    Int firstpt;
+    Point *pt, *pt0;
+    static Polygonset polset;  /* The polygonset */
+    static Long start;         /* Starting place */
+    Rect clip;                 /* Clipping rectangle or VDC extent */
 
-   fill_func = fill_convex;
+    fill_func = fill_convex;
 
-   /* Allocate space for polygon set stucture */
-   if(!cont)
-   {  /* First set of points, allocate space */
-      start = 0;
-      polset.n = abs(np);
-      polset.pts = (Point *)MALLOC( polset.n, sizeof( Point));
-      if(polset.pts == NULL)
-         exit ((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
-      if(set == SET)
-      {  /* Edge-out flags needed */
-         polset.eofl = (Enum *)MALLOC( polset.n, sizeof( Enum));
-         if(polset.eofl == NULL)
-            exit ((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
-      }
-   }
-   else
-   {  /* Additional set of points, reallocate */
-      start = polset.n;
-      polset.n += abs(np);
-      polset.pts = (Point *)realloc( (void *)polset.pts,
-                              (size_t)(polset.n*sizeof(Point)));
-      if(polset.pts == NULL)
-         exit ((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
-      if(set == SET)
-      {
-         polset.eofl = (Enum *)realloc( (void *)polset.pts,
-                                 (size_t)(polset.n*sizeof(Enum)));
-         if(polset.eofl == NULL)
-            exit ((int)CGMerror( func, ERR_NOMEMORY, FATAL, NULLSTR));
-      }
-   }
+    /* Allocate space for polygon set stucture */
+    if (!cont) {  /* First set of points, allocate space */
+        start = 0;
+        polset.n = abs(np);
+        polset.pts = (Point *) MALLOC(polset.n, sizeof(Point));
+        if (polset.pts == NULL)
+            exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+        if (set == SET) {  /* Edge-out flags needed */
+            polset.eofl = (Enum *) MALLOC(polset.n, sizeof(Enum));
+            if (polset.eofl == NULL)
+                exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+        }
+    } else {  /* Additional set of points, reallocate */
+        start = polset.n;
+        polset.n += abs(np);
+        polset.pts = (Point *) realloc((void *) polset.pts,
+                                       (size_t) (polset.n * sizeof(Point)));
+        if (polset.pts == NULL)
+            exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+        if (set == SET) {
+            polset.eofl = (Enum *) realloc((void *) polset.pts,
+                                           (size_t) (polset.n * sizeof(Enum)));
+            if (polset.eofl == NULL)
+                exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+        }
+    }
 
-   /* Put data into polygon set stucture (get as Points) */
-   /*
-   PTSget (polset.n, pi, pr, polset.pts+start, polset.eofl+start);
-   */
-   POLget( polset.n,  pi,  pr,  set==SET, cont,  &polset);
+    /* Put data into polygon set stucture (get as Points) */
+    /*
+    PTSget (polset.n, pi, pr, polset.pts+start, polset.eofl+start);
+    */
+    POLget(polset.n, pi, pr, set == SET, cont, &polset);
 
 
 #ifdef DEBUG
-   DFLUSH;
-   DMESS "FILarea: %d points", np );
-   if ( set ) DMESS " (set)");
-   DFLUSH;
+    DFLUSH;
+    DMESS "FILarea: %d points", np );
+    if ( set ) DMESS " (set)");
+    DFLUSH;
 #endif
 
 /*  Allocate memory for points and edge types */
 
-   pt0 = pt = (Point *) MALLOC( (2*np+1), sizeof ( Point ) );
-   if ( set )
-   {
-      edgeflag = (Long *) MALLOC( (2*np+1), sizeof( Long ) );
-      nomem += ( edgeflag == NULL);
-      edgevis = (Enum *) MALLOC( (2*np+1), sizeof( Enum ) );
-      nomem += ( edgevis == NULL);
-      if ( nomem )
-      {
-         (void) sprintf ( mess, "(for fill area set processing)");
-         (void) CGMerror ( func, ERR_NOMEMORY, ERROR, mess);
-         FREE ( edgeflag );
-         FREE ( edgevis );
-         return;
-      }
+    pt0 = pt = (Point *) MALLOC((2 * np + 1), sizeof(Point));
+    if (set) {
+        edgeflag = (Long *) MALLOC((2 * np + 1), sizeof(Long));
+        nomem += (edgeflag == NULL);
+        edgevis = (Enum *) MALLOC((2 * np + 1), sizeof(Enum));
+        nomem += (edgevis == NULL);
+        if (nomem) {
+            (void) sprintf(mess, "(for fill area set processing)");
+            (void) CGMerror(func, ERR_NOMEMORY, ERROR, mess);
+            FREE (edgeflag);
+            FREE (edgevis);
+            return;
+        }
 #ifdef DEBUG_FULL
-   DMESS " %d bytes allocated for Points list\n",
-           (2*np+1) * (sizeof( Int ) + sizeof( Enum ) ) );
+        DMESS " %d bytes allocated for Points list\n",
+                (2*np+1) * (sizeof( Int ) + sizeof( Enum ) ) );
 #endif
 
-   }
+    }
 
 /*  Store points as real points list *pt create edge flags */
 
-   for (j = ZERO, newedge = TRUE; j < np; j++, pt++)
-   {
-      if (cur.vdc_type == INTEGER)
-      {
-         pt->x = *pi++;
-         pt->y = *pi++;
-      }
-      else
-      {
-         pt->x = *pr++;
-         pt->y = *pr++;
-      }
-      if ( newedge )
-      {
-        firstpt = j;
-        newedge = FALSE;
-      }
-      if ( set )
-      {
-         k = *pi++;
-         edgevis[j] = k;
-         if ( k & EDGECLOSE )  /*  close */
-         {
-            edgeflag[j] = firstpt + 1;
-            edgeflag[firstpt] = - j - 1;
-            newedge = TRUE;
-         }
-         else edgeflag[j] = 0;
-      }
-   }
+    for (j = ZERO, newedge = TRUE; j < np; j++, pt++) {
+        if (cur.vdc_type == INTEGER) {
+            pt->x = *pi++;
+            pt->y = *pi++;
+        } else {
+            pt->x = *pr++;
+            pt->y = *pr++;
+        }
+        if (newedge) {
+            firstpt = j;
+            newedge = FALSE;
+        }
+        if (set) {
+            k = *pi++;
+            edgevis[j] = k;
+            if (k & EDGECLOSE)  /*  close */
+            {
+                edgeflag[j] = firstpt + 1;
+                edgeflag[firstpt] = -j - 1;
+                newedge = TRUE;
+            } else edgeflag[j] = 0;
+        }
+    }
 
 /*  Reset Points lists */
 
-   pt = pt0;
+    pt = pt0;
 
 /*  Close polygon, if last point does not equal first  */
 
-   if ( ! PEQUAL( pt+np-1, pt+firstpt ) )
-   {
-      if ( set )
-      {
-         edgeflag[firstpt] = -np;
-         edgeflag[np-1] = firstpt + 1;
-      }
-      else
-      {
-         pt[np].x = pt[firstpt].x;
-         pt[np].y = pt[firstpt].y;
-         np++;
-      }
-   }
+    if (!PEQUAL(pt + np - 1, pt + firstpt)) {
+        if (set) {
+            edgeflag[firstpt] = -np;
+            edgeflag[np - 1] = firstpt + 1;
+        } else {
+            pt[np].x = pt[firstpt].x;
+            pt[np].y = pt[firstpt].y;
+            np++;
+        }
+    }
 
 /* Now fill polygon, if not hollow or empty  */
 
-   if (curatt.int_style != HOLLOW && curatt.int_style != EMPTY)
-   {
+    if (curatt.int_style != HOLLOW && curatt.int_style != EMPTY) {
 
 #ifdef SIMPLEFILL
-      fill_convex ( np, pt);
+        fill_convex ( np, pt);
 #ifdef DEBUG
-    DMESS "Polygon fill: %d address: 0x%x\n", np, pt);
+      DMESS "Polygon fill: %d address: 0x%x\n", np, pt);
 #endif
 #else
 /*  If Polygon Set and more than one polygon then use Complex routine */
 
-      if ( set && firstpt )
-      {
+        if (set && firstpt) {
 #ifdef DEBUG_TEST
-          for ( j = 0; j < np; j++ )
-          {
-             DMESS "  Point: %d (%f,%f)  close: %d ",
-                        j, pt[j].x, pt[j].y, edgeflag[j] );
-             if ( edgevis[j] & VIS ) DMESS " (close)");
-             if ( edgevis[j] & EDGECLOSE ) DMESS " (vis)\n");
-             else DMESS " (invis)\n");
-          }
+            for ( j = 0; j < np; j++ )
+            {
+               DMESS "  Point: %d (%f,%f)  close: %d ",
+                          j, pt[j].x, pt[j].y, edgeflag[j] );
+               if ( edgevis[j] & VIS ) DMESS " (close)");
+               if ( edgevis[j] & EDGECLOSE ) DMESS " (vis)\n");
+               else DMESS " (invis)\n");
+            }
 #endif
 #ifdef TRAPFILL
-          TRPfill( &polset, NTZ, YTOL, &FILtrap );
+            TRPfill(&polset, NTZ, YTOL, &FILtrap);
 #else
 #ifdef COMPLEXFILL
-          FILcomplex ( np, pt, edgeflag, fill_convex );
+            FILcomplex ( np, pt, edgeflag, fill_convex );
 #else
-          fill_convex ( np, pt);
+            fill_convex ( np, pt);
 #endif
 #endif
-      }
-      else
+        } else
 
 /*  clasify polygon type  */
 
-         switch ( FILpolycheck ( np, pt ) )
-         {
-            case SIMPLE:
+            switch (FILpolycheck(np, pt)) {
+                case SIMPLE:
 #ifdef DEBUG
-               DMESS " Polygon is Convex\n");
+                    DMESS " Polygon is Convex\n");
 #endif
-               fill_convex ( np, pt);
-               break;
+                    fill_convex(np, pt);
+                    break;
 
 #ifdef HORIZFILL
-            case HORIZCONVEX:
+                case HORIZCONVEX:
 #ifdef DEBUG
-               DMESS " Polygon is Horizontally Convex\n");
+                   DMESS " Polygon is Horizontally Convex\n");
 #endif
-               FILmonotone ( np, pt, HORIZCONVEX, fill_convex );
-               break;
+                   FILmonotone ( np, pt, HORIZCONVEX, fill_convex );
+                   break;
 
-            case VERTCONVEX:
+                case VERTCONVEX:
 #ifdef DEBUG
-               DMESS " Polygon is Vertically Convex\n");
+                   DMESS " Polygon is Vertically Convex\n");
 #endif
-               FILmonotone ( np, pt, VERTCONVEX, fill_convex );
-               break;
-#endif
-
-            case COMPLEX:
-#ifdef DEBUG
-               DMESS " Polygon is Complex\n");
+                   FILmonotone ( np, pt, VERTCONVEX, fill_convex );
+                   break;
 #endif
 
-            default:
+                case COMPLEX:
+#ifdef DEBUG
+                    DMESS " Polygon is Complex\n");
+#endif
+
+                default:
 #ifdef TRAPFILL
-               TRPfill( &polset, NTZ, YTOL, &FILtrap );
+                    TRPfill(&polset, NTZ, YTOL, &FILtrap);
 #else
 #ifdef COMPLEXFILL
-               FILcomplex ( np, pt, (Enum*) NULL, fill_convex );
+                FILcomplex ( np, pt, (Enum*) NULL, fill_convex );
 #else
-               fill_convex ( np, pt);
+                fill_convex ( np, pt);
 #endif
 #endif
-               break;
-        }
+                    break;
+            }
 #endif
-   }
+    }
 
 /*  Now draw edge if visible  */
 
-   if ( curatt.edge_vis == ON || curatt.int_style == HOLLOW )
-   {
+    if (curatt.edge_vis == ON || curatt.int_style == HOLLOW) {
 #ifdef DEBUG
-      DMESS "Draw edge: %d address: 0x%x\n", np, pt);
+        DMESS "Draw edge: %d address: 0x%x\n", np, pt);
 #endif
-      draw_edge( np, pt, edgevis );
-   }
+        draw_edge(np, pt, edgevis);
+    }
 
 /*  free memory  */
 
-   FREE( polset.pts );
-   FREE( pt0 );
-   if ( set )
-   {
+    FREE(polset.pts);
+    FREE(pt0);
+    if (set) {
 #ifdef DEBUG_FULL
-   DMESS "  Free edge list: %x %x \n", edgeflag, edgevis );
+        DMESS "  Free edge list: %x %x \n", edgeflag, edgevis );
 #endif
-      FREE(polset.eofl);
-      FREE ( edgeflag );
-      FREE ( edgevis );
-   }
+        FREE(polset.eofl);
+        FREE (edgeflag);
+        FREE (edgevis);
+    }
 
-   return;
+    return;
 }
 
-
+
 /****************************************************** FILpolycheck ***/
 
-Enum FILpolycheck ( Long np, Point *pt )
-
-{
-   register Long i, j;
-   register Float xprod, diff;
-   register Long pos = 0, neg = 0;
-   register Long changes, sign;
+Enum FILpolycheck(Long np, Point *pt) {
+    register Long i, j;
+    register Float xprod, diff;
+    register Long pos = 0, neg = 0;
+    register Long changes, sign;
 
 #ifdef DEBUG
     DMESS "FILpolycheck: %d points\n", np);
@@ -365,98 +339,86 @@ Enum FILpolycheck ( Long np, Point *pt )
 
 /*  trivial case of triangle  */
 
-   if ( np <= 3 ) return (SIMPLE);
+    if (np <= 3) return (SIMPLE);
 
 /* Check for Horizontally Convex  */
 
-   sign = (pt[0].y > pt[np].y ? 1 : -1);
+    sign = (pt[0].y > pt[np].y ? 1 : -1);
 
-   for (i = 1, changes = ZERO; i < np; i++)
-   {
-      diff = pt[i].y - pt[i-1].y;
-      if ( diff != ZERO )
-      {
-         if ( diff > ZERO )
-         {
-            if ( sign == -1 )  /*  Local minimum  */
+    for (i = 1, changes = ZERO; i < np; i++) {
+        diff = pt[i].y - pt[i - 1].y;
+        if (diff != ZERO) {
+            if (diff > ZERO) {
+                if (sign == -1)  /*  Local minimum  */
+                {
+                    changes++;
+                    if (changes > 2) break;
+                    else sign = 1;
+                }
+            } else if (sign == 1)   /*  Local Maximum  */
             {
-               changes++;
-               if ( changes > 2 ) break;
-               else sign = 1;
+                changes++;
+                if (changes > 2) break;
+                else sign = -1;
             }
-         }
-         else
-         if ( sign == 1 )   /*  Local Maximum  */
-         {
-            changes++;
-            if ( changes > 2 ) break;
-            else sign = -1;
-         }
-      }
-   }
-   if ( changes <= 2 )
-   {
+        }
+    }
+    if (changes <= 2) {
 
 /*  Check if this is a simple Polygon */
 
-      for ( j = 0; j < np - 1; j++)
-      {
-         if ( j ) xprod = XPROD ( (pt+j-1), (pt+j), (pt+j), (pt+j+1) );
-         else     xprod = XPROD ( (pt+np-1), (pt+0), (pt+0), (pt+1) );
-         if ( xprod > 0 ) pos++;
-         if ( xprod < 0 ) neg++;
-      }
+        for (j = 0; j < np - 1; j++) {
+            if (j) xprod = XPROD ((pt + j - 1), (pt + j), (pt + j), (pt + j + 1));
+            else xprod = XPROD ((pt + np - 1), (pt + 0), (pt + 0), (pt + 1));
+            if (xprod > 0) pos++;
+            if (xprod < 0) neg++;
+        }
 
 #ifdef DEBUG_TEST
-   DMESS "  Polygon changes: %d %d\n", pos, neg );
+        DMESS "  Polygon changes: %d %d\n", pos, neg );
 #endif
 
 /*  if either pos or neg is zero polygon is simple */
 
-      return ( pos && neg ? HORIZCONVEX : SIMPLE );
-   }
+        return (pos && neg ? HORIZCONVEX : SIMPLE);
+    }
 
 #ifdef DEBUG_TEST
-   DMESS "  Horiz check failed at point: %d\n", i );
+    DMESS "  Horiz check failed at point: %d\n", i );
 #endif
 
 /* check for Vertically Convex  */
 
-   sign = (pt[0].x > pt[np].x ? 1 : -1);
+    sign = (pt[0].x > pt[np].x ? 1 : -1);
 
-   for (i = 1, changes = ZERO; i < np; i++)
-   {
-      diff = pt[i].x - pt[i-1].x;
-      if ( diff != 0 )
-      {
-         if ( diff > 0 )
-         {
-            if ( sign == -1 )  /*  Local minimum  */
+    for (i = 1, changes = ZERO; i < np; i++) {
+        diff = pt[i].x - pt[i - 1].x;
+        if (diff != 0) {
+            if (diff > 0) {
+                if (sign == -1)  /*  Local minimum  */
+                {
+                    changes++;
+                    if (changes > 2) break;
+                    else sign = 1;
+                }
+            } else if (sign == 1)   /*  Local Maximum  */
             {
-               changes++;
-               if ( changes > 2 ) break;
-               else sign = 1;
+                changes++;
+                if (changes > 2) break;
+                else sign = -1;
             }
-         }
-         else
-         if ( sign == 1 )   /*  Local Maximum  */
-         {
-            changes++;
-            if ( changes > 2 ) break;
-            else sign = -1;
-         }
-      }
-   }
-   if ( changes <= 2 ) return (VERTCONVEX);
+        }
+    }
+    if (changes <= 2) return (VERTCONVEX);
 
 #ifdef DEBUG_TEST
-   DMESS "  Vert check failed at point: %d\n", i );
+    DMESS "  Vert check failed at point: %d\n", i );
 #endif
 
-   return (COMPLEX);
+    return (COMPLEX);
 }
 
-
+
 #ifdef HORIZFILL
 /**************************************************** FILmonotone ******/
 
@@ -915,7 +877,7 @@ static void FILmonotone ( Long np, Point *pt, Enum type,
 #undef DEBUG_TEST
 #undef DEBUG_FULL
 #endif
-
+
 #ifdef COMPLEXFILL
 /**************************************************** FILcomplex *******/
 
@@ -1893,33 +1855,32 @@ giveup:
    return;
 }
 #endif
-
-#ifdef TRAPFILL
-/***************************************************** FILtrap ***************/
-static void FILtrap ( Int nt, Trapezoid *trap )
 
-{
-   int i;
-   Point p[4];
-   Trapezoid *pt = trap;
+#ifdef TRAPFILL
+
+/***************************************************** FILtrap ***************/
+static void FILtrap(Int nt, Trapezoid *trap) {
+    int i;
+    Point p[4];
+    Trapezoid *pt = trap;
 
 #ifdef DEBUG
-   DMESS "%d Trapeziums sent to device\n",nt);
+    DMESS "%d Trapeziums sent to device\n",nt);
 #endif
 
-   for ( i = 0; i<nt; i++, pt++ )
-   {
-      p[0].x = pt->top_left;
-      p[1].x = pt->top_right;
-      p[0].y = p[1].y = pt->top;
+    for (i = 0; i < nt; i++, pt++) {
+        p[0].x = pt->top_left;
+        p[1].x = pt->top_right;
+        p[0].y = p[1].y = pt->top;
 
-      p[2].x = pt->base_right;
-      p[3].x = pt->base_left;
-      p[2].y = p[3].y = pt->base;
+        p[2].x = pt->base_right;
+        p[3].x = pt->base_left;
+        p[2].y = p[3].y = pt->base;
 
-      fill_func( (Long)4, p );
-   }
+        fill_func((Long) 4, p);
+    }
 
-   return;
+    return;
 }
+
 #endif

@@ -22,7 +22,7 @@
 #ifndef CGMTYPES_H
 #define CGMTYPES_H
 
-     /*  Include the only file on which this is dependent.  */
+/*  Include the only file on which this is dependent.  */
 
 #include "cgmmach.h"
 
@@ -39,12 +39,18 @@ typedef double Mtype;
 
 /*  Structures used by CGM user interface */
 
-typedef struct { float x, y; } Point;
-typedef struct { float x, y; } Vector;
-typedef struct { Posint red, green, blue; } RGBcolour;
+typedef struct {
+    float x, y;
+} Point;
+typedef struct {
+    float x, y;
+} Vector;
+typedef struct {
+    Posint red, green, blue;
+} RGBcolour;
 struct colour {
-   Index index;
-   Posint red, green, blue;
+    Index index;
+    Posint red, green, blue;
 };
 typedef struct colour Colour;
 
@@ -53,28 +59,30 @@ typedef Index Indexcolour;
 /*  Useful Structures for CGM routines */
 
 struct vdc {
-   long intr;
-   float real;
+    long intr;
+    float real;
 };
 typedef struct vdc Vdc;
 
 struct colourentry {
-   float red, green, blue;
+    float red, green, blue;
 };
 typedef struct colourentry Colourentry;
 
 typedef double Tmatrix[3][2];
 
 struct point {
-  struct vdc x, y;
+    struct vdc x, y;
 };
 typedef struct point Cpoint;
 
 struct rect {
-  struct point a, b;
+    struct point a, b;
 };
 
-typedef struct { float left, right, top, bot; } Rect;
+typedef struct {
+    float left, right, top, bot;
+} Rect;
 
 
 #ifndef TRUE

@@ -52,13 +52,13 @@
 
 /*  Internal routines */
 
-static void CGMfrsave( Code ),
-            CGMmfsave( void ),
-            CGMpoint( Int frame, Code *rc);
+static void CGMfrsave(Code),
+        CGMmfsave(void),
+        CGMpoint(Int frame, Code *rc);
 
 /*  External Routine  */
 
-   extern void CGMoutput( Code c );
+extern void CGMoutput(Code c);
 
 
 /*  External Variables not declared in CGM.H  */
@@ -67,13 +67,13 @@ extern Logical miccharsub, micsubchar[];
 
 /*  Input buffer pointers */
 
-   static Logical nosave_meta=FALSE, eof_meta = FALSE;
-                                                        /* Device    */
-   static Int cur_frame=1, target_frame=0;              /* control   */
-   static Int n_frame=1, max_frame=0;                   /* addresses */
-   static Int cur_meta=1, n_meta=1, max_meta=0;
-   static struct data_frame  *start_frame=NULL;
-   static struct data_frame  *start_meta=NULL;
+static Logical nosave_meta = FALSE, eof_meta = FALSE;
+/* Device    */
+static Int cur_frame = 1, target_frame = 0;              /* control   */
+static Int n_frame = 1, max_frame = 0;                   /* addresses */
+static Int cur_meta = 1, n_meta = 1, max_meta = 0;
+static struct data_frame *start_frame = NULL;
+static struct data_frame *start_meta = NULL;
 
 extern FILE *cgmi;
 extern Enum cgminput;
@@ -82,157 +82,144 @@ extern Enum cgminput;
 
 /****************************************************** CGMframe *******/
 
-Code CGMframe( Code code )
+Code CGMframe(Code code)
 /*  This routine is the main entry point from the input driver
     which checks for random frame access, stores and changes position
     in the input file and calls the output driver
 */
 {
-   Int frame;
-   Code rc = NONOP;
+    Int frame;
+    Code rc = NONOP;
 
 #ifdef DEBUG
-   DMESS "CGMframe: (%d/%d): %04x\n", cur_frame, cur_meta, code );
+    DMESS "CGMframe: (%d/%d): %04x\n", cur_frame, cur_meta, code );
 #endif
 
-   if ( code == EOF)
-   {
+    if (code == EOF) {
 /* End of File processing */
 #ifdef DEBUG
-       DMESS "CGMframe: EOF\n" );
+        DMESS "CGMframe: EOF\n" );
 #endif
-       eof_meta = TRUE;
-       switch (cgmstate)
-       {
-          case PIC_OPEN:
+        eof_meta = TRUE;
+        switch (cgmstate) {
+            case PIC_OPEN:
 /* If in picture close it */
-              rc = ENDPIC;
-              break;
-          case PIC_CLOSED:
-          case MF_CLOSED:
+                rc = ENDPIC;
+                break;
+            case PIC_CLOSED:
+            case MF_CLOSED:
 /* If outside picture position at start of last frame */
-              cgmpresent = cur_frame;
-              cgmnext = cur_frame-1;
-              CGMoutput(code);
-              if(cgmfinished)
-              {   /* quit interpreter */
-                  rc = EOF;
-                  break;
-              }
-              if (cgmnext < 1) target_frame = 1;
-              else if (cgmnext > cur_frame-1)
-                        target_frame = cur_frame-1;
-                   else target_frame = cgmnext;
-              CGMpoint(target_frame, &rc);
-              break;
-          default:
+                cgmpresent = cur_frame;
+                cgmnext = cur_frame - 1;
+                CGMoutput(code);
+                if (cgmfinished) {   /* quit interpreter */
+                    rc = EOF;
+                    break;
+                }
+                if (cgmnext < 1) target_frame = 1;
+                else if (cgmnext > cur_frame - 1)
+                    target_frame = cur_frame - 1;
+                else target_frame = cgmnext;
+                CGMpoint(target_frame, &rc);
+                break;
+            default:
 /* otherwise signal end of metafile */
-              rc = ENDMF;
-              break;
-       }
-       return(rc);
-   }
+                rc = ENDMF;
+                break;
+        }
+        return (rc);
+    }
 
-   if ( cgmstate == MF_DESC || cgmstate == MF_ELEMLIST ||
-        cgmstate == MF_DEFAULTS || cgmstate == MF_CLOSED )
-   {
+    if (cgmstate == MF_DESC || cgmstate == MF_ELEMLIST ||
+        cgmstate == MF_DEFAULTS || cgmstate == MF_CLOSED) {
 #ifdef DEBUG
-       DMESS "CGMframe: MF Descriptor\n" );
+        DMESS "CGMframe: MF Descriptor\n" );
 #endif
 /*  If in metafile descriptor save file position */
-      CGMfrsave(code);
+        CGMfrsave(code);
 
 /* if ENDMF then save metafile pointer */
-      if (code == ENDMF)
-         if (nosave_meta) nosave_meta = FALSE;
-         else
-         {
-            CGMmfsave();
-            cur_meta++;
-         }
+        if (code == ENDMF)
+            if (nosave_meta) nosave_meta = FALSE;
+            else {
+                CGMmfsave();
+                cur_meta++;
+            }
 
 /* Output Element which may change 'cgmnext' */
-      cgmpresent = cur_frame;
-      cgmnext = target_frame;
-      CGMoutput(code);
-      target_frame = (cgmnext<1 ? 1: cgmnext);
-      cgmabort = 0;
+        cgmpresent = cur_frame;
+        cgmnext = target_frame;
+        CGMoutput(code);
+        target_frame = (cgmnext < 1 ? 1 : cgmnext);
+        cgmabort = 0;
 
-      return (rc) ;
-   }
+        return (rc);
+    }
 
-   if ( code == ENDPIC )
-   {
+    if (code == ENDPIC) {
 #ifdef DEBUG
-       DMESS "CGMframe: End of Picture\n" );
+        DMESS "CGMframe: End of Picture\n" );
 #endif
 
 /*  Save frame at end of picture */
-       CGMfrsave(code);
-       if (cur_frame == target_frame)
-       {
-           cgmnext = cur_frame+1;
-           cgmpresent = cur_frame;
-           CGMoutput(code);
-           target_frame = (cgmnext<1 ? 1: cgmnext);
+        CGMfrsave(code);
+        if (cur_frame == target_frame) {
+            cgmnext = cur_frame + 1;
+            cgmpresent = cur_frame;
+            CGMoutput(code);
+            target_frame = (cgmnext < 1 ? 1 : cgmnext);
 
 /* If reading from stdin then issue error message if positioning backward */
-           if (!cgmrandom)
-           {
-              if (target_frame <= cur_frame)
-                  (void) CGMerror ( "CGMframe", ERR_NOBACKSP, ERROR, NULLSTR);
-              target_frame = cur_frame + 1;
-           }
-           cgmabort = 0;
+            if (!cgmrandom) {
+                if (target_frame <= cur_frame)
+                    (void) CGMerror("CGMframe", ERR_NOBACKSP, ERROR, NULLSTR);
+                target_frame = cur_frame + 1;
+            }
+            cgmabort = 0;
 /* If target is next frame then return */
-           if (target_frame == cur_frame + 1)
-           {
-              cur_frame++;
-              return(rc);
-           }
+            if (target_frame == cur_frame + 1) {
+                cur_frame++;
+                return (rc);
+            }
 /* Else point at target */
-           if (target_frame <= n_frame) frame = target_frame;
-           else frame = n_frame;
-           CGMpoint(frame, &rc);
-       }
-       else cur_frame++;
-   }
-   else  /* For all other codes ie inside a Picture */
-   {
-/* First check if picture is aborted */
-      if ( cgmabort ) return(rc);
-/* Then if new target point to it */
-      if ( target_frame != cur_frame )
-         if (cur_frame == n_frame) return(rc);
-         else
-         {
             if (target_frame <= n_frame) frame = target_frame;
             else frame = n_frame;
             CGMpoint(frame, &rc);
-            cur_frame = frame - 1;
-            rc = ENDPIC;
-         }
+        } else cur_frame++;
+    } else  /* For all other codes ie inside a Picture */
+    {
+/* First check if picture is aborted */
+        if (cgmabort) return (rc);
+/* Then if new target point to it */
+        if (target_frame != cur_frame)
+            if (cur_frame == n_frame) return (rc);
+            else {
+                if (target_frame <= n_frame) frame = target_frame;
+                else frame = n_frame;
+                CGMpoint(frame, &rc);
+                cur_frame = frame - 1;
+                rc = ENDPIC;
+            }
 
-      cgmpresent = cur_frame;
-      CGMoutput(code);
+        cgmpresent = cur_frame;
+        CGMoutput(code);
 
 /* If Picture aborted point to next frame */
-      if (cgmabort)
-      {
-         if ((cur_frame == n_frame) || !cgmrandom) return(rc);
-         frame = cur_frame+1;
-         CGMpoint(frame, &rc);
-         cur_frame = frame-1;
+        if (cgmabort) {
+            if ((cur_frame == n_frame) || !cgmrandom) return (rc);
+            frame = cur_frame + 1;
+            CGMpoint(frame, &rc);
+            cur_frame = frame - 1;
 
-         rc = ENDPIC;
-      }
-   }
-   return (rc);
+            rc = ENDPIC;
+        }
+    }
+    return (rc);
 }
 
 /****************************************************** CGMpoint **/
 
-static void CGMpoint( Int frame, Code *rc )
+static void CGMpoint(Int frame, Code *rc)
 /*  Function to move file to 'frame' */
 {
     struct data_frame *p;
@@ -242,31 +229,27 @@ static void CGMpoint( Int frame, Code *rc )
 #endif
 
 /* Trying to point past the end of file, issue warning  */
-    if (eof_meta && (frame >= n_frame) && !cgmabort)
-    {
-       target_frame = frame = n_frame-1;
-       CGMerror ( "CGMpoint", ERR_SEEKEOF, ERROR, NULLSTR);
+    if (eof_meta && (frame >= n_frame) && !cgmabort) {
+        target_frame = frame = n_frame - 1;
+        CGMerror("CGMpoint", ERR_SEEKEOF, ERROR, NULLSTR);
     }
 
 /* set p to data frame structure */
-    p = &start_frame[frame-1];
+    p = &start_frame[frame - 1];
 /* If different metafile get BEGMF pointer */
-    if (p->index.meta != cur_meta)
-    {
-       cur_meta = p->index.meta;
-       p = &start_meta[cur_meta-1];
-       cur_frame = p->index.frame;
+    if (p->index.meta != cur_meta) {
+        cur_meta = p->index.meta;
+        p = &start_meta[cur_meta - 1];
+        cur_frame = p->index.frame;
 /* if picture is closed then send an ENDMF to driver */
-       if ( cgmstate == PIC_CLOSED )
-       {
-          *rc = ENDMF;
-          nosave_meta = TRUE;
-       }
-    }
-    else cur_frame = frame;
+        if (cgmstate == PIC_CLOSED) {
+            *rc = ENDMF;
+            nosave_meta = TRUE;
+        }
+    } else cur_frame = frame;
 
 /* Move to position set by 'p' */
-    fsetpos(cgmi,&(p->disk_addr));
+    fsetpos(cgmi, &(p->disk_addr));
 #ifdef DEBUG
     DMESS "Now points to (%d/%d): %d\n", cur_frame, cur_meta, frame);
     DMESS "Set pointer to:" );
@@ -282,40 +265,39 @@ static void CGMpoint( Int frame, Code *rc )
 
 /****************************************************** CGMfrsave **/
 
-static void CGMfrsave( Code code)
+static void CGMfrsave(Code code)
 /*  Save frame pointer either in MF descriptor or at ENDPIC
     so that pointer is set to next BEGPICBODY or ENDMF */
 {
-   fpos_t disk_addr;
-   struct data_frame *p;
-   Int i;
+    fpos_t disk_addr;
+    struct data_frame *p;
+    Int i;
 
 #ifdef DEBUG
-   DMESS "CGMfrsave (%d/%d): %04x\n", cur_frame, cur_meta, code );
+    DMESS "CGMfrsave (%d/%d): %04x\n", cur_frame, cur_meta, code );
 #endif
 
 /* If using stdin ignore as we can't position backwards */
-   if (!cgmrandom) return;
+    if (!cgmrandom) return;
 
 /* ignore if not at last frame - we have already recorded it */
-   if (cur_frame != n_frame) return;
+    if (cur_frame != n_frame) return;
 
 /* increment last frame counter at ENDPIC */
-   if (code == ENDPIC) n_frame++;
+    if (code == ENDPIC) n_frame++;
 
 /* Get current file position */
-   fgetpos(cgmi,&disk_addr);
+    fgetpos(cgmi, &disk_addr);
 
 /* Correct any overrun */
-   if(cgmoverrun)
-   {
+    if (cgmoverrun) {
 #ifdef LINUX
-      disk_addr.__pos -= cgmoverrun;
+        disk_addr.__pos -= cgmoverrun;
 #else
-      disk_addr -= cgmoverrun;
+        disk_addr -= cgmoverrun;
 #endif
-      cgmoverrun = 0;
-   }
+        cgmoverrun = 0;
+    }
 
 #ifdef DEBUG
     DMESS "Frame %d/%d pointer:", n_frame, cur_meta );
@@ -326,97 +308,92 @@ static void CGMfrsave( Code code)
 #endif
 
 /* If first time initialise start frame structure */
-   if (start_frame == NULL)
-   {
-      max_frame = NFRAME;
-      start_frame=(struct data_frame *)
-                         MALLOC( max_frame, sizeof(struct data_frame) );
-   }
+    if (start_frame == NULL) {
+        max_frame = NFRAME;
+        start_frame = (struct data_frame *)
+                MALLOC(max_frame, sizeof(struct data_frame));
+    }
 
 /* if we have reached the maximum get more space */
-   if (n_frame == max_frame)
-   {
-      p = start_frame;
-      max_frame += NFRAME;
-      start_frame=(struct data_frame *)
-                         MALLOC( max_frame, sizeof(struct data_frame) );
-      for (i=0; i<n_frame; i++) start_frame[i] = p[i];
-      FREE( p );
+    if (n_frame == max_frame) {
+        p = start_frame;
+        max_frame += NFRAME;
+        start_frame = (struct data_frame *)
+                MALLOC(max_frame, sizeof(struct data_frame));
+        for (i = 0; i < n_frame; i++) start_frame[i] = p[i];
+        FREE(p);
     }
 
 /* Save file pointer and current metafile number */
-    start_frame[n_frame-1].disk_addr = disk_addr;
-    start_frame[n_frame-1].index.meta = cur_meta;
+    start_frame[n_frame - 1].disk_addr = disk_addr;
+    start_frame[n_frame - 1].index.meta = cur_meta;
 
     return;
 }
 
 /****************************************************** CGMmfsave **/
 
-static void CGMmfsave( void )
+static void CGMmfsave(void)
 /*  Save metafile pointer at ENDMF */
 {
-   struct data_frame *pm;
-   Int i;
+    struct data_frame *pm;
+    Int i;
 
 #ifdef DEBUG
-   DMESS "CGMmfsave: %d (%d)\n", cur_meta, n_meta );
+    DMESS "CGMmfsave: %d (%d)\n", cur_meta, n_meta );
 #endif
 
 /* If using stdin ignore as we can't position backwards */
-   if (!cgmrandom) return;
+    if (!cgmrandom) return;
 
 /* ignore if not at last frame - we have already recorded it */
-   if (cur_meta != n_meta) return;
+    if (cur_meta != n_meta) return;
 
 /* initialisation was made by CGMstframe */
-   if (start_meta == NULL)
-   {
-      CGMerror("CGMframe", ERR_RANDOM, RC_FATAL, NULLSTR );
-   }
+    if (start_meta == NULL) {
+        CGMerror("CGMframe", ERR_RANDOM, RC_FATAL, NULLSTR);
+    }
 
 /* Increase memory if structure has reached maximum */
-   if (n_meta == max_meta)
-   {
-      pm = start_meta;
-      max_meta += NMETA;
-      start_meta=(struct data_frame *)
-                         MALLOC( max_meta, sizeof(struct data_frame) );
-      for (i=0; i<n_meta; i++) start_meta[i] = pm[i];
-      FREE( pm );
+    if (n_meta == max_meta) {
+        pm = start_meta;
+        max_meta += NMETA;
+        start_meta = (struct data_frame *)
+                MALLOC(max_meta, sizeof(struct data_frame));
+        for (i = 0; i < n_meta; i++) start_meta[i] = pm[i];
+        FREE(pm);
     }
 
 /* Store pointer to BEGPICBODY */
-    start_meta[n_meta] = start_frame[n_frame-1];
+    start_meta[n_meta] = start_frame[n_frame - 1];
 /* Set index to curent frame */
     start_meta[n_meta].index.frame = cur_frame;
     n_meta++;
 
-   return;
+    return;
 }
 
 /****************************************************** CGMstframe *****/
 
-void CGMstframe( void )
+void CGMstframe(void)
 /* Initialise Metafile data_frame at start of file */
 {
-   fpos_t start_pos;
+    fpos_t start_pos;
 
 /* Don't bother if reading from stdin */
-   if (!cgmrandom) return;
+    if (!cgmrandom) return;
 
 /* start_meta should always be NULL, but check for double call */
-   if (start_meta == NULL)
-   {
-      max_meta = NMETA;
-      start_meta = (struct data_frame *)
-                         MALLOC( max_meta, sizeof(struct data_frame) );
+    if (start_meta == NULL) {
+        max_meta = NMETA;
+        start_meta = (struct data_frame *)
+                MALLOC(max_meta, sizeof(struct data_frame));
 /* Use start_pos as the struct is machine dependent */
-      fgetpos(cgmi,&start_pos);
-      start_meta[0].disk_addr = start_pos;
-      start_meta[0].cur_ptr  =  start_meta[0].end_ptr = NULL;
-      start_meta[0].index.frame = 1;
-   }
+        fgetpos(cgmi, &start_pos);
+        start_meta[0].disk_addr = start_pos;
+        start_meta[0].cur_ptr = start_meta[0].end_ptr = NULL;
+        start_meta[0].index.frame = 1;
+    }
 
 #ifdef DEBUG
     DMESS "Initial frame pointer:" );
@@ -426,7 +403,7 @@ void CGMstframe( void )
 #endif
 #endif
 
-   return;
+    return;
 }
 
 #ifndef HAVE_SETPOS /*  Define routines for fsetpos and fgetpos for old C */

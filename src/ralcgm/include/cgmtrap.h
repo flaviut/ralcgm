@@ -25,16 +25,14 @@
 
 /* Trapezoid (Horizontal Trapezium) */
 typedef struct {
-   float top_left, top_right, top, base_left, base_right, base;
+    float top_left, top_right, top, base_left, base_right, base;
 } Trapezoid;
 
-                          /* Trapezoid Decomposition utilities */
+/* Trapezoid Decomposition utilities */
 
-   void
-      /* Fill Polygon(set) by trapezoid decomposition */
-      TRPfill(Polygonset *, Int ,Float, void (*) ( Int, Trapezoid *) );
-
-
+void
+/* Fill Polygon(set) by trapezoid decomposition */
+TRPfill(Polygonset *, Int, Float, void (*)(Int, Trapezoid *));
 
 
 #endif /* CGMTRAP_H */

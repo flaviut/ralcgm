@@ -30,161 +30,139 @@
 #include "cgmcell.h"
 
 /****************************************************** CELLfill ***/
-void CELLfill ( Long ncells, Long *pi, Tmatrix celtrans,
-                Int nx, Int ny, Int *iy,
-                void (*setcolour)(Index, RGBcolour, Code),
-                void (*filldraw)(Int, Point *, Tmatrix, Int))
+void CELLfill(Long ncells, Long *pi, Tmatrix celtrans,
+              Int nx, Int ny, Int *iy,
+              void (*setcolour)(Index, RGBcolour, Code),
+              void (*filldraw)(Int, Point *, Tmatrix, Int)) {
+    Point celb[4];         /* Boundary of Current Cell */
+    register int i, j;       /* Indices of Current Cell */
+    Long *end;              /* End of Colour Data */
+    RGBcolour dircol;       /* Direct Colour */
+    Logical cellfill = TRUE;  /* True, if cell sequence ready to be filled */
+    Logical newcell = TRUE;   /* True, if new cell array */
 
-{
-  Point  celb[4];         /* Boundary of Current Cell */
-  register int i,j;       /* Indices of Current Cell */
-  Long *end;              /* End of Colour Data */
-  RGBcolour dircol;       /* Direct Colour */
-  Logical cellfill=TRUE;  /* True, if cell sequence ready to be filled */
-  Logical newcell=TRUE;   /* True, if new cell array */
+    if ((nx > 0) && (ny > 0)) {      /* Cell array has positive dimensions */
 
-  if((nx > 0) && (ny > 0))
-  {      /* Cell array has positive dimensions */
+        /* Find end of colour data */
+        if (cur.color_mode == DIRECT) end = pi + ncells + ncells + ncells;
+        else end = pi + ncells;
 
-     /* Find end of colour data */
-     if(cur.color_mode == DIRECT) end = pi+ncells+ncells+ncells;
-     else                         end = pi+ncells;
+        for (j = *iy; j < ny && pi < end; j++) {
+            /* Define cell sequence start */
+            celb[0].x = 0.0;
+            celb[0].y = (float) (j);
+            celb[1].x = 0.0;
+            celb[1].y = (float) (j + 1);
+            /* and Y-coords of cell sequence end */
+            celb[2].y = celb[1].y;
+            celb[3].y = celb[0].y;
 
-     for ( j = *iy; j<ny && pi<end; j++)
-     {
-       /* Define cell sequence start */
-       celb[0].x = 0.0;
-       celb[0].y = (float)(j);
-       celb[1].x = 0.0;
-       celb[1].y = (float)(j+1);
-      /* and Y-coords of cell sequence end */
-       celb[2].y = celb[1].y;
-       celb[3].y = celb[0].y;
+            for (i = 0; i < nx && pi < end; i++) {
+                /* Deal with colour */
+                if (cur.color_mode == DIRECT) {
+                    dircol.red = (Posint) *pi++;
+                    dircol.green = (Posint) *pi++;
+                    dircol.blue = (Posint) *pi++;
+                    setcolour(0, dircol, CELLARRAY);
+                    /* Define X-coords of cell sequence end (one cell) */
+                    celb[2].x = celb[1].x + 1.0;
+                    celb[3].x = celb[0].x + 1.0;
+                } else {  /* Indexed colour */
+                    if (((Index) (*pi) != (Index) (*(pi + 1))) ||
+                        (i + 1 == nx)) {  /* Next Cell in row different colour or not found */
+                        setcolour((Index) *pi, dircol, CELLARRAY);
+                        /* Define X-coords of cell sequence end */
+                        celb[3].x = (float) (i + 1);
+                        celb[2].x = celb[3].x;
+                        cellfill = TRUE;  /* Cell sequence ready to fill */
+                    } else { /* Next cell is same colour: extend cell sequence */
+                        cellfill = FALSE; /* Cell sequence incomplete */
+                    }
+                    pi++;       /* Next Cell */
+                }
 
-       for (i=0; i<nx && pi<end; i++)
-       {
-          /* Deal with colour */
-          if ( cur.color_mode == DIRECT )
-          {
-             dircol.red   = (Posint)*pi++;
-             dircol.green = (Posint)*pi++;
-             dircol.blue  = (Posint)*pi++;
-             setcolour( 0, dircol, CELLARRAY);
-             /* Define X-coords of cell sequence end (one cell) */
-             celb[2].x = celb[1].x + 1.0;
-             celb[3].x = celb[0].x + 1.0;
-          }
-          else
-          {  /* Indexed colour */
-             if(((Index)(*pi) != (Index)(*(pi+1))) || (i+1 == nx))
-             {  /* Next Cell in row different colour or not found */
-                setcolour((Index)*pi,dircol,CELLARRAY);
-                /* Define X-coords of cell sequence end */
-                celb[3].x = (float)(i+1);
-                celb[2].x = celb[3].x;
-                cellfill = TRUE;  /* Cell sequence ready to fill */
-             }
-             else
-             { /* Next cell is same colour: extend cell sequence */
-                cellfill = FALSE; /* Cell sequence incomplete */
-             }
-             pi++;       /* Next Cell */
-          }
+                if (cellfill) {
+                    filldraw(4, celb, celtrans, newcell);
+                    newcell = FALSE;
+                    if (i + 1 != nx) { /* Cell row incomplete */
+                        /* Define next cell sequence start */
+                        celb[0].x = (float) (i + 1);
+                        celb[0].y = (float) (j);
+                        celb[1].x = celb[0].x;
+                        celb[1].y = celb[0].y + 1.0;
+                        /* and Y-coords of its end */
+                        celb[2].y = celb[1].y;
+                        celb[3].y = celb[0].y;
+                        /* NB: We do not assume that filldraw has left celb unchanged. */
+                    }
+                }
+            }             /* End of loop over columns (i) */
+        }               /* End of loop over rows (j) */
 
-          if(cellfill)
-          {
-             filldraw( 4, celb, celtrans, newcell);
-             newcell = FALSE;
-             if(i+1 != nx)
-             { /* Cell row incomplete */
-               /* Define next cell sequence start */
-               celb[0].x = (float)(i+1);
-               celb[0].y = (float)(j);
-               celb[1].x = celb[0].x;
-               celb[1].y = celb[0].y + 1.0;
-               /* and Y-coords of its end */
-               celb[2].y = celb[1].y;
-               celb[3].y = celb[0].y;
-      /* NB: We do not assume that filldraw has left celb unchanged. */
-             }
-          }
-       }             /* End of loop over columns (i) */
-     }               /* End of loop over rows (j) */
-
-     *iy = j;   /* Update first row for next chunk */
-  }
-  else
-  {
+        *iy = j;   /* Update first row for next chunk */
+    } else {
 #ifdef DEBUG
-     DMESS "Cell Array has invalid dimensions %d by %d \n",nx,ny);
+        DMESS "Cell Array has invalid dimensions %d by %d \n",nx,ny);
 #endif
-  }
-  return;
+    }
+    return;
 }
+
 /****************************************************** CELLparget *****/
 
-void CELLparget ( Long *pi, Float *pr,
-                  Point *p, Point *q, Point *r,
-                  Int *nx, Int *ny, Int *lp )
-
-{
-   if (cur.vdc_type == REAL)
-   {
-      p->x = *pr++;  /* Corner P:  First row, First column */
-      p->y = *pr++;
-      q->x = *pr++;  /* Corner Q:  Last row,  Last column */
-      q->y = *pr++;
-      r->x = *pr++;  /* Corner R:  First row, Last column */
-      r->y = *pr++;
-      pi += 6;
-   }
-   else
-   {
-      p->x = *pi++;   /* Corner P: First row, First column */
-      p->y = *pi++;
-      q->x = *pi++;   /* Corner Q: Last row,  Last column */
-      q->y = *pi++;
-      r->x = *pi++;   /* Corner R: First row, Last column */
-      r->y = *pi++;
-   }
-   *nx = *pi++;      /* Number of cells in each Row */
-   *ny = *pi++;      /* Number of cells in each Column */
-   *lp = *pi++;      /* Local Precision */
+void CELLparget(Long *pi, Float *pr,
+                Point *p, Point *q, Point *r,
+                Int *nx, Int *ny, Int *lp) {
+    if (cur.vdc_type == REAL) {
+        p->x = *pr++;  /* Corner P:  First row, First column */
+        p->y = *pr++;
+        q->x = *pr++;  /* Corner Q:  Last row,  Last column */
+        q->y = *pr++;
+        r->x = *pr++;  /* Corner R:  First row, Last column */
+        r->y = *pr++;
+        pi += 6;
+    } else {
+        p->x = *pi++;   /* Corner P: First row, First column */
+        p->y = *pi++;
+        q->x = *pi++;   /* Corner Q: Last row,  Last column */
+        q->y = *pi++;
+        r->x = *pi++;   /* Corner R: First row, Last column */
+        r->y = *pi++;
+    }
+    *nx = *pi++;      /* Number of cells in each Row */
+    *ny = *pi++;      /* Number of cells in each Column */
+    *lp = *pi++;      /* Local Precision */
 
 #ifdef DEBUG
-   DMESS "CELLparget: (%f,%f),(%f,%f),(%f,%f) \n",
-                      p->x,p->y,q->x,q->y,r->x,r->y);
-   DMESS "CELLparget: %d by %d \n",*nx,*ny);
+    DMESS "CELLparget: (%f,%f),(%f,%f),(%f,%f) \n",
+                       p->x,p->y,q->x,q->y,r->x,r->y);
+    DMESS "CELLparget: %d by %d \n",*nx,*ny);
 #endif
 
-   return;
+    return;
 }
+
 /****************************************************** CELLtran *******/
-void CELLtran ( Point p, Point q, Point r, Int nx, Int ny, Tmatrix tm)
+void CELLtran(Point p, Point q, Point r, Int nx, Int ny, Tmatrix tm) {
 
-{
+    if ((nx > 0) && (ny > 0)) {      /* Cell array has positive dimensions */
 
-  if((nx > 0) && (ny > 0))
-  {      /* Cell array has positive dimensions */
-
-     /* Determine the cell array transformation (cell-space to VDC) */
-     tm[0][0] = (double)((r.x-p.x)/(float)nx);
-     tm[0][1] = (double)((r.y-p.y)/(float)nx);
-     tm[1][0] = (double)((q.x-r.x)/(float)ny);
-     tm[1][1] = (double)((q.y-r.y)/(float)ny);
-     tm[2][0] = (double)(p.x);
-     tm[2][1] = (double)(p.y);
+        /* Determine the cell array transformation (cell-space to VDC) */
+        tm[0][0] = (double) ((r.x - p.x) / (float) nx);
+        tm[0][1] = (double) ((r.y - p.y) / (float) nx);
+        tm[1][0] = (double) ((q.x - r.x) / (float) ny);
+        tm[1][1] = (double) ((q.y - r.y) / (float) ny);
+        tm[2][0] = (double) (p.x);
+        tm[2][1] = (double) (p.y);
 #ifdef DEBUG_TM
-     DMESS "CELLtran: Cell Array Transformation \n");
-     DMESS "%f %f %f \n", tm[0][0],tm[1][0],tm[2][0]);
-     DMESS "%f %f %f \n", tm[0][1],tm[1][1],tm[2][1]);
+        DMESS "CELLtran: Cell Array Transformation \n");
+        DMESS "%f %f %f \n", tm[0][0],tm[1][0],tm[2][0]);
+        DMESS "%f %f %f \n", tm[0][1],tm[1][1],tm[2][1]);
 #endif
-  }
-  else
-  {
+    } else {
 #ifdef DEBUG
-     DMESS "Cell Array has invalid dimensions %d by %d \n",nx,ny);
+        DMESS "Cell Array has invalid dimensions %d by %d \n",nx,ny);
 #endif
-  }
-  return;
+    }
+    return;
 }

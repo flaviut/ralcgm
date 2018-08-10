@@ -33,16 +33,16 @@
 #include "cgmtypes.h"
 
 #ifdef CGMINIT_H
-  FILE *cgmerr;
+FILE *cgmerr;
 #else
-  extern FILE *cgmerr;
+extern FILE *cgmerr;
 #endif
 
 /*  Error function call */
-   int CGMerror ( char*, int, Enum, char*);
+int CGMerror(char *, int, Enum, char *);
 
 /* Get Error Count */
-   int CGMcounterr ( void );
+int CGMcounterr(void);
 
 /*  Macro to make life a little simpler  */
 

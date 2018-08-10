@@ -46,23 +46,23 @@
  */
 
 #include "cgmtext.h"
+
 #define CGMBEZ_C
+
 #include "cgmubez.h"
 #include "cgmerr.h"
 #include "cgmfile.h"
 
 static char *func = "CGMbez";
 
-     /*  BezOpen:
-      |  ========
-      |
-      |  Open and intialise the Bezier emulation system.
-      |
-     */
+/*  BezOpen:
+ |  ========
+ |
+ |  Open and intialise the Bezier emulation system.
+ |
+*/
 
-static void BezOpen( void )
-
-{
+static void BezOpen(void) {
     int i, n, ibc, nread;
     char *dirname;
     FILE *dirfile;
@@ -71,10 +71,9 @@ static void BezOpen( void )
     if (B_state == BezOPEN) return;
 
     /*****  Open the font directory  */
-    dirname = CGMpath("fontdir",bezext);
-    dirfile = CGMfopen(dirname,F_READ,BINARY);
-    if (dirfile == NULL)
-    {   /* Exit on the spot if open failed */
+    dirname = CGMpath("fontdir", bezext);
+    dirfile = CGMfopen(dirname, F_READ, BINARY);
+    if (dirfile == NULL) {   /* Exit on the spot if open failed */
         (void) CGMerror(func, ERR_OPENFILE, FATAL, dirname);
         FREE(dirname);
         return;
@@ -82,14 +81,14 @@ static void BezOpen( void )
 
     /*****  Read in the directory, so there is an in-core list of all
             available fonts.                                           */
-    B_dir=(BezDir *)calloc(MaxFonts+1,sizeof(BezDir));
+    B_dir = (BezDir *) calloc(MaxFonts + 1, sizeof(BezDir));
     if (B_dir == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
-    nread = fread( B_dir, sizeof(BezDir), MaxFonts+1, dirfile);
-    if (ferror(dirfile))
-    {
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+    nread = fread(B_dir, sizeof(BezDir), MaxFonts + 1, dirfile);
+    if (ferror(dirfile)) {
         (void) CGMerror(func, ERR_FILCOR, ERROR, dirname);
-        FREE(dirname); FREE(B_dir);
+        FREE(dirname);
+        FREE(B_dir);
         return;
     }
 
@@ -104,10 +103,9 @@ static void BezOpen( void )
 
     /* Realloc, note there is no check on this as it always reduces the
        amount of memory being used                                     */
-    B_dir=(BezDir *)realloc(B_dir, nread*sizeof(BezDir));
-    if ( nread == 0)
-    {   /* No Bezier fonts, give up here */
-        (void) CGMerror(func,ERR_NOFONTS,ERROR,dirname);
+    B_dir = (BezDir *) realloc(B_dir, nread * sizeof(BezDir));
+    if (nread == 0) {   /* No Bezier fonts, give up here */
+        (void) CGMerror(func, ERR_NOFONTS, ERROR, dirname);
         FREE(B_dir);
         fclose(dirfile);
         FREE(dirname);
@@ -117,40 +115,37 @@ static void BezOpen( void )
     FREE(dirname);
 
     /*  Calculate the binomial coefficients used by the algorithm  */
-    for (i=0;i<MaxCoef;i++) for (n=0;n<MaxCoef;n++) B_coef[n][i] = 0;
+    for (i = 0; i < MaxCoef; i++) for (n = 0; n < MaxCoef; n++) B_coef[n][i] = 0;
 
     B_coef[0][0] = 1;
 
-    for (n=1;n<MaxCoef;n++)
-        for (i=0;i<n+1;i++)
-        {
-            ibc = B_coef[n-1][i];
-            B_coef[n][i]   = B_coef[n][i]   + ibc;
-            B_coef[n][i+1] = B_coef[n][i+1] + ibc;
+    for (n = 1; n < MaxCoef; n++)
+        for (i = 0; i < n + 1; i++) {
+            ibc = B_coef[n - 1][i];
+            B_coef[n][i] = B_coef[n][i] + ibc;
+            B_coef[n][i + 1] = B_coef[n][i + 1] + ibc;
         }
 
     /*****  Mark the system as ready to go  */
     B_state = BezOPEN;
 }
 
-     /*  BEZtext:
-      |  ========
-      |
-      |  Draw a given text string using the Bezier emulation system.
-      |
-      */
+/*  BEZtext:
+ |  ========
+ |
+ |  Draw a given text string using the Bezier emulation system.
+ |
+ */
 
-void BEZtext( Textitem *txtit, struct textatt *txtatt, Point txtp,
-              void (*linedraw)(int, Point *, Tmatrix, int) )
-
-{
+void BEZtext(Textitem *txtit, struct textatt *txtatt, Point txtp,
+             void (*linedraw)(int, Point *, Tmatrix, int)) {
     int ichar,              /*  ascii number of character  */
-        stat;               /*  return status from function call  */
+            stat;               /*  return status from function call  */
 
     Point *pt;              /*  pointers into array of centres from txtitem  */
 
     float xscale,
-          yscale;           /*  scaling factors for matrix transformation  */
+            yscale;           /*  scaling factors for matrix transformation  */
 
     Tmatrix tl2vmat,        /*  textline to vdc transformation matrix  */
             xmat;           /*  total transformation matrix  */
@@ -158,27 +153,23 @@ void BEZtext( Textitem *txtit, struct textatt *txtatt, Point txtp,
     char *c;                /*  Pointer to current character in txtit */
 
     /*****  Make sure that the Bezier system is initialised  */
-    if (B_state!=BezOPEN)
-    {
+    if (B_state != BezOPEN) {
         BezOpen();
-        if (B_state!=BezOPEN)
-        {
-            (void) CGMerror(func,ERR_DBUNAV,ERROR,NULLSTR);
+        if (B_state != BezOPEN) {
+            (void) CGMerror(func, ERR_DBUNAV, ERROR, NULLSTR);
             return;
         }
     }
 
     /*****  Make sure the right font is loaded  */
-    if ((B_font==NULL) || (txtit->text_font!=B_font->number))
-    {
-        stat=(txtit->text_font==0)?BezLoad(DefBezFnt)
-                                  :BezLoad(txtit->text_font);
+    if ((B_font == NULL) || (txtit->text_font != B_font->number)) {
+        stat = (txtit->text_font == 0) ? BezLoad(DefBezFnt)
+                                       : BezLoad(txtit->text_font);
         /***** unable to load requested font, use the default one */
-        if (stat==-1)
-        { /***** unable to load  default font, return with error
+        if (stat == -1) { /***** unable to load  default font, return with error
                  and close Bezier system                        */
-            B_state=BezCLOSED;
-            (void) CGMerror(func,ERR_DBUNAV,ERROR,NULLSTR);
+            B_state = BezCLOSED;
+            (void) CGMerror(func, ERR_DBUNAV, ERROR, NULLSTR);
             return;
         }
     }
@@ -196,18 +187,17 @@ void BEZtext( Textitem *txtit, struct textatt *txtatt, Point txtp,
     xscale = (txtit->char_exp) * yscale;
 
     /*****  Calculate what we can of the final transformation matrix  */
-    xmat[0][0]=tl2vmat[0][0]*xscale;
-    xmat[1][0]=tl2vmat[1][0]*yscale;
-    xmat[0][1]=tl2vmat[0][1]*xscale;
-    xmat[1][1]=tl2vmat[1][1]*yscale;
+    xmat[0][0] = tl2vmat[0][0] * xscale;
+    xmat[1][0] = tl2vmat[1][0] * yscale;
+    xmat[0][1] = tl2vmat[0][1] * xscale;
+    xmat[1][1] = tl2vmat[1][1] * yscale;
 
-    for (; *c!='\0' ; c++, pt++)
-    {
+    for (; *c != '\0'; c++, pt++) {
         ichar = (int) *c - 32;
 
         /*****  Finish calculation of the final transformation matrix  */
-        xmat[2][0]=tl2vmat[0][0]*(pt->x)+tl2vmat[1][0]*(pt->y)+tl2vmat[2][0];
-        xmat[2][1]=tl2vmat[0][1]*(pt->x)+tl2vmat[1][1]*(pt->y)+tl2vmat[2][1];
+        xmat[2][0] = tl2vmat[0][0] * (pt->x) + tl2vmat[1][0] * (pt->y) + tl2vmat[2][0];
+        xmat[2][1] = tl2vmat[0][1] * (pt->x) + tl2vmat[1][1] * (pt->y) + tl2vmat[2][1];
 
 #ifdef DEBUG
         fprintf(stderr,"calling BEzDraw\n");
@@ -217,20 +207,18 @@ void BEZtext( Textitem *txtit, struct textatt *txtatt, Point txtp,
     }
 }
 
-     /*  BezLoad:
-      |  =======
-      |
-      |  Load a new font from disk.
-      |
-      */
+/*  BezLoad:
+ |  =======
+ |
+ |  Load a new font from disk.
+ |
+ */
 
-static int BezLoad( Index font )
-
-{
+static int BezLoad(Index font) {
     FILE *binfile;
     char *binname, mess[80];
     int i;
-    BezDir  *dir;
+    BezDir *dir;
     BezFlist *fontptr;
 
 #ifdef DEBUG
@@ -238,107 +226,98 @@ static int BezLoad( Index font )
 #endif
 
     /*****  Look for the font in the font list  *****/
-    for(fontptr=B_fontlist;fontptr!=NULL;fontptr=fontptr->next)
-    {
-        if (font==fontptr->bfont->number)
-        {   /***** EXIT POINT , if font is in list set it to current font
+    for (fontptr = B_fontlist; fontptr != NULL; fontptr = fontptr->next) {
+        if (font == fontptr->bfont->number) {   /***** EXIT POINT , if font is in list set it to current font
                    and then return                                         */
-            B_font=fontptr->bfont;
-            B_char=fontptr->bchar;
-            B_def=fontptr->bdef;
+            B_font = fontptr->bfont;
+            B_char = fontptr->bchar;
+            B_def = fontptr->bdef;
 #ifdef DEBUG
             fprintf(stderr,"Found font %d in Fontlist\n",font);
 #endif
-            return(0);
+            return (0);
         }
     }
 
     /***** and now in the font directory  *****/
-    for (dir = B_dir;(dir->number!=-1) && (dir->number!=font);dir++)
-        ;
+    for (dir = B_dir; (dir->number != -1) && (dir->number != font); dir++);
 
-    if (dir->number==-1)
-    {
-        sprintf(mess,"%d",font);
-        (void) CGMerror(func,ERR_FNTNOTSUP,WARNING,mess);
-        return(-1);
+    if (dir->number == -1) {
+        sprintf(mess, "%d", font);
+        (void) CGMerror(func, ERR_FNTNOTSUP, WARNING, mess);
+        return (-1);
     }
 #ifdef DEBUG
     fprintf(stderr,"Found font %d in directory\n",font);
 #endif
 
     /***** Open the font file */
-    binname=CGMpath(dir->filename,binext);
+    binname = CGMpath(dir->filename, binext);
 #ifdef DEBUG
     fprintf(stderr,"opening file %s\n",binname);
 #endif
     binfile = CGMfopen(binname, F_READ, BINARY);
-    if (binfile == NULL)
-    {
-        (void) CGMerror(func,ERR_FNTNOTOPEN,ERROR,dir->filename);
-        return(-1);
+    if (binfile == NULL) {
+        (void) CGMerror(func, ERR_FNTNOTOPEN, ERROR, dir->filename);
+        return (-1);
     }
 
     /***** Allocate memory for new entry in Fontlist */
-    fontptr = (BezFlist *)calloc(1,sizeof(BezFlist));
+    fontptr = (BezFlist *) calloc(1, sizeof(BezFlist));
     if (fontptr == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
 
     /***** Read in the font header information - only first 5 */
-    fontptr->bfont = (BezFont *)calloc(1,sizeof(BezFont));
+    fontptr->bfont = (BezFont *) calloc(1, sizeof(BezFont));
     if (fontptr->bfont == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
-    i = fread(fontptr->bfont,sizeof(BezFont),1,binfile);
-    sprintf(mess,"%s\n",dir->filename);
-    if ( (i != 1) ||
-         (fontptr->bfont->number != font) ||
-         (fontptr->bfont->charids > MaxChars) ||
-         (fontptr->bfont->defs    > MaxDefs) )
-    {
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+    i = fread(fontptr->bfont, sizeof(BezFont), 1, binfile);
+    sprintf(mess, "%s\n", dir->filename);
+    if ((i != 1) ||
+        (fontptr->bfont->number != font) ||
+        (fontptr->bfont->charids > MaxChars) ||
+        (fontptr->bfont->defs > MaxDefs)) {
         FREE(fontptr->bfont);
         FREE(fontptr);
-        (void) CGMerror(func,ERR_FILCOR,ERROR,mess);
-        return(-1);
+        (void) CGMerror(func, ERR_FILCOR, ERROR, mess);
+        return (-1);
     }
-    fontptr->bchar=(BezChar *)calloc(fontptr->bfont->charids,sizeof(BezChar));
+    fontptr->bchar = (BezChar *) calloc(fontptr->bfont->charids, sizeof(BezChar));
     if (fontptr->bchar == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
-    i = fread(fontptr->bchar,sizeof(BezChar),fontptr->bfont->charids,binfile);
-    if (i != fontptr->bfont->charids)
-    {
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+    i = fread(fontptr->bchar, sizeof(BezChar), fontptr->bfont->charids, binfile);
+    if (i != fontptr->bfont->charids) {
         FREE(fontptr->bchar);
         FREE(fontptr->bfont);
         FREE(fontptr);
-        (void) CGMerror(func,ERR_FILCOR,ERROR,mess);
-        return(-1);
+        (void) CGMerror(func, ERR_FILCOR, ERROR, mess);
+        return (-1);
     }
 
-    fontptr->bdef = (BezDef *)calloc(fontptr->bfont->defs,sizeof(BezDef));
+    fontptr->bdef = (BezDef *) calloc(fontptr->bfont->defs, sizeof(BezDef));
     if (fontptr->bdef == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
-    i = fread(fontptr->bdef,sizeof(BezDef), fontptr->bfont->defs,   binfile);
-    if (i != fontptr->bfont->defs)
-    {
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+    i = fread(fontptr->bdef, sizeof(BezDef), fontptr->bfont->defs, binfile);
+    if (i != fontptr->bfont->defs) {
         FREE(fontptr->bdef);
         FREE(fontptr->bchar);
         FREE(fontptr->bfont);
         FREE(fontptr);
-        (void) CGMerror(func,ERR_FILCOR,ERROR,mess);
-        return(-1);
+        (void) CGMerror(func, ERR_FILCOR, ERROR, mess);
+        return (-1);
     }
 
-    B_font=fontptr->bfont;
-    B_char=fontptr->bchar;
-    B_def=fontptr->bdef;
+    B_font = fontptr->bfont;
+    B_char = fontptr->bchar;
+    B_def = fontptr->bdef;
 
-    fontptr->next=B_fontlist;
-    B_fontlist=fontptr;
+    fontptr->next = B_fontlist;
+    B_fontlist = fontptr;
 
-    if (++B_numfonts> MaxResFonts)
-    {
+    if (++B_numfonts > MaxResFonts) {
         /* find end of fontlist */
-        while(fontptr->next->next!=NULL)
-            fontptr=fontptr->next;
+        while (fontptr->next->next != NULL)
+            fontptr = fontptr->next;
 
         /* FREE storage for last font */
         FREE(fontptr->next->bdef);
@@ -347,7 +326,7 @@ static int BezLoad( Index font )
         FREE(fontptr->next);
 
         /* set last but ones next to NULL */
-        fontptr->next=NULL;
+        fontptr->next = NULL;
         --B_numfonts;
     }
 #ifdef DEBUG
@@ -355,64 +334,57 @@ static int BezLoad( Index font )
 #endif
 
     fclose(binfile);
-    return(0);
+    return (0);
 }
 
-     /*  BEZgetfd:
-     |   =======
-     |
-     |   Put the font details into a Textitem data structure.
-     |
-     */
+/*  BEZgetfd:
+|   =======
+|
+|   Put the font details into a Textitem data structure.
+|
+*/
 
-void BEZgetfd( Textitem *txtit )
-
-{
-  int stat,                /*  return status from function call  */
-      i;                   /*  looping variable  */
-  float maxwidth;          /*  width of widest character  */
+void BEZgetfd(Textitem *txtit) {
+    int stat,                /*  return status from function call  */
+            i;                   /*  looping variable  */
+    float maxwidth;          /*  width of widest character  */
 
 #ifdef DEBUG
-  fprintf(stderr,"Getting font details for font %d \n",txtit->text_font);
+    fprintf(stderr,"Getting font details for font %d \n",txtit->text_font);
 #endif
 
-    if (B_state!=BezOPEN)
-    {
+    if (B_state != BezOPEN) {
         BezOpen();
-        if (B_state!=BezOPEN)
-        {
-            (void) CGMerror(func,ERR_DBUNAV,ERROR,NULLSTR);
+        if (B_state != BezOPEN) {
+            (void) CGMerror(func, ERR_DBUNAV, ERROR, NULLSTR);
             return;
         }
     }
 
     /*****  Make sure the right font is loaded  */
 
-    if ((B_font==NULL) || (txtit->text_font!=B_font->number))
-    {
-        stat=(txtit->text_font==0)?BezLoad(DefBezFnt)
-                                  :BezLoad(txtit->text_font);
+    if ((B_font == NULL) || (txtit->text_font != B_font->number)) {
+        stat = (txtit->text_font == 0) ? BezLoad(DefBezFnt)
+                                       : BezLoad(txtit->text_font);
         /***** unable to load requested font, use the default one */
-        if (stat==-1)
-        { /***** unable to load  defaultfont, return with error
+        if (stat == -1) { /***** unable to load  defaultfont, return with error
                  and close bezier system                        */
-            B_state=BezCLOSED;
-            (void) CGMerror(func,ERR_DBUNAV,ERROR,NULLSTR);
+            B_state = BezCLOSED;
+            (void) CGMerror(func, ERR_DBUNAV, ERROR, NULLSTR);
             return;
         }
     }
 
-    maxwidth=0;
-    for(i=0;i<(B_font->charids);i++)
-    {
-        txtit->rwd[i]=(B_char[i].width)/B_font->height;
-        maxwidth=(B_char[i].width>maxwidth)?B_char[i].width
-                                           :maxwidth;
+    maxwidth = 0;
+    for (i = 0; i < (B_font->charids); i++) {
+        txtit->rwd[i] = (B_char[i].width) / B_font->height;
+        maxwidth = (B_char[i].width > maxwidth) ? B_char[i].width
+                                                : maxwidth;
     }
 
-    txtit->rmaxwd=maxwidth/B_font->height;
-    txtit->rbot= -(B_font->bottom)/B_font->height;
-    txtit->rtop=(B_font->top-B_font->cap)/B_font->height;
+    txtit->rmaxwd = maxwidth / B_font->height;
+    txtit->rbot = -(B_font->bottom) / B_font->height;
+    txtit->rtop = (B_font->top - B_font->cap) / B_font->height;
 
     return;
 }
@@ -425,111 +397,109 @@ void BEZgetfd( Textitem *txtit )
 |
 */
 
-static void BezArc( int ncurve, int ncontrol, BezDef *bez, Point *pbx)
-
-{
+static void BezArc(int ncurve, int ncontrol, BezDef *bez, Point *pbx) {
     int j;
     BezDef *bzc;
 
-    for (j=1;j<ncurve;j++)
-    {
+    for (j = 1; j < ncurve; j++) {
         register double
-               *pbu, *pbv, tmp;
+                *pbu, *pbv, tmp;
         register int
-            *bcoef;         /*  pointer into binomial coefficients array  */
+                *bcoef;         /*  pointer into binomial coefficients array  */
         int i;
         double u, v,
-               px=0.0, py=0.0,
-               bu[8],bv[8],
-               blend;
+                px = 0.0, py = 0.0,
+                bu[8], bv[8],
+                blend;
 
 
         u = (double) j / (double) ncurve;
-        v = 1.0-u;
+        v = 1.0 - u;
 
-        pbu=bu; pbv=bv+ncontrol-1;
-        *pbv=1.0; *pbu=1.0;
+        pbu = bu;
+        pbv = bv + ncontrol - 1;
+        *pbv = 1.0;
+        *pbu = 1.0;
 
-        while(pbv>bv)
-        {
+        while (pbv > bv) {
             tmp = *(pbu) * u;
             *(++pbu) = tmp;
             tmp = *(pbv) * v;
             *(--pbv) = tmp;
         }
 
-        pbu=bu; pbv=bv;
-        bcoef = B_coef[ncontrol-1];
-        for (bzc=bez,i=0;i<ncontrol;i++)
-        {
+        pbu = bu;
+        pbv = bv;
+        bcoef = B_coef[ncontrol - 1];
+        for (bzc = bez, i = 0; i < ncontrol; i++) {
             blend = (double) (*bcoef++) * (*pbu++) * (*pbv++);
             px += bzc->x * blend;
             py += (bzc++)->y * blend;
         }
 
-        pbx->x   = px;
+        pbx->x = px;
         (pbx++)->y = py;
     }
 }
 
-     /*  BezDraw:
-         ======
+/*  BezDraw:
+    ======
 
-         Expand the character, and draw it using supplied line function
+    Expand the character, and draw it using supplied line function
 
-     */
+*/
 
-static void BezDraw(int ichar, Tmatrix xmat,struct textatt *txtatt,
-                   void (*linedraw)(int, Point *, Tmatrix, int))
-{
+static void BezDraw(int ichar, Tmatrix xmat, struct textatt *txtatt,
+                    void (*linedraw)(int, Point *, Tmatrix, int)) {
     Point *pbx,          /*  pointer into target array  */
-          bex[MaxExp];   /*  target array  */
+            bex[MaxExp];   /*  target array  */
     BezDef *bez,         /*  pointer to transformed character definition  */
-           *lp=NULL,
-           *cp=NULL,     /*  pointers into transformed control point list  */
-           *cpend,       /*  pointer to end of transformed point list  */
-           *loc;         /*  pointers to bezier character defintition  */
+            *lp = NULL,
+            *cp = NULL,     /*  pointers into transformed control point list  */
+            *cpend,       /*  pointer to end of transformed point list  */
+            *loc;         /*  pointers to bezier character defintition  */
     double prc = 0.9;
     int ncontrol,        /*  number of control points in bezier curve */
-        ncurve,          /*  number of points in expanded curve */
-        nbez,            /*  number of points in bezier definition  */
-        newchar=TRUE;    /*  boolean newcharacter flag  */
+            ncurve,          /*  number of points in expanded curve */
+            nbez,            /*  number of points in bezier definition  */
+            newchar = TRUE;    /*  boolean newcharacter flag  */
     Tmatrix imat;        /*  identity matirx  */
     float x, y;          /*  used in point transformation  */
 
     /*****  set up identitiy matrix */
-    imat[0][0]=1.0; imat[1][0]=0.0; imat[2][0]=0.0;
-    imat[0][1]=0.0; imat[1][1]=1.0; imat[2][1]=0.0;
+    imat[0][0] = 1.0;
+    imat[1][0] = 0.0;
+    imat[2][0] = 0.0;
+    imat[0][1] = 0.0;
+    imat[1][1] = 1.0;
+    imat[2][1] = 0.0;
 
     /*****  get character component by component  */
     loc = &B_def[B_char[ichar].location];
     nbez = B_char[ichar].numcomp;
 
-    bez = (BezDef *)calloc(nbez, sizeof(BezDef));
+    bez = (BezDef *) calloc(nbez, sizeof(BezDef));
     if (bez == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
     cp = bez;
-    cpend = bez+nbez;
+    cpend = bez + nbez;
 
     /*****  get co-ordinates, transform them and plug into arrays
             for the bezier expansion routine.             */
-    for(;cp<cpend;loc++, cp++)
-    {
+    for (; cp < cpend; loc++, cp++) {
         x = (loc->x);
         y = (loc->y);
 
-        cp->x=x*xmat[0][0]+y*xmat[1][0]+xmat[2][0];
-        cp->y=x*xmat[0][1]+y*xmat[1][1]+xmat[2][1];
-        cp->flag=loc->flag;
+        cp->x = x * xmat[0][0] + y * xmat[1][0] + xmat[2][0];
+        cp->y = x * xmat[0][1] + y * xmat[1][1] + xmat[2][1];
+        cp->flag = loc->flag;
     }
 
-    cp=bez;
-    pbx=bex;
+    cp = bez;
+    pbx = bex;
 
-    while (cp<cpend)
-    {
-        switch(ncontrol=(cp->flag))
-        {
+    while (cp < cpend) {
+        switch (ncontrol = (cp->flag)) {
             case 1:  /* Just another pt  */
 #ifdef DEBUG2
                 fprintf(stderr,"Bezier pt %d\n",ncontrol);
@@ -546,14 +516,13 @@ static void BezDraw(int ichar, Tmatrix xmat,struct textatt *txtatt,
 
                 /*****  Call graphics system to do the drawing from arrays,
                         if less than 3 cant fill so don't send it. */
-                if (pbx-bex > 2)
-                {
-                    linedraw(pbx-bex, bex, imat, newchar);
+                if (pbx - bex > 2) {
+                    linedraw(pbx - bex, bex, imat, newchar);
                     newchar = FALSE;
                 }
 
                 /***** Start from begining of output array again  */
-                pbx=bex;
+                pbx = bex;
 
                 break;
 
@@ -570,19 +539,18 @@ static void BezDraw(int ichar, Tmatrix xmat,struct textatt *txtatt,
 
                 /***** Expand the curve and put it in the target arrays  */
 
-                ncurve=(int)(prc*BezNest(ncontrol, lp, txtatt))+1;
+                ncurve = (int) (prc * BezNest(ncontrol, lp, txtatt)) + 1;
                 if (ncurve < ncontrol) ncurve = ncontrol;
 
-                if (pbx-bex+ncurve > MaxExp)
-                {
-                    (void)CGMerror(func, ERR_CURVE2BIG, WARNING, NULLSTR);
+                if (pbx - bex + ncurve > MaxExp) {
+                    (void) CGMerror(func, ERR_CURVE2BIG, WARNING, NULLSTR);
                     return;
                 }
 
                 BezArc(ncurve, ncontrol, lp, pbx);
 
-                cp += ncontrol-2;
-                pbx += ncurve-1;
+                cp += ncontrol - 2;
+                pbx += ncurve - 1;
 
                 break;
         }
@@ -590,39 +558,36 @@ static void BezDraw(int ichar, Tmatrix xmat,struct textatt *txtatt,
         /***** Put pt in target array*/
         pbx->x = cp->x;
         (pbx++)->y = cp->y;
-        lp=cp++;
+        lp = cp++;
     }
 
     /*****  Call graphics system to do the drawing from arrays,
             if less than 3 cant fill so don't send it. */
-    if (pbx-bex > 2)
-        linedraw(pbx-bex, bex, imat, newchar);
+    if (pbx - bex > 2)
+        linedraw(pbx - bex, bex, imat, newchar);
     FREE(bez);
 
     return;
 }
 
-     /*  BezNest:
-         =======
+/*  BezNest:
+    =======
 
-         Calculate the nominal point allowance for the Bezier curve.
+    Calculate the nominal point allowance for the Bezier curve.
 
-     */
+*/
 
-static double BezNest( int ncontrol, BezDef *bez, struct textatt *txtatt )
-
-{
+static double BezNest(int ncontrol, BezDef *bez, struct textatt *txtatt) {
     int i;
 
     double xxi, yyi,              /*  current control point  */
-           total = 0.0;           /*  sum of squares  */
+            total = 0.0;           /*  sum of squares  */
 
-    for (i=1;i<ncontrol;i++)
-    {
-        xxi = txtatt->shared->xgrain * (bez[i].x - bez[i-1].x);
-        yyi = txtatt->shared->ygrain * (bez[i].y - bez[i-1].y);
-        total += xxi*xxi + yyi*yyi;
+    for (i = 1; i < ncontrol; i++) {
+        xxi = txtatt->shared->xgrain * (bez[i].x - bez[i - 1].x);
+        yyi = txtatt->shared->ygrain * (bez[i].y - bez[i - 1].y);
+        total += xxi * xxi + yyi * yyi;
     }
 
-    return (double) SQRT( (ncontrol-1) * SQRT(total) / 3.0 );
+    return (double) SQRT((ncontrol - 1) * SQRT(total) / 3.0);
 }

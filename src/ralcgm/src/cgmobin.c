@@ -56,18 +56,19 @@ static FILE *cgmob;
 
 /* declare internal functions */
 
-void CGMObin( FILE *stream, Code c, Long *pi, Float *pr, char *str);
-static void MOBopcode( Code, Long ),
-            MOBint( Long, Prec, Enum ),
-            MOBreal( Double, Enum, Enum ),
-            MOBcolour( struct colour *, Enum ),
-            MOBvdc( Int, Long*, Float* ),
-            MOBpointlist( Long, Long*, Float*, Enum),
-            MOBclist( Long, Long*, Prec, Enum, Prec ),
-            MOBbits ( Posint, Prec, Long* ),
-            MOBstring( char* ),
-            MOBout( Posint, Prec ),
-            MOBcharci( Code, Int*, Int* );
+void CGMObin(FILE *stream, Code c, Long *pi, Float *pr, char *str);
+
+static void MOBopcode(Code, Long),
+        MOBint(Long, Prec, Enum),
+        MOBreal(Double, Enum, Enum),
+        MOBcolour(struct colour *, Enum),
+        MOBvdc(Int, Long *, Float *),
+        MOBpointlist(Long, Long *, Float *, Enum),
+        MOBclist(Long, Long *, Prec, Enum, Prec),
+        MOBbits(Posint, Prec, Long *),
+        MOBstring(char *),
+        MOBout(Posint, Prec),
+        MOBcharci(Code, Int *, Int *);
 
 /*  Local Parameters */
 
@@ -116,1770 +117,1653 @@ static void MOBopcode( Code, Long ),
 /* Local Variables */
 
 static size_t mobblen = BUFF_LEN,   /* Normal Output Buffer length */
-            mobparmlen,           /* Parameter length in bytes */
-            mobremainder,         /* Bytes left after partition */
-            mobdeflen,            /* MF Defaults replacement length */
-            mobindex = 0;         /* Output buffer pointer */
+        mobparmlen,           /* Parameter length in bytes */
+        mobremainder,         /* Bytes left after partition */
+        mobdeflen,            /* MF Defaults replacement length */
+        mobindex = 0;         /* Output buffer pointer */
 static char mobstdbuff[BUFF_LEN], /* Normal Output buffer */
-           *mobbuff = mobstdbuff, /* Buffer origin */
-           *mobdefbuff;           /* MF Defaults replacement buffer */
+        *mobbuff = mobstdbuff, /* Buffer origin */
+        *mobdefbuff;           /* MF Defaults replacement buffer */
 
-static char *func="CGMobin", mess[40];
+static char *func = "CGMobin", mess[40];
 
 /********************************************************* CGMObin *****/
 
-void CGMObin( FILE *stream, Code c, Long *pi, Float *pr, char *str)
-{
-   register Long j, n, num;
-   Code major;
-   Long parmlen = ZERO;
-   static Long defindex, saveparmlen;
-   static Logical first = TRUE, first_pic = TRUE;
-   Int class, id;
+void CGMObin(FILE *stream, Code c, Long *pi, Float *pr, char *str) {
+    register Long j, n, num;
+    Code major;
+    Long parmlen = ZERO;
+    static Long defindex, saveparmlen;
+    static Logical first = TRUE, first_pic = TRUE;
+    Int class, id;
 
-   if ( c == (Code) EOF )
-   {
-      MOBout ( (Posint) 0, (Prec) 0); /* flush output buffer */
-      if ( cgmverbose ) (void) fprintf(cgmerr,"Interpreter ended OK\n");
-      exit(0);
-   }
+    if (c == (Code) EOF) {
+        MOBout((Posint) 0, (Prec) 0); /* flush output buffer */
+        if (cgmverbose) (void) fprintf(cgmerr, "Interpreter ended OK\n");
+        exit(0);
+    }
 
-   major=c>>8;
-   num = *pi++;
+    major = c >> 8;
+    num = *pi++;
 
-   switch(major)
-   {
-      case 0x00: /* Graphics Primitives */
+    switch (major) {
+        case 0x00: /* Graphics Primitives */
 
-         switch(c)
-         {
-            case NONOP:  /* Ignore Non-Op */
-               break;
+            switch (c) {
+                case NONOP:  /* Ignore Non-Op */
+                    break;
 
-            case LINE:      /* Polyline */
-            case DISJTLINE: /* Disjoint Polyline */
-            case MARKER: /* Polymarker */
-               parmlen = 2*num*VDCSIZE;
-               if ( first ) MOBopcode(c, parmlen);
-               else         MOBopcode(PARTITION, parmlen);
-               first = ( parmlen >= ZERO );
-               MOBpointlist(num, pi, pr, NOSET);
-               break;
+                case LINE:      /* Polyline */
+                case DISJTLINE: /* Disjoint Polyline */
+                case MARKER: /* Polymarker */
+                    parmlen = 2 * num * VDCSIZE;
+                    if (first) MOBopcode(c, parmlen);
+                    else MOBopcode(PARTITION, parmlen);
+                    first = (parmlen >= ZERO);
+                    MOBpointlist(num, pi, pr, NOSET);
+                    break;
 
-            case TEXT: /* Text */
-               parmlen = 2*VDCSIZE + ENUMSIZE + STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)2, pi, pr);
-               PUTENUM ( num );
-               MOBstring(str);
-               break;
+                case TEXT: /* Text */
+                    parmlen = 2 * VDCSIZE + ENUMSIZE + STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 2, pi, pr);
+                    PUTENUM (num);
+                    MOBstring(str);
+                    break;
 
-            case RESTRTEXT: /* Restricted Text */
-               parmlen = 4*VDCSIZE + ENUMSIZE + STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)4, pi, pr);
-               PUTENUM ( num );
-               MOBstring(str);
-               break;
+                case RESTRTEXT: /* Restricted Text */
+                    parmlen = 4 * VDCSIZE + ENUMSIZE + STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 4, pi, pr);
+                    PUTENUM (num);
+                    MOBstring(str);
+                    break;
 
-            case APNDTEXT: /* Append Text */
-               parmlen = ENUMSIZE + STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               PUTENUM ( num );
-               MOBstring(str);
-               break;
+                case APNDTEXT: /* Append Text */
+                    parmlen = ENUMSIZE + STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    PUTENUM (num);
+                    MOBstring(str);
+                    break;
 
-            case POLYGON: /* Polygon */
-               parmlen = 2*num*VDCSIZE;
-               if ( first ) MOBopcode(c, parmlen);
-               else         MOBopcode(PARTITION, parmlen);
-               first = ( parmlen >= ZERO );
-               MOBpointlist(num, pi, pr, NOSET);
-               break;
+                case POLYGON: /* Polygon */
+                    parmlen = 2 * num * VDCSIZE;
+                    if (first) MOBopcode(c, parmlen);
+                    else MOBopcode(PARTITION, parmlen);
+                    first = (parmlen >= ZERO);
+                    MOBpointlist(num, pi, pr, NOSET);
+                    break;
 
-            case POLYGONSET: /* Polygon Set */
-               parmlen = num * ( 2*VDCSIZE + ENUMSIZE );
-               if ( first ) MOBopcode(c, parmlen);
-               else         MOBopcode(PARTITION, parmlen);
-               first = ( parmlen >= ZERO );
-               MOBpointlist(num, pi, pr, SET);
-               break;
+                case POLYGONSET: /* Polygon Set */
+                    parmlen = num * (2 * VDCSIZE + ENUMSIZE);
+                    if (first) MOBopcode(c, parmlen);
+                    else MOBopcode(PARTITION, parmlen);
+                    first = (parmlen >= ZERO);
+                    MOBpointlist(num, pi, pr, SET);
+                    break;
 
-            case CELLARRAY: /* Cell Array */
-            {
-               register Long *pt = pi, i, k;
-               Long red, green, blue, nc, ncol, run, packed;
-               Long last, lastred, lastgreen, lastblue;
-               static Long nx, ny;
-               static Prec lprec;
-               static Enum runlength;
+                case CELLARRAY: /* Cell Array */
+                {
+                    register Long *pt = pi, i, k;
+                    Long red, green, blue, nc, ncol, run, packed;
+                    Long last, lastred, lastgreen, lastblue;
+                    static Long nx, ny;
+                    static Prec lprec;
+                    static Enum runlength;
 
 /*  Number of colour cells */
 
-               nc = abs( num );
-               ncol = abs(cur.color_mode == DIRECT ? 3*num : num );
+                    nc = abs(num);
+                    ncol = abs(cur.color_mode == DIRECT ? 3 * num : num);
 
-               if ( first )
-               {
+                    if (first) {
 
 /*  set up basic parameter length */
-                  parmlen = 6*VDCSIZE + 3*INTSIZE + ENUMSIZE;
-                  pt += 6;    /* skip 3 points */
-                  nx = *pt++;     /* Number of columns */
-                  ny = *pt++;     /* Number of rows */
-                  j  = *pt++;     /* Local precision */
+                        parmlen = 6 * VDCSIZE + 3 * INTSIZE + ENUMSIZE;
+                        pt += 6;    /* skip 3 points */
+                        nx = *pt++;     /* Number of columns */
+                        ny = *pt++;     /* Number of rows */
+                        j = *pt++;     /* Local precision */
 
-                  if ( j == ZERO || num > 0 )
-                  {
+                        if (j == ZERO || num > 0) {
 
 /*  Find largest colour value if cell within buffer */
 
-                     for ( i = 0, k = 0; i < ncol; i++, pt++ )
-                     {
-                        if ( *pt > k ) k = *pt;
-                     }
-                     j = 0;
-                     while ( k )
-                     {
-                        k >>= 1; j++;
-                     }
-                  }
-                  lprec = ( j <= 1  ?  1
-                          : j <= 2  ?  2
-                          : j <= 4  ?  4
-                          : j <= 8  ?  8
-                          : j <= 16 ? 16
-                          : j <= 24 ? 24
-                                    : 32 );
-                  pt = pi + 9;
-               }
+                            for (i = 0, k = 0; i < ncol; i++, pt++) {
+                                if (*pt > k) k = *pt;
+                            }
+                            j = 0;
+                            while (k) {
+                                k >>= 1;
+                                j++;
+                            }
+                        }
+                        lprec = (j <= 1 ? 1
+                                        : j <= 2 ? 2
+                                                 : j <= 4 ? 4
+                                                          : j <= 8 ? 8
+                                                                   : j <= 16 ? 16
+                                                                             : j <= 24 ? 24
+                                                                                       : 32);
+                        pt = pi + 9;
+                    }
 
 /*  Find number of bytes for both coding methods */
 
-               run = 0; packed = 0;
-               for ( j = 0; j < nc; j += nx )
-               {
+                    run = 0;
+                    packed = 0;
+                    for (j = 0; j < nc; j += nx) {
 
 /*  Make sure row starts on a word boundary  */
 
-                  if ( packed & 1 ) packed++;
-                  if ( run & 1 ) run++;
+                        if (packed & 1) packed++;
+                        if (run & 1) run++;
 
 /*  Calculate length of packed list in bytes per row */
 
-                  packed += ( (cur.color_mode == DIRECT ? 3*nx : nx)
-                               * lprec + 7 )>>3;
+                        packed += ((cur.color_mode == DIRECT ? 3 * nx : nx)
+                                   * lprec + 7) >> 3;
 
 /*  Calculate length of run length in bits */
 
-                  k = 0;
-                  if ( cur.color_mode == INDEXED )
-                  {
-                     last = -1;
-                     for ( i = 0; i < nx; i++, pt++ )
-                     {
-                        if ( *pt != last)
-                        {
-                           k += curbin.int_prec + lprec;
-                           last = *pt;
+                        k = 0;
+                        if (cur.color_mode == INDEXED) {
+                            last = -1;
+                            for (i = 0; i < nx; i++, pt++) {
+                                if (*pt != last) {
+                                    k += curbin.int_prec + lprec;
+                                    last = *pt;
+                                }
+                            }
+                        } else {
+                            lastred = -1;
+                            lastgreen = -1;
+                            lastblue = -1;
+                            for (i = 0; i < nx; i++) {
+                                red = *pt++;
+                                green = *pt++;
+                                blue = *pt++;
+                                if (red != lastred || green != lastgreen
+                                    || blue != lastblue) {
+                                    k += curbin.int_prec + 3 * lprec;
+                                    lastred = red;
+                                    lastgreen = green;
+                                    lastblue = blue;
+                                }
+                            }
                         }
-                     }
-                  }
-                  else
-                  {
-                     lastred = -1; lastgreen = -1; lastblue = -1;
-                     for ( i = 0; i < nx; i++ )
-                     {
-                        red = *pt++; green = *pt++; blue = *pt++;
-                        if ( red != lastred || green != lastgreen
-                                       || blue != lastblue )
-                        {
-                           k += curbin.int_prec + 3*lprec;
-                           lastred = red;
-                           lastgreen = green;
-                           lastblue = blue;
-                        }
-                     }
-                  }
 
 /*  Convert runlength to bytes */
-                  run += (k + 7) >>3;
-               }
+                        run += (k + 7) >> 3;
+                    }
 
-               if ( first )
-               {
+                    if (first) {
 
 /*  Decide which encoding is smallest  */
 
-                  if ( run < packed )
-                  {
-                     runlength = RUNLENGTH;
-                     parmlen += run;
-                  }
-                  else
-                  {
-                     runlength = PACKED;
-                     parmlen += packed;
-                  }
+                        if (run < packed) {
+                            runlength = RUNLENGTH;
+                            parmlen += run;
+                        } else {
+                            runlength = PACKED;
+                            parmlen += packed;
+                        }
 
-                  if ( num < 0 ) parmlen = - parmlen;
-                  MOBopcode(c, parmlen);
+                        if (num < 0) parmlen = -parmlen;
+                        MOBopcode(c, parmlen);
 
-                  MOBvdc ( (Int)6, pi, pr );
-                  PUTINT ( nx );
-                  PUTINT ( ny );
-                  PUTINT ( lprec );
+                        MOBvdc((Int) 6, pi, pr);
+                        PUTINT (nx);
+                        PUTINT (ny);
+                        PUTINT (lprec);
 
-                  pi += 9;
-                  PUTENUM ( runlength );
-               }
-               else
-               {
-                  parmlen = ( runlength = RUNLENGTH ? run : packed );
-                  if ( num < 0 ) parmlen = - parmlen;
-                  MOBopcode(PARTITION, parmlen);
-               }
+                        pi += 9;
+                        PUTENUM (runlength);
+                    } else {
+                        parmlen = (runlength = RUNLENGTH ? run : packed);
+                        if (num < 0) parmlen = -parmlen;
+                        MOBopcode(PARTITION, parmlen);
+                    }
 
 #ifdef DEBUG_CELL
-   DMESS " Cell Array %d (%dx%d) cells (run: %d packed: %d prec: %d)\n",
-                     num, nx, ny, run, packed, lprec);
+                    DMESS " Cell Array %d (%dx%d) cells (run: %d packed: %d prec: %d)\n",
+                                      num, nx, ny, run, packed, lprec);
 #endif
 
-               first = ( num >= ZERO );
+                    first = (num >= ZERO);
 
 /*  Output cell array a row at a time */
 
-               for ( j = 0; j < nc; j += nx )
-               {
+                    for (j = 0; j < nc; j += nx) {
 #ifdef DEBUG_CELL
-   DMESS " Line: %d (%d)\n", j/nx, j );
+                        DMESS " Line: %d (%d)\n", j/nx, j );
 #endif
-                  MOBclist (nx, pi, cur.color_mode, runlength, lprec);
-                  pi += ( cur.color_mode == DIRECT ? 3*nx : nx );
-               }
-               break;
+                        MOBclist(nx, pi, cur.color_mode, runlength, lprec);
+                        pi += (cur.color_mode == DIRECT ? 3 * nx : nx);
+                    }
+                    break;
+                }
+
+                case GDP: /* Generalised Drawing Primitive */
+                    parmlen = 2 * INTSIZE + 2 * num * VDCSIZE + STRINGSIZE(str);
+                    if (first) MOBopcode(c, parmlen);
+                    else MOBopcode(PARTITION, parmlen);
+                    first = (parmlen >= ZERO);
+                    PUTINT (*pi);
+                    PUTINT (num);
+                    MOBpointlist(num, pi, pr, NOSET);
+                    MOBstring(str);
+                    break;
+
+                case RECT: /* Rectangle */
+                    parmlen = 4 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 4, pi, pr);
+                    break;
+
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVPRIM, ERROR, mess);
+                    break;
             }
+            break;
 
-            case GDP: /* Generalised Drawing Primitive */
-               parmlen = 2*INTSIZE + 2*num*VDCSIZE + STRINGSIZE(str);
-               if ( first ) MOBopcode(c, parmlen);
-               else         MOBopcode(PARTITION, parmlen);
-               first = ( parmlen >= ZERO );
-               PUTINT ( *pi );
-               PUTINT ( num );
-               MOBpointlist(num, pi, pr, NOSET);
-               MOBstring(str);
-               break;
+        case 0x30:  /*  Delimiter Elements  */
 
-            case RECT: /* Rectangle */
-               parmlen = 4*VDCSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)4, pi, pr);
-               break;
+            switch (c) {
 
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVPRIM, ERROR, mess);
-               break;
-         }
-         break;
+                case BEGMF: /* Begin Metafile */
+                    cgmob = stream;
+                    curbin = bindef;
+                    parmlen = STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    MOBstring(str);
+                    if (cgmverbose) DMESS "Metafile: %s\n", str);
+                    break;
 
-      case 0x30:  /*  Delimiter Elements  */
+                case ENDMF: /* End Metafile */
+                    MOBopcode(c, (Long) 0);
+                    break;
 
-         switch(c)
-         {
+                case BEGPIC: /* Begin Picture Descriptor */
+                    parmlen = STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    MOBstring(str);
+                    if (first_pic) {
+                        first_pic = FALSE;
+                        mfbin = curbin;
+                    } else
+                        curbin = mfbin;
+                    if (cgmverbose) DMESS "Picture: %s\n", str);
+                    break;
 
-            case BEGMF: /* Begin Metafile */
-               cgmob = stream;
-               curbin = bindef;
-               parmlen = STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               MOBstring(str);
-               if ( cgmverbose ) DMESS "Metafile: %s\n", str);
-               break;
+                case BEGPICBODY: /* Begin Picture Body */
+                    MOBopcode(c, (Long) 0);
+                    break;
 
-            case ENDMF: /* End Metafile */
-               MOBopcode(c, (Long)0 );
-               break;
+                case ENDPIC: /* End  Picture */
+                    MOBopcode(c, (Long) 0);
+                    break;
 
-            case BEGPIC: /* Begin Picture Descriptor */
-               parmlen = STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               MOBstring(str);
-               if ( first_pic )
-               {
-                  first_pic = FALSE;
-                  mfbin = curbin;
-               }
-               else
-                  curbin = mfbin;
-               if ( cgmverbose ) DMESS "Picture: %s\n", str);
-               break;
-
-            case BEGPICBODY: /* Begin Picture Body */
-               MOBopcode(c, (Long)0 );
-               break;
-
-            case ENDPIC: /* End  Picture */
-               MOBopcode(c, (Long)0 );
-               break;
-
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVDELIM, ERROR, mess);
-               break;
-         }
-         break;
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVDELIM, ERROR, mess);
+                    break;
+            }
+            break;
 
 
-      case 0x31: /* Metafile Descriptor Elements */
-         switch(c)
-         {
-            case MFVERSION: /* Metafile version */
-               parmlen = INTSIZE;
-               MOBopcode(c, parmlen);
-               PUTINT ( num );
-               break;
+        case 0x31: /* Metafile Descriptor Elements */
+            switch (c) {
+                case MFVERSION: /* Metafile version */
+                    parmlen = INTSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINT (num);
+                    break;
 
-            case MFDESC: /* Metafile Description */
-               parmlen = STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               MOBstring(str);
-               if ( cgmverbose ) DMESS "Metafile Description: %s\n", str);
-               break;
+                case MFDESC: /* Metafile Description */
+                    parmlen = STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    MOBstring(str);
+                    if (cgmverbose) DMESS "Metafile Description: %s\n", str);
+                    break;
 
-            case VDCTYPE: /* VDC Type */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.vdc_type );
-               break;
+                case VDCTYPE: /* VDC Type */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.vdc_type);
+                    break;
 
-            case INTEGERPREC: /* Integer Precision */
-               parmlen = INTSIZE;
-               MOBopcode(c, parmlen);
-               j = ( cur.int_bits <= 8  ?  8
-                   : cur.int_bits <= 16 ? 16
-                   : cur.int_bits <= 24 ? 24
-                                        :32 );
-               PUTINT ( j );
-               curbin.int_prec = j;
-               break;
+                case INTEGERPREC: /* Integer Precision */
+                    parmlen = INTSIZE;
+                    MOBopcode(c, parmlen);
+                    j = (cur.int_bits <= 8 ? 8
+                                           : cur.int_bits <= 16 ? 16
+                                                                : cur.int_bits <= 24 ? 24
+                                                                                     : 32);
+                    PUTINT (j);
+                    curbin.int_prec = j;
+                    break;
 
-            case REALPREC: /* Real Precision */
-               parmlen = ENUMSIZE + 2*INTSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( curbin.real_type );
-               if ( curbin.real_type == FIXED )
-               { /* NB: only 16,16 and 32,32 are permitted */
-                  curbin.real_whole =
-                     (cur.real_bits > 16 || -cur.real_places > 16 ? 32 : 16);
-                  curbin.real_fraction = curbin.real_whole;
-               }
-               PUTINT ( curbin.real_whole );
-               PUTINT ( curbin.real_fraction );
-               break;
+                case REALPREC: /* Real Precision */
+                    parmlen = ENUMSIZE + 2 * INTSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (curbin.real_type);
+                    if (curbin.real_type == FIXED) { /* NB: only 16,16 and 32,32 are permitted */
+                        curbin.real_whole =
+                                (cur.real_bits > 16 || -cur.real_places > 16 ? 32 : 16);
+                        curbin.real_fraction = curbin.real_whole;
+                    }
+                    PUTINT (curbin.real_whole);
+                    PUTINT (curbin.real_fraction);
+                    break;
 
-            case INDEXPREC: /* Index Precision */
-               parmlen = INTSIZE;
-               MOBopcode(c, parmlen);
-               curbin.index_prec = ( cur.index_bits <=  8 ?  8
-                                   : cur.index_bits <= 16 ? 16
-                                   : cur.index_bits <= 24 ? 24
-                                                          : 32 );
-               PUTINT ( curbin.index_prec );
-               break;
+                case INDEXPREC: /* Index Precision */
+                    parmlen = INTSIZE;
+                    MOBopcode(c, parmlen);
+                    curbin.index_prec = (cur.index_bits <= 8 ? 8
+                                                             : cur.index_bits <= 16 ? 16
+                                                                                    : cur.index_bits <= 24 ? 24
+                                                                                                           : 32);
+                    PUTINT (curbin.index_prec);
+                    break;
 
-            case COLRPREC: /* Colour Precision */
-               parmlen = INTSIZE;
-               MOBopcode(c, parmlen);
-               curbin.col_prec = ( cur.col_bits <=  8 ?  8
-                                 : cur.col_bits <= 16 ? 16
-                                 : cur.col_bits <= 24 ? 24
-                                                      : 32 );
-               PUTINT ( curbin.col_prec );
-               break;
+                case COLRPREC: /* Colour Precision */
+                    parmlen = INTSIZE;
+                    MOBopcode(c, parmlen);
+                    curbin.col_prec = (cur.col_bits <= 8 ? 8
+                                                         : cur.col_bits <= 16 ? 16
+                                                                              : cur.col_bits <= 24 ? 24
+                                                                                                   : 32);
+                    PUTINT (curbin.col_prec);
+                    break;
 
-            case COLRINDEXPREC: /* Colour Index Precision */
-               parmlen = INTSIZE;
-               MOBopcode(c, parmlen);
-               curbin.colind_prec = ( cur.colind_bits <=  8 ?  8
-                                    : cur.colind_bits <= 16 ? 16
-                                    : cur.colind_bits <= 24 ? 24
-                                                            : 32 );
-               PUTINT ( curbin.colind_prec );
-               break;
+                case COLRINDEXPREC: /* Colour Index Precision */
+                    parmlen = INTSIZE;
+                    MOBopcode(c, parmlen);
+                    curbin.colind_prec = (cur.colind_bits <= 8 ? 8
+                                                               : cur.colind_bits <= 16 ? 16
+                                                                                       : cur.colind_bits <= 24 ? 24
+                                                                                                               : 32);
+                    PUTINT (curbin.colind_prec);
+                    break;
 
-            case MAXCOLRINDEX: /* Maximum Colour Index */
-               parmlen = COLINDEXSIZE;
-               MOBopcode(c, parmlen);
-               MOBint (cur.max_colind, curbin.colind_prec, UNSIGNED);
-               break;
+                case MAXCOLRINDEX: /* Maximum Colour Index */
+                    parmlen = COLINDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBint(cur.max_colind, curbin.colind_prec, UNSIGNED);
+                    break;
 
-            case COLRVALUEEXT: /* Colour value extent */
-               parmlen = 6 * curbin.col_prec >>3;
-               MOBopcode(c, parmlen);
-               curbin.min_rgb.red   = cur.min_rgb.red;
-               curbin.min_rgb.green = cur.min_rgb.green;
-               curbin.min_rgb.blue  = cur.min_rgb.blue;
-               MOBcolour ( &curbin.min_rgb, DIRECT );
-               curbin.max_rgb.red   = cur.max_rgb.red;
-               curbin.max_rgb.green = cur.max_rgb.green;
-               curbin.max_rgb.blue  = cur.max_rgb.blue;
-               MOBcolour ( &curbin.max_rgb, DIRECT );
-               break;
+                case COLRVALUEEXT: /* Colour value extent */
+                    parmlen = 6 * curbin.col_prec >> 3;
+                    MOBopcode(c, parmlen);
+                    curbin.min_rgb.red = cur.min_rgb.red;
+                    curbin.min_rgb.green = cur.min_rgb.green;
+                    curbin.min_rgb.blue = cur.min_rgb.blue;
+                    MOBcolour(&curbin.min_rgb, DIRECT);
+                    curbin.max_rgb.red = cur.max_rgb.red;
+                    curbin.max_rgb.green = cur.max_rgb.green;
+                    curbin.max_rgb.blue = cur.max_rgb.blue;
+                    MOBcolour(&curbin.max_rgb, DIRECT);
+                    break;
 
-            case MFELEMLIST: /* Metafile element List */
-               parmlen = INTSIZE + 2*num*INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINT ( num );
-               for(n = 0; n < num; n++, pi++)
-               {
-                  switch ( (Int)*pi )
-                  {
-                     case 0:
-                     case 1:
-                        class = -1; id = (Int)*pi;
-                        break;
-                     default:
-                        MOBcharci( (Code)*pi, &class, &id);
-                        break;
-                  }
-                  PUTINDEX ( class );
-                  PUTINDEX ( id );
-               }
-               break;
+                case MFELEMLIST: /* Metafile element List */
+                    parmlen = INTSIZE + 2 * num * INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINT (num);
+                    for (n = 0; n < num; n++, pi++) {
+                        switch ((Int) *pi) {
+                            case 0:
+                            case 1:
+                                class = -1;
+                                id = (Int) *pi;
+                                break;
+                            default:
+                                MOBcharci((Code) *pi, &class, &id);
+                                break;
+                        }
+                        PUTINDEX (class);
+                        PUTINDEX (id);
+                    }
+                    break;
 
-            case BEGMFDEFAULTS: /* Begin Metafile defaults Replacement */
+                case BEGMFDEFAULTS: /* Begin Metafile defaults Replacement */
 #ifdef DEBUG
-    DMESS "\nBegin MF defaults replacement\n");
+                    DMESS "\nBegin MF defaults replacement\n");
 #endif
 /*  Save current index value */
-               defindex = mobindex;
-               saveparmlen = mobparmlen;
-               mobparmlen = 0;
+                    defindex = mobindex;
+                    saveparmlen = mobparmlen;
+                    mobparmlen = 0;
 /*  Create new buffer  */
-               mobblen = ARRAY_MAX;
-               mobbuff = mobdefbuff = (char *) malloc( (size_t)mobblen );
-               mobindex = 0;
-               break;
+                    mobblen = ARRAY_MAX;
+                    mobbuff = mobdefbuff = (char *) malloc((size_t) mobblen);
+                    mobindex = 0;
+                    break;
 
-            case ENDMFDEFAULTS: /* End Metafile defaults Replacement */
+                case ENDMFDEFAULTS: /* End Metafile defaults Replacement */
 /*  reset buffer and index  */
-               mobbuff = mobstdbuff;
-               mobdeflen = mobindex;
-               mobindex = defindex;
-               mobblen = BUFF_LEN;
-               mobparmlen = saveparmlen;
-               MOBopcode(BEGMFDEFAULTS, mobdeflen);
+                    mobbuff = mobstdbuff;
+                    mobdeflen = mobindex;
+                    mobindex = defindex;
+                    mobblen = BUFF_LEN;
+                    mobparmlen = saveparmlen;
+                    MOBopcode(BEGMFDEFAULTS, mobdeflen);
 
 /* copy defaults buffer to output */
-               for ( n = 0; n < mobdeflen; n++ )
-                     PUTBYTE( mobdefbuff[n] );
-               FREE( mobdefbuff );
+                    for (n = 0; n < mobdeflen; n++)
+                        PUTBYTE(mobdefbuff[n]);
+                    FREE(mobdefbuff);
 #ifdef DEBUG
-    DMESS "\nEnd MF defaults replacement\n");
+                    DMESS "\nEnd MF defaults replacement\n");
 #endif
-               break;
+                    break;
 
-            case FONTLIST: /* Font List */
-            {
-               register Long *pt = pi;
+                case FONTLIST: /* Font List */
+                {
+                    register Long *pt = pi;
 
-               for ( j=0, parmlen=0; j < num; j = *pt++ )
-                                   parmlen += STRINGSIZE( &str[j] );
-               MOBopcode(c, parmlen);
-               for ( j=0, pt = pi; j < num; j = *pt++ )
-                                   MOBstring( &str[j] );
-               break;
+                    for (j = 0, parmlen = 0; j < num; j = *pt++)
+                        parmlen += STRINGSIZE(&str[j]);
+                    MOBopcode(c, parmlen);
+                    for (j = 0, pt = pi; j < num; j = *pt++)
+                        MOBstring(&str[j]);
+                    break;
+                }
+
+                case CHARSETLIST: /* Character set list */
+                {
+                    register Long *pt = pi;
+
+                    for (j = 0, parmlen = 0; j < num; j = *pt++) {
+                        parmlen += ENUMSIZE + STRINGSIZE(&str[j]);
+                        pt++;
+                    }
+                    MOBopcode(c, parmlen);
+                    for (j = 0, pt = pi; j < num; j = *pt++) {
+                        PUTENUM (*pt++);
+                        MOBstring(&str[j]);
+                    }
+                    break;
+                }
+
+                case CHARCODING: /* Character coding Announcer */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (num);
+                    break;
+
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVMFDESC, ERROR, mess);
+                    break;
             }
+            break;
 
-            case CHARSETLIST: /* Character set list */
-            {
-               register Long *pt = pi;
+        case 0x32: /* Picture Descriptor Elements */
+            switch (c) {
+                case SCALEMODE: /* Scaling Mode */
+                    parmlen = ENUMSIZE + REALSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.scale_mode);
+                    MOBreal((Double) cur.scale_factor, FLOATING, REAL);
+                    break;
 
-               for ( j=0, parmlen=0; j < num; j = *pt++ )
-               {
-                  parmlen += ENUMSIZE + STRINGSIZE(&str[j]);
-                  pt++;
-               }
-               MOBopcode(c, parmlen);
-               for ( j=0, pt = pi; j < num; j = *pt++ )
-               {
-                  PUTENUM ( *pt++ );
-                  MOBstring( &str[j] );
-               }
-               break;
+                case COLRMODE: /* Colour Selection Mode */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.color_mode);
+                    break;
+
+                case LINEWIDTHMODE: /* Line width Specification */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.linewidth_mode);
+                    break;
+
+                case MARKERSIZEMODE: /* Marker size Specification */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.markersize_mode);
+                    break;
+
+                case EDGEWIDTHMODE: /* Edge width Specification */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.edgewidth_mode);
+                    break;
+
+                case VDCEXT: /* VDC Extent */
+                    parmlen = 4 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    if (cur.vdc_type == REAL) {
+                        PUTREALVDC (cur.vdc_extent.a.x.real);
+                        PUTREALVDC (cur.vdc_extent.a.y.real);
+                        PUTREALVDC (cur.vdc_extent.b.x.real);
+                        PUTREALVDC (cur.vdc_extent.b.y.real);
+                    } else {
+                        PUTINTVDC (cur.vdc_extent.a.x.intr);
+                        PUTINTVDC (cur.vdc_extent.a.y.intr);
+                        PUTINTVDC (cur.vdc_extent.b.x.intr);
+                        PUTINTVDC (cur.vdc_extent.b.y.intr);
+                    }
+                    break;
+
+                case BACKCOLR: /* Background Colour */
+                    parmlen = 3 * curbin.col_prec >> 3;
+                    MOBopcode(c, parmlen);
+                    MOBcolour(&cur.back, DIRECT);
+                    break;
+
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVPDESC, ERROR, mess);
             }
+            break;
 
-            case CHARCODING: /* Character coding Announcer */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( num );
-               break;
+        case 0x33:  /* Control Elements */
+            switch (c) {
+                case VDCINTEGERPREC: /* VDC Integer Precision */
+                    parmlen = INTSIZE;
+                    MOBopcode(c, parmlen);
+                    curbin.vdcint_prec = (cur.vdcint_bits <= 8 ? 8
+                                                               : cur.int_bits <= 16 ? 16
+                                                                                    : cur.int_bits <= 24 ? 24
+                                                                                                         : 32);
+                    PUTINT (curbin.vdcint_prec);
+                    break;
 
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVMFDESC, ERROR, mess);
-               break;
-         }
-         break;
+                case VDCREALPREC: /* VDC Real Precision */
+                    parmlen = ENUMSIZE + 2 * INTSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (curbin.vdc_type);
+                    if (curbin.real_type == FIXED) {  /* NB: only 16,16 or 32,32 permitted */
+                        curbin.vdc_whole =
+                                (cur.vdc_bits > 16 || -cur.vdc_places > 16 ? 32 : 16);
+                        curbin.vdc_fraction = curbin.vdc_whole;
+                    }
+                    PUTINT (curbin.vdc_whole);
+                    PUTINT (curbin.vdc_fraction);
+                    break;
 
-      case 0x32: /* Picture Descriptor Elements */
-         switch(c)
-         {
-            case SCALEMODE: /* Scaling Mode */
-               parmlen = ENUMSIZE + REALSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.scale_mode );
-               MOBreal ( (Double)cur.scale_factor, FLOATING, REAL );
-               break;
+                case AUXCOLR: /* Auxiliary Colour */
+                    parmlen = COLOURSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBcolour(&cur.aux, cur.color_mode);
+                    break;
 
-            case COLRMODE: /* Colour Selection Mode */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.color_mode );
-               break;
+                case TRANSPARENCY: /* Transparency */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.transparency);
+                    break;
 
-            case LINEWIDTHMODE: /* Line width Specification */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.linewidth_mode );
-               break;
+                case CLIPRECT: /* Clip Rectangle */
+                    parmlen = 4 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    if (cur.vdc_type == REAL) {
+                        PUTREALVDC (cur.clip_rect.a.x.real);
+                        PUTREALVDC (cur.clip_rect.a.y.real);
+                        PUTREALVDC (cur.clip_rect.b.x.real);
+                        PUTREALVDC (cur.clip_rect.b.y.real);
+                    } else {
+                        PUTINTVDC (cur.clip_rect.a.x.intr);
+                        PUTINTVDC (cur.clip_rect.a.y.intr);
+                        PUTINTVDC (cur.clip_rect.b.x.intr);
+                        PUTINTVDC (cur.clip_rect.b.y.intr);
+                    }
+                    break;
 
-            case MARKERSIZEMODE: /* Marker size Specification */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.markersize_mode );
-               break;
+                case CLIP: /* Clip Indicator */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (cur.clip_ind);
+                    break;
 
-            case EDGEWIDTHMODE: /* Edge width Specification */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.edgewidth_mode );
-               break;
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVCONT, ERROR, mess);
+                    break;
+            }
+            break;
 
-            case VDCEXT: /* VDC Extent */
-               parmlen = 4*VDCSIZE;
-               MOBopcode(c, parmlen);
-               if (cur.vdc_type == REAL)
-               {
-                 PUTREALVDC ( cur.vdc_extent.a.x.real );
-                 PUTREALVDC ( cur.vdc_extent.a.y.real );
-                 PUTREALVDC ( cur.vdc_extent.b.x.real );
-                 PUTREALVDC ( cur.vdc_extent.b.y.real );
-               }
-               else
-               {
-                 PUTINTVDC ( cur.vdc_extent.a.x.intr );
-                 PUTINTVDC ( cur.vdc_extent.a.y.intr );
-                 PUTINTVDC ( cur.vdc_extent.b.x.intr );
-                 PUTINTVDC ( cur.vdc_extent.b.y.intr );
-               }
-               break;
+        case 0x34: /* Circles and Ellipses */
+            switch (c) {
+                case CIRCLE: /* Circle */
+                    parmlen = 3 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 3, pi, pr);
+                    break;
 
-            case BACKCOLR: /* Background Colour */
-               parmlen = 3 * curbin.col_prec >>3;
-               MOBopcode(c, parmlen);
-               MOBcolour( &cur.back, DIRECT );
-               break;
+                case ARC3PT: /* Circular Arc  3 point */
+                    parmlen = 6 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 6, pi, pr);
+                    break;
 
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVPDESC, ERROR, mess);
-         }
-         break;
+                case ARC3PTCLOSE: /* Circular Arc  3 point close */
+                    parmlen = 6 * VDCSIZE + ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 6, pi, pr);
+                    PUTENUM (*(pi + 6));
+                    break;
 
-      case 0x33:  /* Control Elements */
-         switch(c)
-         {
-            case VDCINTEGERPREC: /* VDC Integer Precision */
-               parmlen = INTSIZE;
-               MOBopcode(c, parmlen);
-               curbin.vdcint_prec = ( cur.vdcint_bits <= 8  ?  8
-                                    : cur.int_bits <= 16 ? 16
-                                    : cur.int_bits <= 24 ? 24
-                                                         :32 );
-               PUTINT ( curbin.vdcint_prec );
-               break;
+                case ARCCTR: /* Circle Arc centre */
+                    parmlen = 7 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 7, pi, pr);
+                    break;
 
-            case VDCREALPREC: /* VDC Real Precision */
-               parmlen = ENUMSIZE + 2*INTSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( curbin.vdc_type );
-               if ( curbin.real_type == FIXED )
-               {  /* NB: only 16,16 or 32,32 permitted */
-                  curbin.vdc_whole =
-                     (cur.vdc_bits > 16 || -cur.vdc_places > 16 ? 32 : 16);
-                  curbin.vdc_fraction = curbin.vdc_whole;
-               }
-               PUTINT ( curbin.vdc_whole );
-               PUTINT ( curbin.vdc_fraction );
-               break;
+                case ARCCTRCLOSE: /* Circle Arc centre close */
+                    parmlen = 7 * VDCSIZE + ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 7, pi, pr);
+                    PUTENUM (*(pi + 7));
+                    break;
 
-            case AUXCOLR: /* Auxiliary Colour */
-               parmlen = COLOURSIZE;
-               MOBopcode(c, parmlen);
-               MOBcolour( &cur.aux, cur.color_mode );
-               break;
+                case ELLIPSE: /* Ellipse */
+                    parmlen = 6 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 6, pi, pr);
+                    break;
 
-            case TRANSPARENCY: /* Transparency */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.transparency );
-               break;
+                case ELLIPARC: /* Elliptical Arc */
+                    parmlen = 10 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 10, pi, pr);
+                    break;
 
-            case CLIPRECT: /* Clip Rectangle */
-               parmlen = 4*VDCSIZE;
-               MOBopcode(c, parmlen);
-               if ( cur.vdc_type == REAL )
-               {
-                 PUTREALVDC ( cur.clip_rect.a.x.real );
-                 PUTREALVDC ( cur.clip_rect.a.y.real );
-                 PUTREALVDC ( cur.clip_rect.b.x.real );
-                 PUTREALVDC ( cur.clip_rect.b.y.real );
-               }
-               else
-               {
-                 PUTINTVDC ( cur.clip_rect.a.x.intr );
-                 PUTINTVDC ( cur.clip_rect.a.y.intr );
-                 PUTINTVDC ( cur.clip_rect.b.x.intr );
-                 PUTINTVDC ( cur.clip_rect.b.y.intr );
-               }
-               break;
+                case ELLIPARCCLOSE: /* Elliptical Arc close */
+                    parmlen = 10 * VDCSIZE + ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBvdc((Int) 10, pi, pr);
+                    PUTENUM (*(pi + 10));
+                    break;
 
-            case CLIP: /* Clip Indicator */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( cur.clip_ind );
-               break;
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVOUT, ERROR, mess);
+                    break;
+            }
+            break;
 
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVCONT, ERROR, mess);
-               break;
-         }
-         break;
+        case 0x35: /* Attributes */
 
-      case 0x34: /* Circles and Ellipses */
-         switch(c)
-         {
-            case CIRCLE: /* Circle */
-               parmlen = 3*VDCSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)3, pi, pr );
-               break;
+            switch (c) {
+                case LINEINDEX: /* Line Bundle index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.line_ind);
+                    break;
 
-            case ARC3PT: /* Circular Arc  3 point */
-               parmlen = 6*VDCSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)6, pi, pr );
-               break;
+                case LINETYPE: /* Line Type */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.line_type);
+                    break;
 
-            case ARC3PTCLOSE: /* Circular Arc  3 point close */
-               parmlen = 6*VDCSIZE + ENUMSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)6, pi, pr );
-               PUTENUM ( *(pi+6) );
-               break;
+                case LINEWIDTH: /* Line Width */
+                    if (cur.linewidth_mode == SCALED) {
+                        parmlen = REALSIZE;
+                        MOBopcode(c, parmlen);
+                        PUTREAL (curatt.line_width.real);
+                    } else {
+                        parmlen = VDCSIZE;
+                        MOBopcode(c, parmlen);
+                        if (cur.vdc_type == REAL)
+                            PUTREALVDC (curatt.line_width.real);
+                        else
+                            PUTINTVDC (curatt.line_width.intr);
+                    }
+                    break;
 
-            case ARCCTR: /* Circle Arc centre */
-               parmlen = 7*VDCSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)7, pi, pr );
-               break;
+                case LINECOLR: /* Line Colour */
+                    parmlen = COLOURSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBcolour(&curatt.line, cur.color_mode);
+                    break;
 
-            case ARCCTRCLOSE: /* Circle Arc centre close */
-               parmlen = 7*VDCSIZE + ENUMSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)7, pi, pr );
-               PUTENUM ( *(pi+7) );
-               break;
+                case MARKERINDEX: /* Marker Bundle index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.mark_ind);
+                    break;
 
-            case ELLIPSE: /* Ellipse */
-               parmlen = 6*VDCSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)6, pi, pr );
-               break;
+                case MARKERTYPE: /* Marker Type */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.mark_type);
+                    break;
 
-            case ELLIPARC: /* Elliptical Arc */
-               parmlen = 10*VDCSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)10, pi, pr );
-               break;
+                case MARKERSIZE: /* Marker Size */
+                    if (cur.markersize_mode == SCALED) {
+                        parmlen = REALSIZE;
+                        MOBopcode(c, parmlen);
+                        PUTREAL (curatt.mark_size.real);
+                    } else {
+                        parmlen = VDCSIZE;
+                        MOBopcode(c, parmlen);
+                        if (cur.vdc_type == REAL)
+                            PUTREALVDC (curatt.mark_size.real);
+                        else
+                            PUTINTVDC (curatt.mark_size.intr);
+                    }
+                    break;
 
-            case ELLIPARCCLOSE: /* Elliptical Arc close */
-               parmlen = 10*VDCSIZE + ENUMSIZE;
-               MOBopcode(c, parmlen);
-               MOBvdc( (Int)10, pi, pr );
-               PUTENUM ( *(pi+10) );
-               break;
+                case MARKERCOLR: /* Marker Colour */
+                    parmlen = COLOURSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBcolour(&curatt.marker, cur.color_mode);
+                    break;
 
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVOUT, ERROR, mess);
-               break;
-         }
-         break;
+                case TEXTINDEX: /* Text Bundle index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.text_ind);
+                    break;
 
-      case 0x35: /* Attributes */
+                case TEXTFONTINDEX: /* Text Font Index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.text_font);
+                    break;
 
-         switch(c)
-         {
-            case LINEINDEX: /* Line Bundle index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.line_ind );
-               break;
+                case TEXTPREC: /* Text Precision */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (curatt.text_prec);
+                    break;
 
-            case LINETYPE: /* Line Type */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.line_type );
-               break;
+                case CHAREXPAN: /* Character Expansion Factor */
+                    parmlen = REALSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTREAL (curatt.char_exp);
+                    break;
 
-            case LINEWIDTH: /* Line Width */
-               if(cur.linewidth_mode == SCALED)
-               {
-                 parmlen = REALSIZE;
-                 MOBopcode(c, parmlen);
-                 PUTREAL ( curatt.line_width.real );
-               }
-               else
-               {
-                 parmlen = VDCSIZE;
-                 MOBopcode(c, parmlen);
-                 if ( cur.vdc_type == REAL )
-                      PUTREALVDC ( curatt.line_width.real );
-                 else PUTINTVDC ( curatt.line_width.intr );
-               }
-               break;
+                case CHARSPACE: /* Character Spacing */
+                    parmlen = REALSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTREAL (curatt.char_space);
+                    break;
 
-            case LINECOLR: /* Line Colour */
-               parmlen = COLOURSIZE;
-               MOBopcode(c, parmlen);
-               MOBcolour( &curatt.line, cur.color_mode);
-               break;
+                case TEXTCOLR: /* Text Colour */
+                    parmlen = COLOURSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBcolour(&curatt.text, cur.color_mode);
+                    break;
 
-            case MARKERINDEX: /* Marker Bundle index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.mark_ind );
-               break;
+                case CHARHEIGHT: /* Character Height */
+                    parmlen = VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    if (cur.vdc_type == REAL)
+                        PUTREALVDC (curatt.char_height.real);
+                    else
+                        PUTINTVDC (curatt.char_height.intr);
+                    break;
 
-            case MARKERTYPE: /* Marker Type */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.mark_type );
-               break;
+                case CHARORI: /* Character Orientation */
+                    parmlen = 4 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    if (cur.vdc_type == REAL) {
+                        PUTREALVDC (curatt.char_up.x.real);
+                        PUTREALVDC (curatt.char_up.y.real);
+                        PUTREALVDC (curatt.char_base.x.real);
+                        PUTREALVDC (curatt.char_base.y.real);
+                    } else {
+                        PUTINTVDC (curatt.char_up.x.intr);
+                        PUTINTVDC (curatt.char_up.y.intr);
+                        PUTINTVDC (curatt.char_base.x.intr);
+                        PUTINTVDC (curatt.char_base.y.intr);
+                    }
+                    break;
 
-            case MARKERSIZE: /* Marker Size */
-               if(cur.markersize_mode == SCALED)
-               {
-                 parmlen = REALSIZE;
-                 MOBopcode(c, parmlen);
-                 PUTREAL ( curatt.mark_size.real );
-               }
-               else
-               {
-                 parmlen = VDCSIZE;
-                 MOBopcode(c, parmlen);
-                 if ( cur.vdc_type == REAL )
-                      PUTREALVDC ( curatt.mark_size.real );
-                 else PUTINTVDC ( curatt.mark_size.intr );
-               }
-               break;
+                case TEXTPATH: /* Text Path */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (curatt.text_path);
+                    break;
 
-            case MARKERCOLR: /* Marker Colour */
-               parmlen = COLOURSIZE;
-               MOBopcode(c, parmlen);
-               MOBcolour( &curatt.marker, cur.color_mode);
-               break;
+                case TEXTALIGN:       /*  Text Alignment */
+                    parmlen = 2 * ENUMSIZE + 2 * REALSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (curatt.text_halign);
+                    PUTENUM (curatt.text_valign);
+                    PUTREAL (curatt.text_hcont);
+                    PUTREAL (curatt.text_vcont);
+                    break;
 
-            case TEXTINDEX: /* Text Bundle index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.text_ind );
-               break;
+                case CHARSETINDEX: /* Character Set Index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.char_set);
+                    break;
 
-            case TEXTFONTINDEX: /* Text Font Index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.text_font );
-               break;
+                case ALTCHARSETINDEX: /* Alt Character Set Index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.altchar_set);
+                    break;
 
-            case TEXTPREC: /* Text Precision */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( curatt.text_prec );
-               break;
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVATT, ERROR, mess);
+                    break;
+            }
+            break;
 
-            case CHAREXPAN: /* Character Expansion Factor */
-               parmlen = REALSIZE;
-               MOBopcode(c, parmlen);
-               PUTREAL ( curatt.char_exp );
-               break;
+        case 0x36: /* More Attributes */
+            switch (c) {
+                case FILLINDEX: /* Fill Bundle index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX (curatt.fill_ind);
+                    break;
 
-            case CHARSPACE: /* Character Spacing */
-               parmlen = REALSIZE;
-               MOBopcode(c, parmlen);
-               PUTREAL ( curatt.char_space );
-               break;
+                case INTSTYLE: /* Interior Style */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (curatt.int_style);
+                    break;
 
-            case TEXTCOLR: /* Text Colour */
-               parmlen = COLOURSIZE;
-               MOBopcode(c, parmlen);
-               MOBcolour( &curatt.text, cur.color_mode);
-               break;
+                case FILLCOLR: /* Fill Colour */
+                    parmlen = COLOURSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBcolour(&curatt.fill, cur.color_mode);
+                    break;
 
-            case CHARHEIGHT: /* Character Height */
-               parmlen = VDCSIZE;
-               MOBopcode(c, parmlen);
-               if ( cur.vdc_type == REAL )
-                    PUTREALVDC ( curatt.char_height.real );
-               else PUTINTVDC ( curatt.char_height.intr );
-               break;
+                case HATCHINDEX: /* Hatch Index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX(curatt.hatch_ind);
+                    break;
 
-            case CHARORI: /* Character Orientation */
-               parmlen = 4*VDCSIZE;
-               MOBopcode(c, parmlen);
-               if ( cur.vdc_type == REAL )
-               {
-                  PUTREALVDC ( curatt.char_up.x.real );
-                  PUTREALVDC ( curatt.char_up.y.real );
-                  PUTREALVDC ( curatt.char_base.x.real );
-                  PUTREALVDC ( curatt.char_base.y.real );
-               }
-               else
-               {
-                  PUTINTVDC (curatt.char_up.x.intr );
-                  PUTINTVDC (curatt.char_up.y.intr );
-                  PUTINTVDC (curatt.char_base.x.intr );
-                  PUTINTVDC (curatt.char_base.y.intr );
-               }
-               break;
+                case PATINDEX: /* Pattern Index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX(curatt.pat_ind);
+                    break;
 
-            case TEXTPATH: /* Text Path */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( curatt.text_path );
-               break;
+                case EDGEINDEX: /* Edge Bundle index */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX(curatt.edge_ind);
+                    break;
 
-            case TEXTALIGN:       /*  Text Alignment */
-               parmlen = 2*ENUMSIZE + 2*REALSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( curatt.text_halign );
-               PUTENUM ( curatt.text_valign );
-               PUTREAL ( curatt.text_hcont );
-               PUTREAL ( curatt.text_vcont );
-               break;
+                case EDGETYPE: /* Edge Type */
+                    parmlen = INDEXSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTINDEX(curatt.edge_type);
+                    break;
 
-            case CHARSETINDEX: /* Character Set Index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.char_set );
-               break;
+                case EDGEWIDTH: /* Edge Width */
+                    if (cur.edgewidth_mode == SCALED) {
+                        parmlen = REALSIZE;
+                        MOBopcode(c, parmlen);
+                        PUTREAL (curatt.edge_width.real);
+                    } else {
+                        parmlen = VDCSIZE;
+                        MOBopcode(c, parmlen);
+                        if (cur.vdc_type == REAL)
+                            PUTREALVDC (curatt.edge_width.real);
+                        else
+                            PUTINTVDC (curatt.edge_width.intr);
+                    }
+                    break;
 
-            case ALTCHARSETINDEX: /* Alt Character Set Index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.altchar_set );
-               break;
+                case EDGECOLR: /* Edge Colour */
+                    parmlen = COLOURSIZE;
+                    MOBopcode(c, parmlen);
+                    MOBcolour(&curatt.edge, cur.color_mode);
+                    break;
 
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVATT, ERROR, mess);
-               break;
-         }
-         break;
+                case EDGEVIS: /* Edge Visibility */
+                    parmlen = ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    PUTENUM (curatt.edge_vis);
+                    break;
 
-      case 0x36: /* More Attributes */
-         switch(c)
-         {
-            case FILLINDEX: /* Fill Bundle index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX ( curatt.fill_ind );
-               break;
+                case FILLREFPT: /* Fill Reference Point */
+                    parmlen = 2 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    if (cur.vdc_type == REAL) {
+                        PUTREALVDC (curatt.fill_ref.x.real);
+                        PUTREALVDC (curatt.fill_ref.y.real);
+                    } else {
+                        PUTINTVDC (curatt.fill_ref.x.intr);
+                        PUTINTVDC (curatt.fill_ref.y.intr);
+                    }
+                    break;
 
-            case INTSTYLE: /* Interior Style */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( curatt.int_style );
-               break;
+                case PATTABLE: /* Pattern Table */
+                {
+                    register Long *pt = pi, patind, i, k;
+                    Long nx, ny;
+                    Prec lprec;
 
-            case FILLCOLR: /* Fill Colour */
-               parmlen = COLOURSIZE;
-               MOBopcode(c, parmlen);
-               MOBcolour( &curatt.fill, cur.color_mode);
-               break;
-
-            case HATCHINDEX: /* Hatch Index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX(curatt.hatch_ind );
-               break;
-
-            case PATINDEX: /* Pattern Index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX(curatt.pat_ind );
-               break;
-
-            case EDGEINDEX: /* Edge Bundle index */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX(curatt.edge_ind );
-               break;
-
-            case EDGETYPE: /* Edge Type */
-               parmlen = INDEXSIZE;
-               MOBopcode(c, parmlen);
-               PUTINDEX(curatt.edge_type );
-               break;
-
-            case EDGEWIDTH: /* Edge Width */
-               if(cur.edgewidth_mode == SCALED)
-               {
-                 parmlen = REALSIZE;
-                 MOBopcode(c, parmlen);
-                 PUTREAL ( curatt.edge_width.real );
-               }
-               else
-               {
-                 parmlen = VDCSIZE;
-                 MOBopcode(c, parmlen);
-                 if ( cur.vdc_type == REAL )
-                      PUTREALVDC ( curatt.edge_width.real );
-                 else PUTINTVDC ( curatt.edge_width.intr );
-               }
-               break;
-
-            case EDGECOLR: /* Edge Colour */
-               parmlen = COLOURSIZE;
-               MOBopcode(c, parmlen);
-               MOBcolour( &curatt.edge, cur.color_mode);
-               break;
-
-            case EDGEVIS: /* Edge Visibility */
-               parmlen = ENUMSIZE;
-               MOBopcode(c, parmlen);
-               PUTENUM ( curatt.edge_vis );
-               break;
-
-            case FILLREFPT: /* Fill Reference Point */
-               parmlen = 2*VDCSIZE;
-               MOBopcode(c, parmlen);
-               if ( cur.vdc_type == REAL )
-               {
-                  PUTREALVDC ( curatt.fill_ref.x.real );
-                  PUTREALVDC ( curatt.fill_ref.y.real );
-               }
-               else
-               {
-                  PUTINTVDC ( curatt.fill_ref.x.intr );
-                  PUTINTVDC ( curatt.fill_ref.y.intr );
-               }
-               break;
-
-            case PATTABLE: /* Pattern Table */
-            {
-               register Long *pt = pi, patind, i, k;
-               Long nx, ny;
-               Prec lprec;
-
-               parmlen = INDEXSIZE + 3*INTSIZE;
-               patind = *pt++;
-               nx = *pt++;
-               ny = *pt++;
-               pt++;   /* ignore previous local precision */
+                    parmlen = INDEXSIZE + 3 * INTSIZE;
+                    patind = *pt++;
+                    nx = *pt++;
+                    ny = *pt++;
+                    pt++;   /* ignore previous local precision */
 
 /*  Find local precision */
 
-               n = (cur.color_mode == DIRECT ? 3*num : num );
-               for ( i = 0, k = 0; i < n; i++, pt++ )
-               {
-                  if ( *pt > k ) k = *pt;
-               }
-               j = 0;
-               while ( k )
-               {
-                  k >>= 1; j++;
-               }
-               lprec = ( j <=  1 ?  1
-                       : j <=  2 ?  2
-                       : j <=  4 ?  4
-                       : j <=  8 ?  8
-                       : j <= 16 ? 16
-                       : j <= 24 ? 24
-                                 : 32 );
+                    n = (cur.color_mode == DIRECT ? 3 * num : num);
+                    for (i = 0, k = 0; i < n; i++, pt++) {
+                        if (*pt > k) k = *pt;
+                    }
+                    j = 0;
+                    while (k) {
+                        k >>= 1;
+                        j++;
+                    }
+                    lprec = (j <= 1 ? 1
+                                    : j <= 2 ? 2
+                                             : j <= 4 ? 4
+                                                      : j <= 8 ? 8
+                                                               : j <= 16 ? 16
+                                                                         : j <= 24 ? 24
+                                                                                   : 32);
 
 /* Work out parameter length in bytes  */
 
-               parmlen += ( lprec * (cur.color_mode == DIRECT ? 3*num : num )
-                          + 7 )>>3;
+                    parmlen += (lprec * (cur.color_mode == DIRECT ? 3 * num : num)
+                                + 7) >> 3;
 
-               MOBopcode(c, parmlen);
+                    MOBopcode(c, parmlen);
 
 #ifdef DEBUG
-   DMESS " Pattern index: %d  %d (%dx%d) cells (prec: %d)\n",
-                     patind, num, nx, ny, lprec);
+                    DMESS " Pattern index: %d  %d (%dx%d) cells (prec: %d)\n",
+                                      patind, num, nx, ny, lprec);
 #endif
 
-               PUTINDEX ( patind );
-               PUTINT ( nx );
-               PUTINT ( ny );
-               PUTINT ( lprec );
+                    PUTINDEX (patind);
+                    PUTINT (nx);
+                    PUTINT (ny);
+                    PUTINT (lprec);
 
 /*  Output whole cell array */
 
-               MOBclist ( num, pi + 4, cur.color_mode, PACKED, lprec);
-               break;
+                    MOBclist(num, pi + 4, cur.color_mode, PACKED, lprec);
+                    break;
+                }
+
+                case PATSIZE: /* Pattern Size */
+                    parmlen = 4 * VDCSIZE;
+                    MOBopcode(c, parmlen);
+                    if (cur.vdc_type == REAL) {
+                        PUTREALVDC (curatt.pat_size.a.x.real);
+                        PUTREALVDC (curatt.pat_size.a.y.real);
+                        PUTREALVDC (curatt.pat_size.b.x.real);
+                        PUTREALVDC (curatt.pat_size.b.y.real);
+                    } else {
+                        PUTINTVDC (curatt.pat_size.a.x.intr);
+                        PUTINTVDC (curatt.pat_size.a.y.intr);
+                        PUTINTVDC (curatt.pat_size.b.x.intr);
+                        PUTINTVDC (curatt.pat_size.b.y.intr);
+                    }
+                    break;
+
+                case COLRTABLE: /* Colour Table */
+                    parmlen = COLINDEXSIZE + ((3 * num * curbin.col_prec) >> 3);
+                    MOBopcode(c, parmlen);
+                    MOBint(*pi++, curbin.colind_prec, UNSIGNED);
+                    for (j = 0; j < num; j++) {
+                        MOBint(*pi++, curbin.col_prec, UNSIGNED);
+                        MOBint(*pi++, curbin.col_prec, UNSIGNED);
+                        MOBint(*pi++, curbin.col_prec, UNSIGNED);
+                    }
+                    break;
+
+                case ASF: /* Aspect source flags */
+                {
+                    Long k, l, *pt = pi;
+                    Int type, value;
+                    Logical asflag[ASFS];
+
+                    for (j = 0; j < ASFS; j++) asflag[j] = FALSE;
+                    for (j = 0; j < num; j++) {
+                        type = *pt++;
+                        value = (*pt++) + 1;
+                        if (type < ASFS) asflag[type] = value;
+                        else {
+                            switch (type) {
+                                case 506:     /* all edge */
+                                    k = 15;
+                                    l = 17;
+                                    break;
+                                case 507:     /* all fill */
+                                    k = 11;
+                                    l = 14;
+                                    break;
+                                case 508:     /* all text */
+                                    k = 6;
+                                    l = 10;
+                                    break;
+                                case 509:     /* all marker */
+                                    k = 3;
+                                    l = 5;
+                                    break;
+                                case 510:     /* all line */
+                                    k = 0;
+                                    l = 2;
+                                    break;
+                                case 511:     /* all */
+                                    k = 0;
+                                    l = 17;
+                                    break;
+                                default:      /* ignore  */
+                                    k = 1;
+                                    l = 0;
+                                    break;
+                            }
+                            for (n = k; n < l; n++) asflag[n] = value;
+                        }
+                    }
+                    for (j = 0; j < ASFS; j++)
+                        if (asflag[j]) parmlen += 2 * ENUMSIZE;
+                    MOBopcode(c, parmlen);
+                    for (j = 0; j < ASFS; j++)
+                        if (asflag[j]) {
+                            PUTENUM (j);
+                            PUTENUM (curatt.asf[j]);
+                        }
+                    break;
+                }
+
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVATT, ERROR, mess);
+                    break;
             }
+            break;
 
-            case PATSIZE: /* Pattern Size */
-               parmlen = 4*VDCSIZE;
-               MOBopcode(c, parmlen);
-               if ( cur.vdc_type == REAL )
-               {
-                  PUTREALVDC ( curatt.pat_size.a.x.real );
-                  PUTREALVDC ( curatt.pat_size.a.y.real );
-                  PUTREALVDC ( curatt.pat_size.b.x.real );
-                  PUTREALVDC ( curatt.pat_size.b.y.real );
-               }
-               else
-               {
-                  PUTINTVDC ( curatt.pat_size.a.x.intr );
-                  PUTINTVDC ( curatt.pat_size.a.y.intr );
-                  PUTINTVDC ( curatt.pat_size.b.x.intr );
-                  PUTINTVDC ( curatt.pat_size.b.y.intr );
-               }
-               break;
+        case 0x37: /* Escape And External Elements */
+            switch (c) {
+                case ESCAPE: /* Escape */
+                    parmlen = INTSIZE + STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    PUTINT (num);
+                    MOBstring(str);
+                    break;
 
-            case COLRTABLE: /* Colour Table */
-               parmlen = COLINDEXSIZE + ((3*num*curbin.col_prec)>>3);
-               MOBopcode(c, parmlen);
-               MOBint(*pi++, curbin.colind_prec, UNSIGNED);
-               for ( j=0; j < num; j++)
-               {
-                     MOBint(*pi++, curbin.col_prec, UNSIGNED);
-                     MOBint(*pi++, curbin.col_prec, UNSIGNED);
-                     MOBint(*pi++, curbin.col_prec, UNSIGNED);
-               }
-               break;
+                case MESSAGE: /* Message */
+                    parmlen = ENUMSIZE + STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    PUTENUM (num);
+                    MOBstring(str);
+                    break;
 
-            case ASF: /* Aspect source flags */
-            {
-               Long k, l, *pt=pi;
-               Int type, value;
-               Logical asflag[ASFS];
+                case APPLDATA: /* Application Data */
+                    parmlen = INTSIZE + STRINGSIZE(str);
+                    MOBopcode(c, parmlen);
+                    PUTINT (num);
+                    MOBstring(str);
+                    break;
 
-               for ( j=0; j < ASFS; j++) asflag[j] = FALSE;
-               for ( j=0; j < num; j++ )
-               {
-                  type = *pt++; value = (*pt++) + 1;
-                  if ( type < ASFS ) asflag[type] = value;
-                  else
-                  {
-                     switch ( type )
-                     {
-                        case 506:     /* all edge */
-                           k = 15; l = 17; break;
-                        case 507:     /* all fill */
-                           k = 11; l = 14; break;
-                        case 508:     /* all text */
-                           k = 6; l = 10; break;
-                        case 509:     /* all marker */
-                           k = 3; l = 5; break;
-                        case 510:     /* all line */
-                           k = 0; l = 2; break;
-                        case 511:     /* all */
-                           k = 0; l = 17; break;
-                        default:      /* ignore  */
-                           k = 1; l = 0; break;
-                     }
-                     for ( n = k; n < l; n++ ) asflag[n] = value;
-                  }
-               }
-               for ( j=0; j < ASFS; j++)
-                  if ( asflag[j] ) parmlen += 2*ENUMSIZE;
-               MOBopcode(c, parmlen);
-               for ( j=0; j < ASFS; j++)
-                  if ( asflag[j] )
-                  {
-                     PUTENUM ( j );
-                     PUTENUM ( curatt.asf[j] );
-                  }
-               break;
+                default:
+                    (void) sprintf(mess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVESC, ERROR, mess);
+                    break;
             }
+            break;
 
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVATT, ERROR, mess);
-               break;
-         }
-         break;
-
-      case 0x37: /* Escape And External Elements */
-         switch(c)
-         {
-            case ESCAPE: /* Escape */
-               parmlen = INTSIZE + STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               PUTINT ( num );
-               MOBstring(str);
-               break;
-
-            case MESSAGE: /* Message */
-               parmlen = ENUMSIZE + STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               PUTENUM ( num );
-               MOBstring(str);
-               break;
-
-            case APPLDATA: /* Application Data */
-               parmlen = INTSIZE + STRINGSIZE(str);
-               MOBopcode(c, parmlen);
-               PUTINT ( num );
-               MOBstring(str);
-               break;
-
-            default:
-               (void) sprintf( mess, "(code: 0x%x)", c);
-               (void) CGMerror(func, ERR_INVESC, ERROR, mess);
-               break;
-         }
-         break;
-
-      default:
-        (void) sprintf( mess, "(code: 0x%x)", c);
-        (void) CGMerror(func, ERR_INVELEM, ERROR, mess);
-        break;
-   }
-   return;
+        default:
+            (void) sprintf(mess, "(code: 0x%x)", c);
+            (void) CGMerror(func, ERR_INVELEM, ERROR, mess);
+            break;
+    }
+    return;
 }
 
 /******************************************************** MOBopcode ****/
 
-static void MOBopcode( Code c, Long len )
-{
-   Int class, id;
-   unsigned Long oneword, plen, remainder;
-   Logical part;
+static void MOBopcode(Code c, Long len) {
+    Int class, id;
+    unsigned Long oneword, plen, remainder;
+    Logical part;
 
 /* Pad out last element if necessary */
-   while ( mobparmlen && mobparmlen < 0x8000 ) PUTBYTE( ZERO );
+    while (mobparmlen && mobparmlen < 0x8000) PUTBYTE(ZERO);
 
-   plen = abs(len);
-   part = (len < 0);
+    plen = abs(len);
+    part = (len < 0);
 
 /*  check for parameter length > 32766 */
 
-   if ( plen > 0x7ffe )
-   {
-      remainder = plen - 0x7ffe;
-      part = TRUE;
-      plen = 0x7ffe;
-   }
-   else remainder = 0;
+    if (plen > 0x7ffe) {
+        remainder = plen - 0x7ffe;
+        part = TRUE;
+        plen = 0x7ffe;
+    } else remainder = 0;
 
 #ifdef DEBUG
-   DMESS "\nOpcode: 0x%x (length: %d)", c, plen );
+    DMESS "\nOpcode: 0x%x (length: %d)", c, plen );
 #endif
 
-   if ( c != PARTITION )
-   {
-      MOBcharci(c, &class, &id);
-      oneword = (class<<12) + (id<<5) + ( part || (plen > 0x1e) ? 0x1f
-                                                             : plen );
+    if (c != PARTITION) {
+        MOBcharci(c, &class, &id);
+        oneword = (class << 12) + (id << 5) + (part || (plen > 0x1e) ? 0x1f
+                                                                     : plen);
 #ifdef DEBUG
-      DMESS " (class: %d id: %d) (%x)", class, id, oneword );
+        DMESS " (class: %d id: %d) (%x)", class, id, oneword );
 #endif
-      PUTWORD ( oneword );
-   }
+        PUTWORD (oneword);
+    }
 
 /* Put out parameter length as integer */
 
-   if ( c == PARTITION || plen > 0x1e )
-   {
-      oneword = ( part ? plen | 0x8000 : plen );
-      PUTWORD ( oneword );
-   }
+    if (c == PARTITION || plen > 0x1e) {
+        oneword = (part ? plen | 0x8000 : plen);
+        PUTWORD (oneword);
+    }
 
-   mobparmlen = plen;
-   mobremainder = remainder;
-   if (mobparmlen & 1) mobparmlen++;
+    mobparmlen = plen;
+    mobremainder = remainder;
+    if (mobparmlen & 1) mobparmlen++;
 
 #ifdef DEBUG
-   DMESS " (%d)\n", mobparmlen);
+    DMESS " (%d)\n", mobparmlen);
 #endif
 
-   return;
+    return;
 }
 
 /******************************************************** MOBcharci ****/
 
-static void MOBcharci( Code c, Int *class, Int *id )
+static void MOBcharci(Code c, Int *class, Int *id) {
+    Code major = c >> 8, minor = c & 0xff;
 
-{
-   Code major = c>>8, minor = c & 0xff;
+    *class = -1;
+    *id = 0;
+    switch (major) {
+        case 0x00:  /* Graphics Primitives */
+            if (minor >= 0x20 && minor <= 0x2A) {
+                *class = 4;
+                *id = minor - 0x20 + 1;
+            } else if (minor == 0) *class = ZERO;  /*  Non-Op */
+            break;
 
-   *class = -1; *id = 0;
-   switch ( major )
-   {
-      case 0x00:  /* Graphics Primitives */
-         if ( minor >= 0x20 && minor <= 0x2A )
-         {
-            *class = 4; *id = minor - 0x20 + 1;
-         }
-         else if ( minor == 0 ) *class = ZERO;  /*  Non-Op */
-         break;
+        case 0x30:  /* Metafile delimiters */
+            if (minor >= 0x20 && minor <= 0x24) {
+                *class = 0;
+                *id = minor - 0x20 + 1;
+            }
+            break;
 
-      case 0x30:  /* Metafile delimiters */
-         if ( minor >= 0x20 && minor <= 0x24 )
-         {
-            *class = 0; *id = minor - 0x20 + 1;
-         }
-         break;
+        case 0x31:  /* Metafile Descriptor Elements */
+            if (minor >= 0x20 && minor <= 0x2b) {
+                *class = 1;
+                *id = minor - 0x20 + 1;
+            } else if (minor > 0x2c && minor <= 0x2f) {
+                *class = 1;
+                *id = minor - 0x20;
+            }
+            break;
 
-      case 0x31:  /* Metafile Descriptor Elements */
-         if ( minor >= 0x20 && minor <= 0x2b )
-         {
-            *class = 1; *id = minor - 0x20 + 1;
-         }
-         else if ( minor > 0x2c && minor <= 0x2f )
-         {
-            *class = 1; *id = minor - 0x20;
-         }
-         break;
+        case 0x32:  /* Picture Descriptor Elements */
+            if (minor >= 0x20 && minor <= 0x26) {
+                *class = 2;
+                *id = minor - 0x20 + 1;
+            }
+            break;
 
-      case 0x32:  /* Picture Descriptor Elements */
-         if ( minor >= 0x20 && minor <= 0x26 )
-         {
-            *class = 2; *id = minor - 0x20 + 1;
-         }
-         break;
+        case 0x33:  /* Control Elements */
+            if (minor >= 0x20 && minor <= 0x25) {
+                *class = 3;
+                *id = minor - 0x20 + 1;
+            }
+            break;
 
-      case 0x33:  /* Control Elements */
-         if ( minor >= 0x20 && minor <= 0x25 )
-         {
-            *class = 3; *id = minor - 0x20 + 1;
-         }
-         break;
+        case 0x34:  /* More Graphics Primitives */
+            if (minor >= 0x20 && minor <= 0x27) {
+                *class = 4;
+                *id = minor - 0x20 + 12;
+            }
+            break;
 
-      case 0x34:  /* More Graphics Primitives */
-         if ( minor >= 0x20 && minor <= 0x27 )
-         {
-            *class = 4; *id = minor - 0x20 + 12;
-         }
-         break;
+        case 0x35:  /* Attributes */
+            if (minor >= 0x20 && minor <= 0x27) {
+                *class = 5;
+                *id = minor - 0x20 + 1;
+            } else if (minor >= 0x30 && minor <= 0x3b) {
+                *class = 5;
+                *id = minor - 0x30 + 9;
+            }
+            break;
 
-      case 0x35:  /* Attributes */
-         if ( minor >= 0x20 && minor <= 0x27 )
-         {
-            *class = 5; *id = minor - 0x20 + 1;
-         }
-         else if ( minor >= 0x30 && minor <= 0x3b )
-         {
-            *class = 5; *id = minor - 0x30 + 9;
-         }
-         break;
+        case 0x36:  /* More Attributes */
+            if (minor >= 0x20 && minor <= 0x2c) {
+                *class = 5;
+                *id = minor - 0x20 + 21;
+            } else if (minor >= 0x30 && minor <= 0x31) {
+                *class = 5;
+                *id = minor - 0x30 + 34;
+            }
+            break;
 
-      case 0x36:  /* More Attributes */
-         if ( minor >= 0x20 && minor <= 0x2c )
-         {
-            *class = 5; *id = minor - 0x20 + 21;
-         }
-         else if ( minor >= 0x30 && minor <= 0x31 )
-         {
-            *class = 5; *id = minor - 0x30 + 34;
-         }
-         break;
+        case 0x37:  /* External elements */
+            if (minor == 0x20) {
+                *class = 6;
+                *id = 1;
+            } else if (minor >= 0x21 && minor <= 0x22) {
+                *class = 7;
+                *id = minor - 0x20;
+            }
+            break;
 
-      case 0x37:  /* External elements */
-         if ( minor == 0x20 )
-         {
-            *class = 6; *id = 1;
-         }
-         else if ( minor >= 0x21 && minor <= 0x22 )
-         {
-            *class = 7; *id = minor - 0x20;
-         }
-         break;
+        default:
+            break;
+    }
 
-      default:
-         break;
-   }
+    if (*class < 0) {
+        (void) sprintf(mess, "(code: 0x%x)", c);
+        (void) CGMerror(func, ERR_INVELEM, ERROR, mess);
+        *class = 0;
+    }
 
-   if ( *class < 0 )
-   {
-      (void) sprintf( mess, "(code: 0x%x)", c);
-      (void) CGMerror(func, ERR_INVELEM, ERROR, mess);
-      *class = 0;
-   }
-
-   return;
+    return;
 }
 
 /******************************************************** MOBint *******/
 
-static void MOBint( Long n, Prec prec, Enum sign )
-
-{
+static void MOBint(Long n, Prec prec, Enum sign) {
 
 #ifdef DEBUG
-   DMESS "\nInteger: %d prec: %d Type: %d", n, prec, sign);
+    DMESS "\nInteger: %d prec: %d Type: %d", n, prec, sign);
 #endif
 
 /*
    if ( sign == SIGNED && n < 0 )
       n = (-n | (Posint) 1L<<(prec-1));
 */
-   MOBout( (Posint) n, prec>>3 );
-   return;
+    MOBout((Posint) n, prec >> 3);
+    return;
 }
 
 /******************************************************** MOBcolour ****/
 
-static void MOBcolour( struct colour *col, Enum type )
-{
+static void MOBcolour(struct colour *col, Enum type) {
 
 #ifdef DEBUG
-   if ( type == DIRECT )
-      DMESS "Colour: %d, %d, %d\n", col->red, col->green, col->blue );
-   else
-      DMESS "Colour: %d\n", col->index );
+    if ( type == DIRECT )
+       DMESS "Colour: %d, %d, %d\n", col->red, col->green, col->blue );
+    else
+       DMESS "Colour: %d\n", col->index );
 #endif
-   if ( type == DIRECT )
-   {
-      MOBint( (Long) col->red, curbin.col_prec, UNSIGNED );
-      MOBint( (Long) col->green, curbin.col_prec, UNSIGNED );
-      MOBint( (Long) col->blue, curbin.col_prec, UNSIGNED );
-   }
-   else
-   {
-      MOBint( (Long) col->index, curbin.colind_prec, UNSIGNED );
-   }
+    if (type == DIRECT) {
+        MOBint((Long) col->red, curbin.col_prec, UNSIGNED);
+        MOBint((Long) col->green, curbin.col_prec, UNSIGNED);
+        MOBint((Long) col->blue, curbin.col_prec, UNSIGNED);
+    } else {
+        MOBint((Long) col->index, curbin.colind_prec, UNSIGNED);
+    }
 
-   return;
+    return;
 }
 
 /******************************************************** MOBvdc *******/
 
-static void MOBvdc( Int n, Long *pi, Float *pr)
-{
-   Int i;
+static void MOBvdc(Int n, Long *pi, Float *pr) {
+    Int i;
 
 #ifdef DEBUG
-   DMESS "%d vdcs:\n", n);
+    DMESS "%d vdcs:\n", n);
 #endif
 
-   for ( i = 0; i < n; i++)
-   {
-      if ( cur.vdc_type == INTEGER )
-      {
-         PUTINTVDC ( *pi++ );
-      }
-      else
-      {
-         PUTREALVDC ( *pr++ );
-      }
-   }
+    for (i = 0; i < n; i++) {
+        if (cur.vdc_type == INTEGER) {
+            PUTINTVDC (*pi++);
+        } else {
+            PUTREALVDC (*pr++);
+        }
+    }
 
-   return;
+    return;
 }
 
 /******************************************************** MOBpointlist */
 
-static void MOBpointlist( Long n, Long *pi, Float *pr, Enum set )
-{
-   Int i;
+static void MOBpointlist(Long n, Long *pi, Float *pr, Enum set) {
+    Int i;
 
 #ifdef DEBUG
-   DMESS "%d points:", n);
+    DMESS "%d points:", n);
 #endif
 
-   for ( i = 0; i < n; i++)
-   {
-      if ( cur.vdc_type == INTEGER )
-      {
-         PUTINTVDC ( *pi++ );
-         PUTINTVDC ( *pi++ );
-      }
-      else
-      {
-         PUTREALVDC ( *pr++ );
-         PUTREALVDC ( *pr++ );
-      }
-      if ( set ) PUTENUM ( *pi++ );
-   }
+    for (i = 0; i < n; i++) {
+        if (cur.vdc_type == INTEGER) {
+            PUTINTVDC (*pi++);
+            PUTINTVDC (*pi++);
+        } else {
+            PUTREALVDC (*pr++);
+            PUTREALVDC (*pr++);
+        }
+        if (set) PUTENUM (*pi++);
+    }
 
-   return;
+    return;
 }
 
 /******************************************************** MOBreal ******/
 
-static void MOBreal( Double x, Enum real_type, Enum real_or_vdc )
-{
-   Posint whole, exponent, neg;
-   Posint64 fract;
-   Prec prec;
-   Double f;
+static void MOBreal(Double x, Enum real_type, Enum real_or_vdc) {
+    Posint whole, exponent, neg;
+    Posint64 fract;
+    Prec prec;
+    Double f;
 
 #ifdef DEBUG
-   DMESS "Real: %lg ", x);
-   if (real_type == FIXED ) DMESS "(Fixed Point)");
-   else                     DMESS "(Floating Point)");
+    DMESS "Real: %lg ", x);
+    if (real_type == FIXED ) DMESS "(Fixed Point)");
+    else                     DMESS "(Floating Point)");
 #endif
 
-   neg = ( x < 0.0 ) << 15;
+    neg = (x < 0.0) << 15;
 
-   if ( real_type == FIXED )
-   {
-      prec = (real_or_vdc == VDC ? curbin.vdc_whole
-                                 : curbin.real_whole);
-      whole = (Posint)( neg ? -((floor(x))) : x );
-      fract = (Posint64)( ( neg ? x + (Double)whole : x - (Double)whole )
-                            * ( 1L<<prec-2 ) * 4.0 );
+    if (real_type == FIXED) {
+        prec = (real_or_vdc == VDC ? curbin.vdc_whole
+                                   : curbin.real_whole);
+        whole = (Posint) (neg ? -((floor(x))) : x);
+        fract = (Posint64) ((neg ? x + (Double) whole : x - (Double) whole)
+                            * (1L << prec - 2) * 4.0);
 
 #ifdef DEBUG
-      DMESS " Prec: %d\n", prec);
-      DMESS "whole: %d fraction: %d sign: %d", whole, fract, neg);
+        DMESS " Prec: %d\n", prec);
+        DMESS "whole: %d fraction: %d sign: %d", whole, fract, neg);
 #endif
 
-      if ( prec == 32 )
-      {
-         PUTWORD( whole>>16 | neg );
-         PUTWORD( whole & (Posint)0xffff );
-         PUTWORD( fract>>16 );
-         PUTWORD( fract & (Posint)0xffff );
-      }
-      else
-      {
-         PUTWORD( whole | neg );
-         PUTWORD( fract );
-      }
-   }
-   else
-   {
+        if (prec == 32) {
+            PUTWORD(whole >> 16 | neg);
+            PUTWORD(whole & (Posint) 0xffff);
+            PUTWORD(fract >> 16);
+            PUTWORD(fract & (Posint) 0xffff);
+        } else {
+            PUTWORD(whole | neg);
+            PUTWORD(fract);
+        }
+    } else {
 /*  IEEE Floating point reals */
 
-      prec = (real_or_vdc == VDC ? curbin.vdc_whole + curbin.vdc_fraction
-                                 : curbin.real_whole + curbin.real_fraction);
-      prec = (prec == 64 ? 12 : 9);
-      f = ( neg ? -x : x );
+        prec = (real_or_vdc == VDC ? curbin.vdc_whole + curbin.vdc_fraction
+                                   : curbin.real_whole + curbin.real_fraction);
+        prec = (prec == 64 ? 12 : 9);
+        f = (neg ? -x : x);
 
-      if ( f < (Double)(real_or_vdc == VDC ? cur.vdcmin : cur.realmin) )
-      {
-         exponent = ZERO;
-         fract = ZERO;
-      }
-      else
-      {
+        if (f < (Double) (real_or_vdc == VDC ? cur.vdcmin : cur.realmin)) {
+            exponent = ZERO;
+            fract = ZERO;
+        } else {
 
 /*  check if greater than smallest exponent  */
 
-         exponent = ( prec == 12 ? 1023 : 127 );
+            exponent = (prec == 12 ? 1023 : 127);
 
-         if ( f <= 1.0 / (Double) (prec-1) )
-         {
-            exponent = ZERO;
-         }
-         else
-         {
-            while ( f >= 2.0 )
-            {
-               f /= 2.0;
-               exponent++;
+            if (f <= 1.0 / (Double) (prec - 1)) {
+                exponent = ZERO;
+            } else {
+                while (f >= 2.0) {
+                    f /= 2.0;
+                    exponent++;
+                }
+                while (f < 1.0) {
+                    f *= 2.0;
+                    exponent--;
+                }
             }
-            while ( f < 1.0 )
-            {
-               f *= 2.0;
-               exponent--;
-            }
-         }
-         fract = (Posint64) ( (f - 1.0) * (Double)(1L<<(prec == 12 ? 52 : 23)) );
-      }
+            fract = (Posint64) ((f - 1.0) * (Double) (1L << (prec == 12 ? 52 : 23)));
+        }
 
 #ifdef DEBUG
-   DMESS " Prec: %d real fraction: %f\n", prec, f);
-   DMESS " exp: %lu mantissa: %lu sign: %lu", exponent, fract, neg);
+        DMESS " Prec: %d real fraction: %f\n", prec, f);
+        DMESS " exp: %lu mantissa: %lu sign: %lu", exponent, fract, neg);
 #endif
 
-      if ( prec == 12 )
-      {
-         PUTWORD( (exponent<<4) | neg | (fract>>48) );
-         PUTWORD( (fract >> 32) & (Posint)0xffff );
-         PUTWORD( (fract >> 16) & (Posint)0xffff );
-         PUTWORD( fract & (Posint)0xffff );
-      }
-      else
-      {
-         PUTWORD( (exponent<<7) | neg | (fract>>16) );
-         PUTWORD( fract & (Posint)0xffff );
-      }
-   }
+        if (prec == 12) {
+            PUTWORD((exponent << 4) | neg | (fract >> 48));
+            PUTWORD((fract >> 32) & (Posint) 0xffff);
+            PUTWORD((fract >> 16) & (Posint) 0xffff);
+            PUTWORD(fract & (Posint) 0xffff);
+        } else {
+            PUTWORD((exponent << 7) | neg | (fract >> 16));
+            PUTWORD(fract & (Posint) 0xffff);
+        }
+    }
 #ifdef DEBUG
-      DMESS "\n");
+    DMESS "\n");
 #endif
 
-   return;
+    return;
 }
 
 /******************************************************** MOBstring ****/
 
-static void MOBstring( char *s )
-{
-   register Int i, len, slen = strlen(s);
-   register char chr;
+static void MOBstring(char *s) {
+    register Int i, len, slen = strlen(s);
+    register char chr;
 
 #ifdef DEBUG
-   DMESS "String: '%s'", s);
+    DMESS "String: '%s'", s);
 #endif
 
-   len = slen;
-   do
-   {
-      PUTBYTE ( len >= 0xff ? 0xff : len );
-      len -= 0xff;
-   } while ( len >= 0 );
+    len = slen;
+    do {
+        PUTBYTE (len >= 0xff ? 0xff : len);
+        len -= 0xff;
+    } while (len >= 0);
 
-   for (i = 0; i < slen; i++)
-   {
+    for (i = 0; i < slen; i++) {
 #ifdef EBCDIC
-      chr = cgmascii[*s++];
+        chr = cgmascii[*s++];
 #else
-      chr = *s++;
+        chr = *s++;
 #endif
-      PUTBYTE ( chr );
-   }
+        PUTBYTE (chr);
+    }
 
 #ifdef DEBUG
-   DMESS "\n");
+    DMESS "\n");
 #endif
 
-   return;
+    return;
 }
 
 /******************************************************** MOBclist *****/
 
-static void MOBclist( register Long num, register Long *col,
-                      Prec mode, Enum type, Prec prec )
-
-{
-   register Long j, k, n;
-   Long bits, bytes = 0;
+static void MOBclist(register Long num, register Long *col,
+                     Prec mode, Enum type, Prec prec) {
+    register Long j, k, n;
+    Long bits, bytes = 0;
 
 #ifdef DEBUG_CELL
-   DMESS "\n%d Colours (prec: %d)", num, prec);
-   if ( mode == DIRECT ) DMESS " (Direct)" );
-   else                  DMESS " (Indexed)" );
-   if ( type == RUNLENGTH ) DMESS " (Runlength)" );
-   else                     DMESS " (Packed)" );
-   DMESS "\n");
+    DMESS "\n%d Colours (prec: %d)", num, prec);
+    if ( mode == DIRECT ) DMESS " (Direct)" );
+    else                  DMESS " (Indexed)" );
+    if ( type == RUNLENGTH ) DMESS " (Runlength)" );
+    else                     DMESS " (Packed)" );
+    DMESS "\n");
 #endif
 
-   if ( type == RUNLENGTH )
-   {
-      Long run = 1, bit = 0;
+    if (type == RUNLENGTH) {
+        Long run = 1, bit = 0;
 
-      if ( mode == DIRECT )
-      {
-         Posint red, green, blue, lastred, lastgreen, lastblue;
+        if (mode == DIRECT) {
+            Posint red, green, blue, lastred, lastgreen, lastblue;
 
-         lastred = (*col++);
-         lastgreen = (*col++);
-         lastblue = (*col++);
-         for ( j = 1; j <= num; j++ )
-         {
-            red = (*col++); green = (*col++); blue = (*col++);
-            if ( j == num ||
-                 red != lastred || green != lastgreen || blue != lastblue )
-            {
-               MOBbits ( run, curbin.int_prec, &bit );
-               MOBbits ( lastred, prec, &bit );
-               MOBbits ( lastgreen, prec, &bit );
-               MOBbits ( lastblue, prec, &bit );
+            lastred = (*col++);
+            lastgreen = (*col++);
+            lastblue = (*col++);
+            for (j = 1; j <= num; j++) {
+                red = (*col++);
+                green = (*col++);
+                blue = (*col++);
+                if (j == num ||
+                    red != lastred || green != lastgreen || blue != lastblue) {
+                    MOBbits(run, curbin.int_prec, &bit);
+                    MOBbits(lastred, prec, &bit);
+                    MOBbits(lastgreen, prec, &bit);
+                    MOBbits(lastblue, prec, &bit);
 #ifdef DEBUG_CELL
-    DMESS "%6d run: %3d colour: %3d %3d %3d\n",
-            j, run, lastred, lastgreen, lastblue );
+                    DMESS "%6d run: %3d colour: %3d %3d %3d\n",
+                            j, run, lastred, lastgreen, lastblue );
 #endif
-               if ( j == num ) break;
-               lastred = red; lastgreen = green; lastblue = blue;
-               run = 1;
+                    if (j == num) break;
+                    lastred = red;
+                    lastgreen = green;
+                    lastblue = blue;
+                    run = 1;
+                } else run++;
             }
-            else run++;
-         }
-      }
-      else   /* Indexed runlength */
-      {
-         Long lastcol;
+        } else   /* Indexed runlength */
+        {
+            Long lastcol;
 
-         lastcol = (*col++);
-         for ( j = 1; j <= num; j++, col++ )
-         {
-            if ( j == num || *col != lastcol )
-            {
-               MOBbits ( run, curbin.int_prec, &bit );
-               MOBbits ( lastcol, prec, &bit );
-               if ( j == num ) break;
-               lastcol = *col;
-               run = 1;
+            lastcol = (*col++);
+            for (j = 1; j <= num; j++, col++) {
+                if (j == num || *col != lastcol) {
+                    MOBbits(run, curbin.int_prec, &bit);
+                    MOBbits(lastcol, prec, &bit);
+                    if (j == num) break;
+                    lastcol = *col;
+                    run = 1;
+                } else run++;
             }
-            else run++;
-         }
-      }
+        }
 
 /* make sure list ends on a word boundary */
 
-      if ( bit ) MOBbits ( (Posint) 0 , (Prec) 16, &bit );
+        if (bit) MOBbits((Posint) 0, (Prec) 16, &bit);
 
-   }
-   else   /* Packed mode */
-   {
-      n = ( mode == DIRECT ? 3*num : num );
-      bytes = ( n*prec + 7 ) >>3;
+    } else   /* Packed mode */
+    {
+        n = (mode == DIRECT ? 3 * num : num);
+        bytes = (n * prec + 7) >> 3;
 
-      for ( j = 0, bits = 0, k = 0; j < n; j++)
-      {
-         if ( bits ) k <<= prec;
-         else        k = 0;
-         k += (*col++);
-         bits += prec;
+        for (j = 0, bits = 0, k = 0; j < n; j++) {
+            if (bits) k <<= prec;
+            else k = 0;
+            k += (*col++);
+            bits += prec;
 
-         while ( bits >= 8 )
-         {
-            bits -= 8;
-            PUTBYTE ( (k>>bits) & 0xff );
-         }
-      }
-      if ( bits > 0 ) PUTBYTE ( k<<(8-bits) );
+            while (bits >= 8) {
+                bits -= 8;
+                PUTBYTE ((k >> bits) & 0xff);
+            }
+        }
+        if (bits > 0) PUTBYTE (k << (8 - bits));
 
 /* Pad buffer if necessary */
-      if ( bytes & 1 ) PUTBYTE ( 0 );
-   }
+        if (bytes & 1) PUTBYTE (0);
+    }
 
 #ifdef DEBUG_CELL
-   DMESS "\n");
+    DMESS "\n");
 #endif
 
-   return;
+    return;
 }
 
 /******************************************************** MOBbits ******/
 
-static void MOBbits ( Posint value, Prec prec, Long *bit )
-{
-   static Posint oneword = 0;
-   Posint mask = (Posint)0xffffffff;
+static void MOBbits(Posint value, Prec prec, Long *bit) {
+    static Posint oneword = 0;
+    Posint mask = (Posint) 0xffffffff;
 
 #ifdef DEBUG
-   DMESS " value: %d prec: %d bit: %d", value, prec, *bit );
+    DMESS " value: %d prec: %d bit: %d", value, prec, *bit );
 #endif
 
-   *bit += prec;
-   if ( *bit <= 16 )
-   {
-      oneword |= value<<(16 - *bit);
-   }
-   else
-   {
-      while ( *bit > 16 )
-      {
-         *bit -= 16;
+    *bit += prec;
+    if (*bit <= 16) {
+        oneword |= value << (16 - *bit);
+    } else {
+        while (*bit > 16) {
+            *bit -= 16;
 /*       k = prec + *bit - 16; */
-         oneword |= value>>*bit;
-         value &= mask>>(32 - *bit);
+            oneword |= value >> *bit;
+            value &= mask >> (32 - *bit);
 #ifdef DEBUG2
-   DMESS " *(0x%04x) shift: %d remainder: %d\n", oneword, *bit, value );
+            DMESS " *(0x%04x) shift: %d remainder: %d\n", oneword, *bit, value );
 #endif
-         MOBout ( oneword, WORD );
-         oneword = value<<16;
-      }
-      oneword = value<<(16 - *bit);
-   }
+            MOBout(oneword, WORD);
+            oneword = value << 16;
+        }
+        oneword = value << (16 - *bit);
+    }
 
 #ifdef DEBUG
-   DMESS " Word: 0x%04x *bit: %d\n", oneword, *bit );
+    DMESS " Word: 0x%04x *bit: %d\n", oneword, *bit );
 #endif
 
-   return;
+    return;
 }
 
 /******************************************************** MOBout *******/
 
-static void MOBout( Posint hex, Prec bytes )
-{
-   register Int i;
+static void MOBout(Posint hex, Prec bytes) {
+    register Int i;
 
-start:
+    start:
 #ifdef DEBUG2
-  DMESS " *");
+    DMESS " *");
 #endif
 
-   if ( bytes > 0 ) for( ; bytes ; mobindex++ )
-   {
-      if ( mobindex == mobblen )
-      {
-         if ( cgmstate != MF_DEFAULTS )
-         {
+    if (bytes > 0)
+        for (; bytes; mobindex++) {
+            if (mobindex == mobblen) {
+                if (cgmstate != MF_DEFAULTS) {
 #ifdef DEBUG2
-  DMESS "\n*** Output Buffer ***\n *");
+                    DMESS "\n*** Output Buffer ***\n *");
 #endif
-            fwrite(mobbuff,mobblen,(size_t)1,cgmob);
-            mobindex=ZERO;
-         }
-         else
-         {
-            mobblen += BUFF_LEN;
+                    fwrite(mobbuff, mobblen, (size_t) 1, cgmob);
+                    mobindex = ZERO;
+                } else {
+                    mobblen += BUFF_LEN;
 #ifdef DEBUG
-  DMESS "\n Reallocate MF Defaults buffer to %d\n", mobblen);
+                    DMESS "\n Reallocate MF Defaults buffer to %d\n", mobblen);
 #endif
-            mobbuff = (char *)realloc (mobbuff, (size_t)mobblen);
-         }
-      }
-      if ( mobindex == ZERO )  /* Initialise buffer to zero */
-      {
-         for(i = ZERO; i < mobblen ; i++) mobbuff[i] = '\0';
-      }
-      bytes--;
-      mobbuff[mobindex] = ( hex>>(8*bytes) ) & 0xff;
-      mobparmlen--;
+                    mobbuff = (char *) realloc(mobbuff, (size_t) mobblen);
+                }
+            }
+            if (mobindex == ZERO)  /* Initialise buffer to zero */
+            {
+                for (i = ZERO; i < mobblen; i++) mobbuff[i] = '\0';
+            }
+            bytes--;
+            mobbuff[mobindex] = (hex >> (8 * bytes)) & 0xff;
+            mobparmlen--;
 
 #ifdef DEBUG2
-   DMESS "(0x%x)", mobbuff[mobindex]);
+            DMESS "(0x%x)", mobbuff[mobindex]);
 #endif
 
-   }
-   else         /* Flush Buffer if bytes == 0 */
-   {
+        }
+    else         /* Flush Buffer if bytes == 0 */
+    {
 #ifdef DEBUG
-  DMESS "\n*** Flush Output Buffer ***\n");
+        DMESS "\n*** Flush Output Buffer ***\n");
 #endif
-      fwrite(mobbuff,BUFF_LEN,(size_t)1,cgmob);
-      mobindex = ZERO;
-   }
+        fwrite(mobbuff, BUFF_LEN, (size_t) 1, cgmob);
+        mobindex = ZERO;
+    }
 
-   if ( mobremainder && mobparmlen == 0 )
-   {
+    if (mobremainder && mobparmlen == 0) {
 /*  put out partition count */
-      if ( mobremainder > 0x7ffe )
-      {
-         hex = 0xfffe;
-         mobremainder -= 0x7ffe;
-      }
-      else
-      {
-         hex = mobremainder;
-         mobremainder = 0;
-      }
-      mobparmlen = hex & 0x7fff;
+        if (mobremainder > 0x7ffe) {
+            hex = 0xfffe;
+            mobremainder -= 0x7ffe;
+        } else {
+            hex = mobremainder;
+            mobremainder = 0;
+        }
+        mobparmlen = hex & 0x7fff;
 #ifdef DEBUG
-  DMESS "New Partition %d bytes\n", mobparmlen);
+        DMESS "New Partition %d bytes\n", mobparmlen);
 #endif
-      bytes = 2;
-      mobparmlen += 2;
-      goto start;
-   }
+        bytes = 2;
+        mobparmlen += 2;
+        goto start;
+    }
 
-   return;
+    return;
 }

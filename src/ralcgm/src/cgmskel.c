@@ -40,36 +40,36 @@
 #include "cgmxxx.h"
 
 
-void CGMOxxx( Code, Long*, Float*, char* ),
-     XXXinit( void ),
-     XXXclose( void ),
-     XXXnewpic( char *name ),
-     XXXmenu( void ),
-     XXXattrib( Code type ),
-     XXXline( Int n, Long *pi, Float *pr, Enum set ),
-     XXXmarker( Int, Long*, Float* ),
-     XXXtext( char* ),
-     XXXcells( Int, Long* ),
-     XXXgdp( Code type, Long *pi, Float *pr, Enum close ),
-     XXXfill( Int, Lpoint* ),
-     XXXedge( Int n, Lpoint *pt, Enum *edgeflag );
+void CGMOxxx(Code, Long *, Float *, char *),
+        XXXinit(void),
+        XXXclose(void),
+        XXXnewpic(char *name),
+        XXXmenu(void),
+        XXXattrib(Code type),
+        XXXline(Int n, Long *pi, Float *pr, Enum set),
+        XXXmarker(Int, Long *, Float *),
+        XXXtext(char *),
+        XXXcells(Int, Long *),
+        XXXgdp(Code type, Long *pi, Float *pr, Enum close),
+        XXXfill(Int, Lpoint *),
+        XXXedge(Int n, Lpoint *pt, Enum *edgeflag);
 
-                               /*  CGM Utilities    */
+/*  CGM Utilities    */
 
-extern void GDPcentre( Point *cen, Float *rad, Float *ang,
-                       Point a, Point b, Point c ),
-            GDParc( Point cen, Float rad,
-                    Point a, Point b, Float *ang, Point *c, Point *d ),
-            GDPcircle( Point cen, Float rad, Float ang, Point a,
-                       Float rat, Long *np, LPOINT(pt), Enum cl ),
-            GDPellipse( Point cen, Point cdp1, Point cdp2, Point a, Point b,
-                        Float rat, Long *np, LPOINT(pt), Enum cl );
+extern void GDPcentre(Point *cen, Float *rad, Float *ang,
+                      Point a, Point b, Point c),
+        GDParc(Point cen, Float rad,
+               Point a, Point b, Float *ang, Point *c, Point *d),
+        GDPcircle(Point cen, Float rad, Float ang, Point a,
+                  Float rat, Long *np, LPOINT(pt), Enum cl),
+        GDPellipse(Point cen, Point cdp1, Point cdp2, Point a, Point b,
+                   Float rat, Long *np, LPOINT(pt), Enum cl);
 
-extern void CGMfill( Long n, Long *pi, Float *pr, LPOINT(pl), Enum set );
+extern void CGMfill(Long n, Long *pi, Float *pr, LPOINT(pl), Enum set);
 
 /*   Direct colour calculation */
 
-#define RGBVAL(x,y)     ( (short) 255 * (x - cur.min_rgb.y)\
+#define RGBVAL(x, y)     ( (short) 255 * (x - cur.min_rgb.y)\
                           / (cur.max_rgb.y - cur.min_rgb.y) )
 
 /*   Debug messages  */
@@ -82,851 +82,817 @@ static char *func = "CGMXXX", emess[48];
 
 static Enum Text_method[] = {
 #ifdef BEZIER
-         BEZ,
+        BEZ,
 #endif
 #ifdef HERSHEY
-         HER,
+        HER,
 #endif
-         HDW,
-         (Enum) 0 };
+        HDW,
+        (Enum) 0};
 
 /**************************************************** CGMOxxx **********/
-void CGMOxxx ( Code c, Long *pi, Float *pr, char *str )
-{
-   static Logical first = TRUE;
-   register Long n, i, j, num;
-   Code major;
-   Enum close;
-   Lpoint localpts[ARRAY_MAX];
+void CGMOxxx(Code c, Long *pi, Float *pr, char *str) {
+    static Logical first = TRUE;
+    register Long n, i, j, num;
+    Code major;
+    Enum close;
+    Lpoint localpts[ARRAY_MAX];
 
 #ifdef DEBUG
-   DMESS "\n  CGMxxx code: 0x%x\n", c);
+    DMESS "\n  CGMxxx code: 0x%x\n", c);
 #endif
 
-   if ( c == (Code) EOF ) exit(0);
-   major = c>>8;
-   num = *pi++;
+    if (c == (Code) EOF) exit(0);
+    major = c >> 8;
+    num = *pi++;
 
-   switch (major)
-   {
-      case 0x00:               /* Graphics Primitives  */
+    switch (major) {
+        case 0x00:               /* Graphics Primitives  */
 
-         switch (c)
-         {
-            case LINE:         /*  Polyline   */
-               if ( first ) XXXattrib(LINE);
-               XXXline ( num, pi, pr, NOSET);
-               first = ( num >= ZERO );
-               break;
+            switch (c) {
+                case LINE:         /*  Polyline   */
+                    if (first) XXXattrib(LINE);
+                    XXXline(num, pi, pr, NOSET);
+                    first = (num >= ZERO);
+                    break;
 
-            case DISJTLINE:         /*  Disjoint Polyline  */
-               if ( first ) XXXattrib(LINE);
-               for (i = 1; i <= abs(num); i += 2)
-               {
-                  XXXline (2L, pi, pr, NOSET);
-                  pi += 4; pr += 4;
-               }
-               first = ( num >= ZERO );
-               break;
+                case DISJTLINE:         /*  Disjoint Polyline  */
+                    if (first) XXXattrib(LINE);
+                    for (i = 1; i <= abs(num); i += 2) {
+                        XXXline(2L, pi, pr, NOSET);
+                        pi += 4;
+                        pr += 4;
+                    }
+                    first = (num >= ZERO);
+                    break;
 
-            case MARKER:         /*  Polymarker  */
-               if ( first ) XXXattrib(MARKER);
-               XXXmarker ( num, pi, pr);
-               first = ( num >= ZERO );
-               break;
+                case MARKER:         /*  Polymarker  */
+                    if (first) XXXattrib(MARKER);
+                    XXXmarker(num, pi, pr);
+                    first = (num >= ZERO);
+                    break;
 
-            case TEXT:         /*  Text   */
+                case TEXT:         /*  Text   */
 /*  Save Text Position from (*pr,*pr+1) or (*pi,*pi+1) */
-               ATTtext(NTEXTB, text_bundle, NCOLOURS, &xxxtext);
-               xxxtext_item = TXTaccinf(num, str, &xxxtext, text_method);
-               if ( (Enum)num == FINAL ) XXXtext( xxxtext_item );
-               break;
+                    ATTtext(NTEXTB, text_bundle, NCOLOURS, &xxxtext);
+                    xxxtext_item = TXTaccinf(num, str, &xxxtext, text_method);
+                    if ((Enum) num == FINAL) XXXtext(xxxtext_item);
+                    break;
 
-            case RESTRTEXT:         /*  Restricted Text */
+                case RESTRTEXT:         /*  Restricted Text */
 /*  Save Text box size from *pr, *pr+1 or *pi, *pi+1
     and Text Position from (*pr+2,*pr+3) or (*pi+2,*pi+3) */
-               ATTtext(NTEXTB, text_bundle, NCOLOURS, &xxxtext);
-               xxxtext_item = TXTaccinf(num, str, &xxxtext, text_method);
-               if ( (Enum)num == FINAL ) XXXtext( xxxtext_item );
-               break;
+                    ATTtext(NTEXTB, text_bundle, NCOLOURS, &xxxtext);
+                    xxxtext_item = TXTaccinf(num, str, &xxxtext, text_method);
+                    if ((Enum) num == FINAL) XXXtext(xxxtext_item);
+                    break;
 
-            case APNDTEXT:         /*  Append Text   */
-               ATTtext(NTEXTB, text_bundle, NCOLOURS, &xxxtext);
-               xxxtext_item = TXTaccinf(num, str, &xxxtext, text_method);
-               if ( (Enum)num == FINAL ) XXXtext( xxxtext_item );
-               break;
+                case APNDTEXT:         /*  Append Text   */
+                    ATTtext(NTEXTB, text_bundle, NCOLOURS, &xxxtext);
+                    xxxtext_item = TXTaccinf(num, str, &xxxtext, text_method);
+                    if ((Enum) num == FINAL) XXXtext(xxxtext_item);
+                    break;
 
-            case POLYGON:         /*  Polygon   */
-               XXXattrib(POLYGON);
-               CGMfill ( num, pi, pr, localpts, NOSET);
-               break;
+                case POLYGON:         /*  Polygon   */
+                    XXXattrib(POLYGON);
+                    CGMfill(num, pi, pr, localpts, NOSET);
+                    break;
 
-            case POLYGONSET:         /*  Polygon Set  */
-               XXXattrib(POLYGON);
-               CGMfill ( num, pi, pr, localpts, SET);
-               break;
+                case POLYGONSET:         /*  Polygon Set  */
+                    XXXattrib(POLYGON);
+                    CGMfill(num, pi, pr, localpts, SET);
+                    break;
 
-            case CELLARRAY:         /*  Cell Array  */
-               if ( first )
-               {
-                  XXXattrib (CELLARRAY);
+                case CELLARRAY:         /*  Cell Array  */
+                    if (first) {
+                        XXXattrib(CELLARRAY);
 
 /*  set up local Cell Array parameters here */
 
-               }
-               XXXcells ( num, pi );
-               first = ( num >= ZERO );
-               break;
+                    }
+                    XXXcells(num, pi);
+                    first = (num >= ZERO);
+                    break;
 
-            case GDP:         /*  Generalised Drawing Primitive  */
-               j = *pi++;
-               if ( cgmralgks )
-               {
-                  Enum close;
-                  close = ( j == GKSPIE ? PIE
-                                        : (j == GKSCHORD ? CHORD
-                                                         : NOCLOSE ));
-                  XXXgdp ( (Code) j, pi, pr, close);
-               }
-               else
-               {
-                  CGMerror(func, ERR_NOGDP, ERROR, NULLSTR);
-               }
-               break;
+                case GDP:         /*  Generalised Drawing Primitive  */
+                    j = *pi++;
+                    if (cgmralgks) {
+                        Enum close;
+                        close = (j == GKSPIE ? PIE
+                                             : (j == GKSCHORD ? CHORD
+                                                              : NOCLOSE));
+                        XXXgdp((Code) j, pi, pr, close);
+                    } else {
+                        CGMerror(func, ERR_NOGDP, ERROR, NULLSTR);
+                    }
+                    break;
 
-            case RECT:         /*  Rectangle   */
-               XXXgdp (RECT, pi, pr, NOCLOSE);
-               break;
+                case RECT:         /*  Rectangle   */
+                    XXXgdp(RECT, pi, pr, NOCLOSE);
+                    break;
 
-            default:
-               (void) sprintf( emess, "(code: 0x%x)", c);
-               (void) CGMerror (func, ERR_INVPRIM, ERROR, emess);
-               break;
-         }
-         break;
+                default:
+                    (void) sprintf(emess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVPRIM, ERROR, emess);
+                    break;
+            }
+            break;
 
-      case 0x30:  /*  Delimiter Elements  */
+        case 0x30:  /*  Delimiter Elements  */
 
-         switch (c)
-         {
+            switch (c) {
 
-            case BEGMF:         /*  Begin Metafile   */
-               XXXinit();
-               break;
+                case BEGMF:         /*  Begin Metafile   */
+                    XXXinit();
+                    break;
 
-            case ENDMF:         /*  End Metafile   */
-               XXXclose();
-               break;
+                case ENDMF:         /*  End Metafile   */
+                    XXXclose();
+                    break;
 
-            case BEGPIC:        /*  Begin Picture Descriptor   */
-               XXXnewpic(str);
-               break;
+                case BEGPIC:        /*  Begin Picture Descriptor   */
+                    XXXnewpic(str);
+                    break;
 
-            case BEGPICBODY:         /*  Begin Picture Body  */
-               XXXattrib(BEGPIC);
-               break;
+                case BEGPICBODY:         /*  Begin Picture Body  */
+                    XXXattrib(BEGPIC);
+                    break;
 
-            case ENDPIC:         /*  End  Picture    */
-               XXXmenu();
-               break;
+                case ENDPIC:         /*  End  Picture    */
+                    XXXmenu();
+                    break;
 
-            default:
-               (void) sprintf ( emess, "(Code: 0x%x)", c);
-               (void) CGMerror ( func, ERR_INVDELIM, ERROR, emess );
-         }
-         break;
+                default:
+                    (void) sprintf(emess, "(Code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVDELIM, ERROR, emess);
+            }
+            break;
 
 
-      case 0x31:  /* Metafile Descriptor Elements  */
-         switch (c)
-         {
-            case MFVERSION:         /*  Metafile version   */
+        case 0x31:  /* Metafile Descriptor Elements  */
+            switch (c) {
+                case MFVERSION:         /*  Metafile version   */
 
-            case MFDESC:         /*  Metafile Description  */
+                case MFDESC:         /*  Metafile Description  */
 
-            case VDCTYPE:         /*  VDC Type   */
+                case VDCTYPE:         /*  VDC Type   */
 
-            case INTEGERPREC:         /*  Integer Precision  */
+                case INTEGERPREC:         /*  Integer Precision  */
 
-            case REALPREC:         /*  Real Precision   */
+                case REALPREC:         /*  Real Precision   */
 
-            case INDEXPREC:         /*  Index Precision   */
+                case INDEXPREC:         /*  Index Precision   */
 
-            case COLRPREC:         /*  Colour Precision  */
+                case COLRPREC:         /*  Colour Precision  */
 
-            case COLRINDEXPREC:         /*  Colour Index Precision  */
+                case COLRINDEXPREC:         /*  Colour Index Precision  */
 
-            case MAXCOLRINDEX:         /*  Maximum Colour Index  */
+                case MAXCOLRINDEX:         /*  Maximum Colour Index  */
 
-            case COLRVALUEEXT:         /*  Colour value extent  */
+                case COLRVALUEEXT:         /*  Colour value extent  */
 
-            case MFELEMLIST:         /*  Metafile element List  */
+                case MFELEMLIST:         /*  Metafile element List  */
 
-            case BEGMFDEFAULTS: /* Begin Metafile defaults Replacement*/
+                case BEGMFDEFAULTS: /* Begin Metafile defaults Replacement*/
 
-            case ENDMFDEFAULTS: /* End Metafile defaults Replacement */
+                case ENDMFDEFAULTS: /* End Metafile defaults Replacement */
 
-            case FONTLIST:         /*  Font List   */
+                case FONTLIST:         /*  Font List   */
 
-            case CHARSETLIST:         /*  Character set list  */
+                case CHARSETLIST:         /*  Character set list  */
 
-            case CHARCODING:         /*  Character coding Announcer  */
-               break;
-         }
-         break;
+                case CHARCODING:         /*  Character coding Announcer  */
+                    break;
+            }
+            break;
 
-      case 0x32:  /* Picture Descriptor Elements  */
-         switch (c)
-         {
-            case COLRMODE:         /*  Colour Selection Mode */
+        case 0x32:  /* Picture Descriptor Elements  */
+            switch (c) {
+                case COLRMODE:         /*  Colour Selection Mode */
 
-            case SCALEMODE:        /*  Scaling Mode   */
+                case SCALEMODE:        /*  Scaling Mode   */
 
-            case LINEWIDTHMODE:    /*  Line width Specification  */
+                case LINEWIDTHMODE:    /*  Line width Specification  */
 
-            case MARKERSIZEMODE:   /*  Marker size Specification  */
+                case MARKERSIZEMODE:   /*  Marker size Specification  */
 
-            case EDGEWIDTHMODE:    /*  Edge width Specification  */
-               break;
+                case EDGEWIDTHMODE:    /*  Edge width Specification  */
+                    break;
 
-            case VDCEXT:           /*  VDC Extent    */
-               break;
+                case VDCEXT:           /*  VDC Extent    */
+                    break;
 
-            case BACKCOLR:         /*  Background Colour  */
-               break;
+                case BACKCOLR:         /*  Background Colour  */
+                    break;
 
-            default:
-               (void) sprintf (emess, "(code: 0x%x)", c);
-               (void) CGMerror ( func, ERR_INVCONT, ERROR, emess);
-         }
-         break;
+                default:
+                    (void) sprintf(emess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVCONT, ERROR, emess);
+            }
+            break;
 
-      case 0x33:  /* Control Elements  */
+        case 0x33:  /* Control Elements  */
 
-         switch(c)
-         {
-            case VDCINTEGERPREC:       /* VDC Integer Precision  */
+            switch (c) {
+                case VDCINTEGERPREC:       /* VDC Integer Precision  */
 
-            case VDCREALPREC:          /* VDC Real Precision  */
+                case VDCREALPREC:          /* VDC Real Precision  */
 
-            case AUXCOLR:              /* Auxiliary Colour  */
+                case AUXCOLR:              /* Auxiliary Colour  */
 
-            case TRANSPARENCY:         /* Transparency  */
+                case TRANSPARENCY:         /* Transparency  */
 
-            case CLIPRECT:             /* Clip Rectangle  */
+                case CLIPRECT:             /* Clip Rectangle  */
 
-            case CLIP:                 /* Clip Indicator  */
-               break;
+                case CLIP:                 /* Clip Indicator  */
+                    break;
 
-            default:
-               (void) sprintf ( emess, "(Code: 0x%x)", c);
-               (void) CGMerror ( func, ERR_INVCONT, ERROR, emess);
-         }
-         break;
+                default:
+                    (void) sprintf(emess, "(Code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVCONT, ERROR, emess);
+            }
+            break;
 
-      case 0x34:  /* Circles and Ellipses  */
+        case 0x34:  /* Circles and Ellipses  */
 
-         switch(c)
-         {
-            case CIRCLE:       /* Circle      */
-               XXXgdp (CIRCLE, pi, pr, NOCLOSE);
-               break;
+            switch (c) {
+                case CIRCLE:       /* Circle      */
+                    XXXgdp(CIRCLE, pi, pr, NOCLOSE);
+                    break;
 
-            case ARC3PT:       /* Circular Arc  3 point */
-               XXXgdp (ARC3PT, pi, pr, NOCLOSE);
-               break;
+                case ARC3PT:       /* Circular Arc  3 point */
+                    XXXgdp(ARC3PT, pi, pr, NOCLOSE);
+                    break;
 
-            case ARC3PTCLOSE:       /* Circular Arc  3 point close */
-               XXXgdp (ARC3PTCLOSE, pi, pr, (Enum) *(pi+6)+1 );
-               break;
+                case ARC3PTCLOSE:       /* Circular Arc  3 point close */
+                    XXXgdp(ARC3PTCLOSE, pi, pr, (Enum) * (pi + 6) + 1);
+                    break;
 
-            case ARCCTR:       /* Circle Arc centre */
-               XXXgdp (ARCCTR, pi, pr, NOCLOSE);
-               break;
+                case ARCCTR:       /* Circle Arc centre */
+                    XXXgdp(ARCCTR, pi, pr, NOCLOSE);
+                    break;
 
-            case ARCCTRCLOSE:       /* Circle Arc centre close */
-               XXXgdp (ARCCTRCLOSE, pi, pr, (Enum) *(pi+7)+1 );
-               break;
+                case ARCCTRCLOSE:       /* Circle Arc centre close */
+                    XXXgdp(ARCCTRCLOSE, pi, pr, (Enum) * (pi + 7) + 1);
+                    break;
 
-            case ELLIPSE:       /* Ellipse    */
-               XXXgdp (ELLIPSE, pi, pr, NOCLOSE);
-               break;
+                case ELLIPSE:       /* Ellipse    */
+                    XXXgdp(ELLIPSE, pi, pr, NOCLOSE);
+                    break;
 
-            case ELLIPARC:       /* Elliptical Arc */
-               XXXgdp (ELLIPARC, pi, pr, NOCLOSE);
-               break;
+                case ELLIPARC:       /* Elliptical Arc */
+                    XXXgdp(ELLIPARC, pi, pr, NOCLOSE);
+                    break;
 
-            case ELLIPARCCLOSE:       /* Elliptical Arc close*/
-               XXXgdp (ELLIPARCCLOSE, pi, pr, (Enum) *(pi+10)+1 );
-               break;
+                case ELLIPARCCLOSE:       /* Elliptical Arc close*/
+                    XXXgdp(ELLIPARCCLOSE, pi, pr, (Enum) * (pi + 10) + 1);
+                    break;
 
-            default:
-               (void) sprintf ( emess, "(Code: 0x%x)", c);
-               (void) CGMerror ( func, ERR_INVOUT, ERROR, emess );
-         }
-         break;
+                default:
+                    (void) sprintf(emess, "(Code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVOUT, ERROR, emess);
+            }
+            break;
 
-      case 0x35:  /* Attributes  */
-         att_flag = TRUE;
-         switch(c)
-         {
-            case CHARHEIGHT:       /*  Character Height   */
+        case 0x35:  /* Attributes  */
+            att_flag = TRUE;
+            switch (c) {
+                case CHARHEIGHT:       /*  Character Height   */
 
-            case LINEWIDTH:       /*  Line Width */
+                case LINEWIDTH:       /*  Line Width */
 
-            case MARKERSIZE:       /*  Marker Size */
+                case MARKERSIZE:       /*  Marker Size */
 
-            case LINEINDEX:       /*  Line Bundle index  */
+                case LINEINDEX:       /*  Line Bundle index  */
 
-            case LINETYPE:       /*  Line Type   */
+                case LINETYPE:       /*  Line Type   */
 
-            case LINECOLR:       /*  Line Colour  */
+                case LINECOLR:       /*  Line Colour  */
 
-            case MARKERINDEX:       /*  Marker Bundle index  */
+                case MARKERINDEX:       /*  Marker Bundle index  */
 
-            case MARKERTYPE:       /*  Marker Type   */
+                case MARKERTYPE:       /*  Marker Type   */
 
-            case MARKERCOLR:       /*  Marker Colour  */
+                case MARKERCOLR:       /*  Marker Colour  */
 
-            case TEXTINDEX:       /*  Text Bundle index  */
+                case TEXTINDEX:       /*  Text Bundle index  */
 
-            case TEXTFONTINDEX:       /*  Text Font Index  */
+                case TEXTFONTINDEX:       /*  Text Font Index  */
 
-            case TEXTPREC:       /*  Text Precision   */
+                case TEXTPREC:       /*  Text Precision   */
 
-            case CHAREXPAN:       /*  Character Expansion Factor  */
+                case CHAREXPAN:       /*  Character Expansion Factor  */
 
-            case CHARSPACE:       /*  Character Spacing  */
+                case CHARSPACE:       /*  Character Spacing  */
 
-            case TEXTCOLR:       /*  Text Colour   */
+                case TEXTCOLR:       /*  Text Colour   */
 
-            case CHARORI:       /*  Character Orientation */
+                case CHARORI:       /*  Character Orientation */
 
-            case TEXTPATH:       /*  Text Path */
+                case TEXTPATH:       /*  Text Path */
 
-            case TEXTALIGN:       /*  Text Alignment */
+                case TEXTALIGN:       /*  Text Alignment */
 
-            case CHARSETINDEX:      /*  Character Set Index */
+                case CHARSETINDEX:      /*  Character Set Index */
 
-            case ALTCHARSETINDEX:   /*  Altern Character Set Index */
-               break;
+                case ALTCHARSETINDEX:   /*  Altern Character Set Index */
+                    break;
 
-            default:
-               (void) sprintf ( emess, "(Code: 0x%x)", c);
-               (void) CGMerror ( func, ERR_INVATT, ERROR, emess );
-               break;
-         }
-         break;
+                default:
+                    (void) sprintf(emess, "(Code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVATT, ERROR, emess);
+                    break;
+            }
+            break;
 
-      case 0x36:  /* More Attributes  */
-         att_flag = TRUE;
-         switch(c)
-         {
-            case EDGEWIDTH:       /*  Edge Width */
+        case 0x36:  /* More Attributes  */
+            att_flag = TRUE;
+            switch (c) {
+                case EDGEWIDTH:       /*  Edge Width */
 
-            case FILLINDEX:       /*  Fill Bundle index  */
+                case FILLINDEX:       /*  Fill Bundle index  */
 
-            case INTSTYLE:       /*  Interior Style  */
+                case INTSTYLE:       /*  Interior Style  */
 
-            case FILLCOLR:       /*  Fill Colour */
+                case FILLCOLR:       /*  Fill Colour */
 
-            case HATCHINDEX:       /*  Hatch Index  */
+                case HATCHINDEX:       /*  Hatch Index  */
 
-            case PATINDEX:       /*  Pattern Index  */
+                case PATINDEX:       /*  Pattern Index  */
 
-            case EDGEINDEX:       /*  Edge Bundle index  */
+                case EDGEINDEX:       /*  Edge Bundle index  */
 
-            case EDGETYPE:       /*  Edge Type  */
+                case EDGETYPE:       /*  Edge Type  */
 
-            case EDGECOLR:       /*  Edge Colour  */
+                case EDGECOLR:       /*  Edge Colour  */
 
-            case EDGEVIS:       /*  Edge Visibility  */
+                case EDGEVIS:       /*  Edge Visibility  */
 
-            case FILLREFPT:       /*  Fill Reference Point  */
+                case FILLREFPT:       /*  Fill Reference Point  */
 
-            case PATTABLE:       /*  Pattern Table  */
+                case PATTABLE:       /*  Pattern Table  */
 
-            case PATSIZE:       /*  Pattern Size  */
+                case PATSIZE:       /*  Pattern Size  */
 
-            case COLRTABLE:       /*  Colour Table  */
+                case COLRTABLE:       /*  Colour Table  */
 
-            case ASF:       /*  Aspect source flags  */
-               break;
+                case ASF:       /*  Aspect source flags  */
+                    break;
 
-            default:
-               (void) sprintf ( emess, "(Code: 0x%x)", c);
-               (void) CGMerror ( func, ERR_INVATT, ERROR, emess );
-               break;
+                default:
+                    (void) sprintf(emess, "(Code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVATT, ERROR, emess);
+                    break;
 
-         }
-         break;
+            }
+            break;
 
-      case 0x37:  /* Escape And External Elements  */
-         switch (c)
-         {
-            case ESCAPE:         /*  Escape  */
-               break;
+        case 0x37:  /* Escape And External Elements  */
+            switch (c) {
+                case ESCAPE:         /*  Escape  */
+                    break;
 
-            case MESSAGE:         /*  Message  */
-               break;
+                case MESSAGE:         /*  Message  */
+                    break;
 
-            case APPLDATA:         /*  Application Data  */
-               break;
+                case APPLDATA:         /*  Application Data  */
+                    break;
 
-            default:
-               (void) sprintf ( emess, "(code: 0x%x)", c);
-               (void) CGMerror ( func, ERR_INVESC, ERROR, emess);
-               break;
-         }
-         break;
+                default:
+                    (void) sprintf(emess, "(code: 0x%x)", c);
+                    (void) CGMerror(func, ERR_INVESC, ERROR, emess);
+                    break;
+            }
+            break;
 
-      default:
-         (void) sprintf ( emess, "(Code: 0x%x)", c);
-         (void) CGMerror ( func, ERR_INVELEM, ERROR, emess);
-         break;
-     }
+        default:
+            (void) sprintf(emess, "(Code: 0x%x)", c);
+            (void) CGMerror(func, ERR_INVELEM, ERROR, emess);
+            break;
+    }
 
-     return;
-  }
+    return;
+}
 
 /***************************************************** XXXattrib *******/
 
-void XXXattrib ( Code type )
-
-{
+void XXXattrib(Code type) {
     static Logical last_prim = NONOP;
 
 #ifdef DEBUG
     DMESS  "XXXattrib: type 0x%x\n", type);
 #endif
 
-    switch (type)
-    {
-       case LINE:
+    switch (type) {
+        case LINE:
 
 /* if no attribute has changed and last primitive was a line return */
 
-          if ( ! att_flag && last_prim == LINE ) return;
+            if (!att_flag && last_prim == LINE) return;
 
 /* Set local attributes here  */
 
-          last_prim = LINE;
-          break;
+            last_prim = LINE;
+            break;
 
 
-      case MARKER:
+        case MARKER:
 
 /* if no attribute has changed and last primitive was a marker return */
 
-          if ( ! att_flag  && last_prim == MARKER ) return;
+            if (!att_flag && last_prim == MARKER) return;
 
 /* Set local attributes here  */
 
-          last_prim = MARKER;
-          break;
+            last_prim = MARKER;
+            break;
 
-      case TEXT:
+        case TEXT:
 
 /* if no attribute has changed and last primitive was text return */
 
-          if ( ! att_flag && last_prim == TEXT ) return;
+            if (!att_flag && last_prim == TEXT) return;
 
 /* Set local attributes here  */
 
-          last_prim = TEXT;
-          break;
+            last_prim = TEXT;
+            break;
 
-      case POLYGON:  /*  Fill attributes  */
+        case POLYGON:  /*  Fill attributes  */
 
 /* if no attribute has changed and last primitive was a Fill Area return */
 
-          if ( ! att_flag && last_prim == POLYGON ) return;
+            if (!att_flag && last_prim == POLYGON) return;
 
 /* Set local attributes here  */
 
-          last_prim = POLYGON;
-          break;
+            last_prim = POLYGON;
+            break;
 
-      case EDGEVIS:    /*  Edge attributes */
+        case EDGEVIS:    /*  Edge attributes */
 
 /* if no attribute has changed and last primitive was a edge return */
 
-          if ( ! att_flag && last_prim == EDGEVIS ) return;
+            if (!att_flag && last_prim == EDGEVIS) return;
 
 /* Set local attributes here  */
 
-          last_prim = EDGEVIS;
-          break;
+            last_prim = EDGEVIS;
+            break;
 
-      case CELLARRAY:  /*  Cell array - may affect texture & colour*/
-          last_prim = CELLARRAY;
-          break;
+        case CELLARRAY:  /*  Cell array - may affect texture & colour*/
+            last_prim = CELLARRAY;
+            break;
 
-      case BEGPIC:    /* Reset Picture attributes to default */
-         last_prim = ZERO;
-         att_flag = TRUE;
-         return;
+        case BEGPIC:    /* Reset Picture attributes to default */
+            last_prim = ZERO;
+            att_flag = TRUE;
+            return;
 
-      default:
-         (void) sprintf ( emess, "(Type: 0x%x)", type);
-         (void) CGMerror ( func, ERR_INVATT, ERROR, emess );
-         break;
-   }
+        default:
+            (void) sprintf(emess, "(Type: 0x%x)", type);
+            (void) CGMerror(func, ERR_INVATT, ERROR, emess);
+            break;
+    }
 
-   att_flag = FALSE;
+    att_flag = FALSE;
 
-   return;
+    return;
 }
 
 /***************************************************** XXXinit *********/
 
-void XXXinit( void )
+void XXXinit(void)
 
 /*  Initialise Variables and colour map */
 
 {
-   return;
+    return;
 }
 
 /***************************************************** XXXnewpic *******/
 
-void XXXnewpic( char *pic_name )
+void XXXnewpic(char *pic_name)
 
 /*   New Frame processing started at first drawing element  */
 
-char *pic_name;
+        char *pic_name;
 {
-   return;
+    return;
 }
 
 /***************************************************** XXXmenu *********/
 
-void XXXmenu( void )
+void XXXmenu(void)
 
 /*  End of frame processing to select options */
 
 {
-   return;
+    return;
 }
 
 /***************************************************** XXXclose ********/
 
-void XXXclose( void )
+void XXXclose(void)
 
 /*  Close down the Graphics  */
 
 {
-   return;
+    return;
 }
 
 
 /***************************************************** XXXline *********/
 
-void XXXline ( Int n, Long *pi, Float *pr, Enum set )
-{
-   return;
+void XXXline(Int n, Long *pi, Float *pr, Enum set) {
+    return;
 }
 
 /***************************************************** XXXmarker *******/
 
-void XXXmarker ( Int n, Long *pi, Float *pr)
-{
-   return;
+void XXXmarker(Int n, Long *pi, Float *pr) {
+    return;
 }
 
 /***************************************************** XXXtext *********/
 
-void XXXtext ( Textitem *txt )
-{
-   Textitem curtxt = txt;
-   Point txtpos; /* Current text position */
+void XXXtext(Textitem *txt) {
+    Textitem curtxt = txt;
+    Point txtpos; /* Current text position */
 
-   TXTalign ( txt, txtpos, TXTgwidth(txt), TXTgheight(txt) );
-   while ( curtxt != NULL )
-   {
-      switch( curtxt->text_method )
-      {
+    TXTalign(txt, txtpos, TXTgwidth(txt), TXTgheight(txt));
+    while (curtxt != NULL) {
+        switch (curtxt->text_method) {
 #ifdef HERSHEY
-         case HER:
-            HERtext( curtxt, txtpos, XXXtxtline );
-            break;
+            case HER:
+               HERtext( curtxt, txtpos, XXXtxtline );
+               break;
 #endif
 #ifdef BEZIER
-         case BEZ:
-            BEZtext( curtxt, &xxxtxt, txtpos, XXXtxtfill );
-            break;
+            case BEZ:
+               BEZtext( curtxt, &xxxtxt, txtpos, XXXtxtfill );
+               break;
 #endif
 #ifdef TEX
-         case TEX:
-            break;
+            case TEX:
+               break;
 #endif
-         case HDW:
-         default:
-                  /* Local text method */
-            break;
-      }
-      curtxt = curtxt->next;
-   }
-   TXTfree(txt);
-   return;
+            case HDW:
+            default:
+                /* Local text method */
+                break;
+        }
+        curtxt = curtxt->next;
+    }
+    TXTfree(txt);
+    return;
 }
 
 /***************************************************** XXXcells ********/
 
-void XXXcells ( Int num, Long *pi )
-{
-   return;
+void XXXcells(Int num, Long *pi) {
+    return;
 }
 
 /***************************************************** XXXgdp **********/
 
-void XXXgdp ( Code type, Long *pi, Float *pr, Enum close )
-{
-   Long j, np;
-   Logical fill, edge, GKSgdp, isarc, centreknown = FALSE;
-   Point p1, p2, p3, p4, p5;
-   Float rad, ang, ang1, ang2, wvrat;
-   Point centre, cdp1, cdp2;
-   Lpoint *pt = localpts;
+void XXXgdp(Code type, Long *pi, Float *pr, Enum close) {
+    Long j, np;
+    Logical fill, edge, GKSgdp, isarc, centreknown = FALSE;
+    Point p1, p2, p3, p4, p5;
+    Float rad, ang, ang1, ang2, wvrat;
+    Point centre, cdp1, cdp2;
+    Lpoint *pt = localpts;
 
 /*  work out if a RAL-GKS GDP  */
 
-   GKSgdp = ( type == GKSCIRCLE || type == GKSARC ||
-              type == GKSPIE    || type == GKSCHORD );
+    GKSgdp = (type == GKSCIRCLE || type == GKSARC ||
+              type == GKSPIE || type == GKSCHORD);
 
 /*  work out if this is an arc  */
 
-   isarc = ( type == GKSARC || type == ARC3PT || type == ARCCTR ||
-                                               type == ELLIPARC );
+    isarc = (type == GKSARC || type == ARC3PT || type == ARCCTR ||
+             type == ELLIPARC);
 
 /*  decide whether to draw fill area, edge or both and set attributes  */
 
-   fill = ( ! isarc && curatt.int_style != EMPTY
+    fill = (!isarc && curatt.int_style != EMPTY
             && curatt.int_style != HOLLOW) * curatt.int_style;
-   edge = ( isarc || curatt.edge_vis == ON || curatt.int_style == HOLLOW );
+    edge = (isarc || curatt.edge_vis == ON || curatt.int_style == HOLLOW);
 
-   if ( fill ) XXXattrib ( POLYGON );
-   else        XXXattrib ( LINE );
+    if (fill) XXXattrib(POLYGON);
+    else XXXattrib(LINE);
 
 /* make sure area is visible */
 
-   if ( ! (fill || edge) ) return;
+    if (!(fill || edge)) return;
 
 /*  At present ignore transformation of GKS GDPs */
 
-   if (GKSgdp)
-   {
-       pi += 6; pr += 6;
-   }
+    if (GKSgdp) {
+        pi += 6;
+        pr += 6;
+    }
 
 /*  get 5 points and convert to real values */
 
-   if (cur.vdc_type == REAL)
-   {
-      p1.x = *pr++;   p1.y = *pr++;
-      p2.x = *pr++;   p2.y = *pr++;
-      p3.x = *pr++;   p3.y = *pr++;
-      p4.x = *pr++;   p4.y = *pr++;
-      p5.x = *pr++;   p5.y = *pr++;
-   }
-   else
-   {
-      p1.x = *pi++;   p1.y = *pi++;
-      p2.x = *pi++;   p2.y = *pi++;
-      p3.x = *pi++;   p3.y = *pi++;
-      p4.x = *pi++;   p4.y = *pi++;
-      p5.x = *pi++;   p5.y = *pi++;
-   }
+    if (cur.vdc_type == REAL) {
+        p1.x = *pr++;
+        p1.y = *pr++;
+        p2.x = *pr++;
+        p2.y = *pr++;
+        p3.x = *pr++;
+        p3.y = *pr++;
+        p4.x = *pr++;
+        p4.y = *pr++;
+        p5.x = *pr++;
+        p5.y = *pr++;
+    } else {
+        p1.x = *pi++;
+        p1.y = *pi++;
+        p2.x = *pi++;
+        p2.y = *pi++;
+        p3.x = *pi++;
+        p3.y = *pi++;
+        p4.x = *pi++;
+        p4.y = *pi++;
+        p5.x = *pi++;
+        p5.y = *pi++;
+    }
 
 /*  Now work out significant points  */
 
-   switch ( type )
-   {
-      case ARCCTR:
-      case ARCCTRCLOSE:
-         centre = p1;
-         rad = p4.x;
-         CGMarc (centre, rad, p2, p3, &ang, &p1, &p3);
-         centreknown = TRUE;
+    switch (type) {
+        case ARCCTR:
+        case ARCCTRCLOSE:
+            centre = p1;
+            rad = p4.x;
+            CGMarc(centre, rad, p2, p3, &ang, &p1, &p3);
+            centreknown = TRUE;
 
-      case GKSARC:
-      case GKSCHORD:
-      case GKSPIE:
-      case ARC3PT:
-      case ARC3PTCLOSE:
-         if ( ! centreknown )
-                CGMcentre ( &centre, &rad, &ang, p1, p2, p3);
+        case GKSARC:
+        case GKSCHORD:
+        case GKSPIE:
+        case ARC3PT:
+        case ARC3PTCLOSE:
+            if (!centreknown)
+                CGMcentre(&centre, &rad, &ang, p1, p2, p3);
 
 #ifdef DEBUG1
-   DMESS  "  Centre: (%f,%f)  rad: %f ang: %f\n",
-             centre.x, centre.y, rad, ang );
+        DMESS  "  Centre: (%f,%f)  rad: %f ang: %f\n",
+                  centre.x, centre.y, rad, ang );
 #endif
 
-         if ( REQUAL( ang, 0.0 ) )
-         {
-                     /*  Points are co-linear  */
-            p2 = p3;
-            type = LINE;
-            break;
-         }
-         if ( REQUAL(ang, 2.0 * PI) )
-         {
-                    /*  Points form circle  */
-            if (GKSgdp) type = GKSCIRCLE;
-            else        type = CIRCLE;
-            if ( fill == PATTERN )
-            {
-               CGMcircle ( centre, rad, ang, p1, wvrat, &np, pt, close );
-               type = SOFTWARE;
+            if (REQUAL(ang, 0.0)) {
+                /*  Points are co-linear  */
+                p2 = p3;
+                type = LINE;
+                break;
+            }
+            if (REQUAL(ang, 2.0 * PI)) {
+                /*  Points form circle  */
+                if (GKSgdp) type = GKSCIRCLE;
+                else type = CIRCLE;
+                if (fill == PATTERN) {
+                    CGMcircle(centre, rad, ang, p1, wvrat, &np, pt, close);
+                    type = SOFTWARE;
+                }
+                break;
+            }
+            if (close == CHORD || fill == PATTERN) {
+                /*  Work out points  */
+                CGMcircle(centre, rad, ang, p1, wvrat, &np, pt, close);
+                type = SOFTWARE;
+            } else {
+                ang1 = atan2(p1.y - centre.y, p1.x - centre.x);
+                ang2 = atan2(p3.y - centre.y, p3.x - centre.x);
+#ifdef DEBUG1
+                DMESS  "  angles (radians): %f (%f to %f)\n", ang, ang1, ang2 );
+#endif
+                if (ang < 0.0) {
+                    /*  Clockwise  - Swap points */
+                    ang = ang1;
+                    ang1 = ang2;
+                    ang2 = ang;
+                }
+#ifdef DEBUG1
+                DMESS  "  angles (degrees): %f (%f to %f)\n",
+                                    ang*180.0/PI , ang1*180.0/PI, ang2*180.0/PI );
+#endif
             }
             break;
-         }
-         if ( close == CHORD || fill == PATTERN )
-         {
-                   /*  Work out points  */
-            CGMcircle ( centre, rad, ang, p1, wvrat, &np, pt, close );
-            type = SOFTWARE;
-         }
-         else
-         {
-            ang1 = atan2( p1.y - centre.y, p1.x - centre.x);
-            ang2 = atan2( p3.y - centre.y, p3.x - centre.x);
-#ifdef DEBUG1
-   DMESS  "  angles (radians): %f (%f to %f)\n", ang, ang1, ang2 );
-#endif
-            if ( ang < 0.0 )
-            {
-                         /*  Clockwise  - Swap points */
-               ang  = ang1;
-               ang1 = ang2;
-               ang2 = ang;
+
+        case GKSCIRCLE:
+            centre = p1;
+            rad = SQRT((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+            if (fill == PATTERN) {
+                CGMcircle(centre, rad, 2 * PI, p2, wvrat, &np, pt, close);
+                type = SOFTWARE;
             }
-#ifdef DEBUG1
-   DMESS  "  angles (degrees): %f (%f to %f)\n",
-                       ang*180.0/PI , ang1*180.0/PI, ang2*180.0/PI );
-#endif
-         }
-         break;
-
-      case GKSCIRCLE:
-         centre = p1;
-         rad = SQRT( (p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y) );
-         if ( fill == PATTERN )
-         {
-            CGMcircle ( centre, rad, 2*PI, p2, wvrat, &np, pt, close );
-            type = SOFTWARE;
-         }
-         break;
-
-      case CIRCLE:
-         centre = p1;
-         rad = p2.x;
-         p1.x += rad;
-         if ( fill == PATTERN )
-         {
-            CGMcircle ( centre, rad, 2*PI, p1, wvrat, &np, pt, close );
-            type = SOFTWARE;
-         }
-         break;
-
-
-      case RECT:
-         if ( fill == PATTERN )
-         {
-            np = 4;
-            BEGINLIST(pt)
-            STOREPOINT ( pt, p1);
-            STOREVALUE ( pt, p1.x, p2.y );
-            STOREPOINT ( pt, p2 );
-            STOREVALUE ( pt, p2.x, p1.y );
-            ENDLIST(pt)
-            pt = localpts;
-            type = SOFTWARE;
-         }
-         break;
-
-      case ELLIPSE:
-         centre = p1;
-         cdp1 = p2;
-         cdp2 = p3;
-         p4.x = 1.0;  p4.y = 0.0;
-         CGMellipse(centre, cdp1, cdp2, p4, p4, wvrat, &np, pt, close );
-         type = SOFTWARE;
-         break;
-
-      case ELLIPARC:
-
-      case ELLIPARCCLOSE:
-         centre = p1;
-         cdp1 = p2;
-         cdp2 = p3;
-         if ( VEQUAL( p2.x*p3.y - p3.x*p2.y, 0.0 ) )
-         {
-                     /*  Points are co-linear  */
-            p1 = p3;
-            type = LINE;
             break;
-         }
-         CGMellipse(centre, cdp1, cdp2, p4, p5, wvrat, &np, pt, close);
-         type = SOFTWARE;
-         break;
 
-      default:
-         break;
-   }
+        case CIRCLE:
+            centre = p1;
+            rad = p2.x;
+            p1.x += rad;
+            if (fill == PATTERN) {
+                CGMcircle(centre, rad, 2 * PI, p1, wvrat, &np, pt, close);
+                type = SOFTWARE;
+            }
+            break;
+
+
+        case RECT:
+            if (fill == PATTERN) {
+                np = 4;
+                BEGINLIST(pt)
+                STOREPOINT(pt, p1);
+                STOREVALUE(pt, p1.x, p2.y);
+                STOREPOINT(pt, p2);
+                STOREVALUE(pt, p2.x, p1.y);
+                ENDLIST(pt)
+                pt = localpts;
+                type = SOFTWARE;
+            }
+            break;
+
+        case ELLIPSE:
+            centre = p1;
+            cdp1 = p2;
+            cdp2 = p3;
+            p4.x = 1.0;
+            p4.y = 0.0;
+            CGMellipse(centre, cdp1, cdp2, p4, p4, wvrat, &np, pt, close);
+            type = SOFTWARE;
+            break;
+
+        case ELLIPARC:
+
+        case ELLIPARCCLOSE:
+            centre = p1;
+            cdp1 = p2;
+            cdp2 = p3;
+            if (VEQUAL(p2.x * p3.y - p3.x * p2.y, 0.0)) {
+                /*  Points are co-linear  */
+                p1 = p3;
+                type = LINE;
+                break;
+            }
+            CGMellipse(centre, cdp1, cdp2, p4, p5, wvrat, &np, pt, close);
+            type = SOFTWARE;
+            break;
+
+        default:
+            break;
+    }
 
 /* now draw primitives  */
 
-   switch ( type )
-   {
-      case SOFTWARE:
-         break;
+    switch (type) {
+        case SOFTWARE:
+            break;
 
-      case ARCCTR:
-      case ARCCTRCLOSE:
-      case GKSARC:
-      case GKSCHORD:
-      case GKSPIE:
-      case ARC3PT:
-      case ARC3PTCLOSE:
-         break;
+        case ARCCTR:
+        case ARCCTRCLOSE:
+        case GKSARC:
+        case GKSCHORD:
+        case GKSPIE:
+        case ARC3PT:
+        case ARC3PTCLOSE:
+            break;
 
-      case GKSCIRCLE:
-         break;
+        case GKSCIRCLE:
+            break;
 
-      case CIRCLE:
-         break;
+        case CIRCLE:
+            break;
 
-      case LINE:    /*   Points are co-linear  */
-         break;
+        case LINE:    /*   Points are co-linear  */
+            break;
 
-      case RECT:
-         break;
+        case RECT:
+            break;
 
-      case ELLIPSE:
+        case ELLIPSE:
 
-      case ELLIPARC:
+        case ELLIPARC:
 
-      case ELLIPARCCLOSE:
+        case ELLIPARCCLOSE:
 
-      default:
-         break;
-   }
-   return;
+        default:
+            break;
+    }
+    return;
 }
 
 /***************************************************** XXXfill *********/
 
-void XXXfill ( Int np, Lpoint *pt )
-
-{
-   return;
+void XXXfill(Int np, Lpoint *pt) {
+    return;
 }
 
 /***************************************************** XXXedge *********/
 
-void XXXedge ( Int np, Long *pt, Enum *edgeflag )
-
-{
-   return;
+void XXXedge(Int np, Long *pt, Enum *edgeflag) {
+    return;
 }

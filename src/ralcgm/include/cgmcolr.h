@@ -24,15 +24,15 @@
 #define CGMCOLR_H
 
 void
-      /* Put colours into CGM colour table */
-      COLRput (Long , Long *),
+/* Put colours into CGM colour table */
+        COLRput(Long, Long *),
 
-      /* Free space allocated to CGM colour table */
-      COLRfree ( void );
+/* Free space allocated to CGM colour table */
+        COLRfree(void);
 
 RGBcolour *
-      /* Get entry of CGM colour table */
-      COLRtab (Index);
+/* Get entry of CGM colour table */
+COLRtab(Index);
 
 
 #endif /* CGMCOLR_H */

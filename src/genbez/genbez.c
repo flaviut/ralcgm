@@ -24,21 +24,24 @@
 
 #include "cgmmach.h"
 #include "cgmpar.h"
+
 #define GENBEZ_C
+
 #include "cgmubez.h"
+
 #define CGMINIT_H
+
 #include "cgmerr.h"
 #include "cgmfile.h"
 
-static char *func="genbez";
+static char *func = "genbez";
 
-Logical cgmerrcount=FALSE, cgmquiet=FALSE;
+Logical cgmerrcount = FALSE, cgmquiet = FALSE;
 
-BezDir  Dir;
+BezDir Dir;
 BezFont Bfont;
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     FILE *generator, *directory;
     char *dirname, *genname;
 
@@ -49,34 +52,31 @@ int main(int argc, char **argv)
             the binary font file will be called name.b  */
 
     /***** Open generator file */
-    genname = CGMpath("fontgen",bezext);
+    genname = CGMpath("fontgen", bezext);
     generator = CGMfopen(genname, F_READ, CLEAR_TEXT);
-    if( generator == NULL)
-    { /* Exit on the spot if open failed */
+    if (generator == NULL) { /* Exit on the spot if open failed */
         CGMerror(func, ERR_OPENFILE, FATAL, genname);
-        (void)FREE(genname);
+        (void) FREE(genname);
         exit(0);
     }
 
     /***** Open directory file */
-    dirname = CGMpath("fontdir",bezext);
+    dirname = CGMpath("fontdir", bezext);
     directory = CGMfopen(dirname, F_WRITE, BINARY);
-    if ( directory == NULL)
-    { /* Exit on the spot if open failed */
+    if (directory == NULL) { /* Exit on the spot if open failed */
         CGMerror(func, ERR_OPENFILE, FATAL, dirname);
-        (void)FREE(dirname);
+        (void) FREE(dirname);
         exit(0);
     }
 
-    B_char=(BezChar *)calloc((int)MaxChars,sizeof(BezChar));
+    B_char = (BezChar *) calloc((int) MaxChars, sizeof(BezChar));
     if (B_char == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
-    B_def=(BezDef *)calloc((int)MaxDefs,sizeof(BezDef));
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+    B_def = (BezDef *) calloc((int) MaxDefs, sizeof(BezDef));
     if (B_def == NULL)
-       CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
+        CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR);
 
-    do
-    {
+    do {
         int count, ic, fontcode;
         char srcname[80], *fsrcname, fontname[80], comment[80], *binname;
         int charid, loc, more, line;
@@ -88,17 +88,15 @@ int main(int argc, char **argv)
                 in which the source data of the font is held and finally
                 its "official" font name, inside double quotes.           */
 
-        fscanf(generator,"%d %s",&fontcode,srcname);
+        fscanf(generator, "%d %s", &fontcode, srcname);
         if (fontcode == 0) break;
-        fgets(fontname,80,generator);
-        for (ic=0;ic<strlen(fontname);ic++)
-            if (fontname[ic+2] == '"')
-            {
+        fgets(fontname, 80, generator);
+        for (ic = 0; ic < strlen(fontname); ic++)
+            if (fontname[ic + 2] == '"') {
                 fontname[ic] = '\000';
                 break;
-            }
-            else
-                fontname[ic]=fontname[ic+2];
+            } else
+                fontname[ic] = fontname[ic + 2];
 
 #ifdef DEBUG
         fprintf(stderr, "Font %d in file %s is %s\n",
@@ -107,11 +105,10 @@ int main(int argc, char **argv)
 
         /*****  Open up the source file.                                  */
 
-        fsrcname = CGMpath(srcname,srcext);
-        source = CGMfopen(fsrcname,F_READ,CLEAR_TEXT);
-        if (source == NULL)
-        {
-            printf("Font data file %s could not be opened\n",fsrcname);
+        fsrcname = CGMpath(srcname, srcext);
+        source = CGMfopen(fsrcname, F_READ, CLEAR_TEXT);
+        if (source == NULL) {
+            printf("Font data file %s could not be opened\n", fsrcname);
             continue;
         }
 #ifdef DEBUG
@@ -121,11 +118,10 @@ int main(int argc, char **argv)
 
         /*****  Open up the binary file  */
 
-        binname = CGMpath(srcname,binext);
-        binary = CGMfopen(binname,F_WRITE,BINARY);
-        if (binary == NULL)
-        {
-            printf("Output file %s could not be opened\n",binname);
+        binname = CGMpath(srcname, binext);
+        binary = CGMfopen(binname, F_WRITE, BINARY);
+        if (binary == NULL) {
+            printf("Output file %s could not be opened\n", binname);
             exit(0);
         }
 #ifdef DEBUG
@@ -135,24 +131,21 @@ int main(int argc, char **argv)
         /*****  Read in the three comment lines and then the header line
                 from the source file.                                    */
 
-        for (ic=0;ic<3;ic++)
-        {
-            fgets(comment,80,source);
-            comment[strlen(comment)-1] = comment[strlen(comment)];
+        for (ic = 0; ic < 3; ic++) {
+            fgets(comment, 80, source);
+            comment[strlen(comment) - 1] = comment[strlen(comment)];
 #ifdef DEBUG
             fprintf(stderr, "Comment ignored: %s\n",comment);
 #endif
         }
 
-        count = fscanf(source,"%f%f%f%f%f", &va, &vb, &vc, &vd, &ve);
-        if (count != 5)
-        {
+        count = fscanf(source, "%f%f%f%f%f", &va, &vb, &vc, &vd, &ve);
+        if (count != 5) {
             printf("Too few values on font header\n");
             exit(0);
         }
 
-        while (getc(source) != '\n')
-           ;
+        while (getc(source) != '\n');
 
 #ifdef DEBUG
         fprintf(stderr, "Top %g cap %g bottom %g width %g shear %g\n",
@@ -168,77 +161,71 @@ int main(int argc, char **argv)
         more = 1;
         line = 3;
 
-        for (ic=0;ic<MaxChars;ic++)
+        for (ic = 0; ic < MaxChars; ic++)
             B_char[ic].location = 0;
 
-        do
-        {
+        do {
             int flag;
-            float a,b,c,xref,yref;
+            float a, b, c, xref, yref;
 
-            fscanf(source,"%d",&flag);
+            fscanf(source, "%d", &flag);
             line++;
 
-            switch (flag)
+            switch (flag) {
+                case 9:     /*  new character  */
+                    fscanf(source, "%f%f", &a, &b);
+                    while (fgetc(source) != '\n');
+                    fscanf(source, "%*d%f", &c);
+                    while (fgetc(source) != '\n');
+                    line++;
 
-            {
-            case 9:     /*  new character  */
-                fscanf(source,"%f%f",&a,&b);
-                while (fgetc(source) != '\n')
-                    ;
-                fscanf(source,"%*d%f",&c);
-                while (fgetc(source) != '\n')
-                        ;
-                line++;
+                    B_char[++charid].location = loc;
+                    B_char[charid].numcomp = 0;
+                    B_char[charid].width = c;
 
-                B_char[++charid].location = loc;
-                B_char[charid].numcomp  = 0;
-                B_char[charid].width  = c;
-
-                xref = a;
-                yref = b;
+                    xref = a;
+                    yref = b;
 
 #ifdef DEBUG
-                fprintf(stderr, " %d",charid+31);
+                    fprintf(stderr, " %d",charid+31);
 #endif
-                break;
+                    break;
 
-            case 0: case 1: case 2: case 4:
-                fscanf(source,"%f%f",&a,&b);
-                while (fgetc(source) != '\n')
-                  ;
-                B_def[loc].x      = a - xref;
-                B_def[loc].y      = b - yref;
-                B_def[loc++].flag = flag;
-                B_char[charid].numcomp++;
-                if (loc > MaxDefs)
-                {
-                    printf("Character %d causes array overflow\n",
-                            charid+31);
-                    exit(0);
-                }
-                if (flag == 2)
-                {
-                    if (B_char[charid].numcomp > MaxComp)
-                    {
-                        printf("Character %d ; too many (%d) components\n",
-                                 charid+31,MaxComp+1);
+                case 0:
+                case 1:
+                case 2:
+                case 4:
+                    fscanf(source, "%f%f", &a, &b);
+                    while (fgetc(source) != '\n');
+                    B_def[loc].x = a - xref;
+                    B_def[loc].y = b - yref;
+                    B_def[loc++].flag = flag;
+                    B_char[charid].numcomp++;
+                    if (loc > MaxDefs) {
+                        printf("Character %d causes array overflow\n",
+                               charid + 31);
                         exit(0);
                     }
-                }
-                break;
+                    if (flag == 2) {
+                        if (B_char[charid].numcomp > MaxComp) {
+                            printf("Character %d ; too many (%d) components\n",
+                                   charid + 31, MaxComp + 1);
+                            exit(0);
+                        }
+                    }
+                    break;
 
-            case -1:     /*  end of font  */
-                B_char[charid].location = loc;
-                more = 0;
+                case -1:     /*  end of font  */
+                    B_char[charid].location = loc;
+                    more = 0;
 #ifdef DEBUG
-                fprintf(stderr, "\n");
+                    fprintf(stderr, "\n");
 #endif
-                break;
+                    break;
 
-            default:
-                printf("Unknown BEZIER flag %d at line %d\n",flag,line);
-                break;
+                default:
+                    printf("Unknown BEZIER flag %d at line %d\n", flag, line);
+                    break;
 
             }
 
@@ -246,11 +233,11 @@ int main(int argc, char **argv)
 
         /*****  Store the font metric parameters in the font header.  */
 
-        Bfont.top    = va;
-        Bfont.cap    = vb;
+        Bfont.top = va;
+        Bfont.cap = vb;
         Bfont.bottom = vc;
-        Bfont.width  = vd;
-        Bfont.shear  = ve;
+        Bfont.width = vd;
+        Bfont.shear = ve;
         Bfont.height = vb;
         Bfont.number = fontcode;
         Bfont.charids = charid;
@@ -260,24 +247,24 @@ int main(int argc, char **argv)
                  header block that goes in the binary font file.           */
 
         Dir.number = fontcode;
-        strcpy(Dir.name,fontname);
-        strcpy(Dir.filename,srcname);
+        strcpy(Dir.name, fontname);
+        strcpy(Dir.filename, srcname);
 
 #ifdef DEBUG
         fprintf(stderr, "Will store %d chars %d defs\n",charid,loc);
 #endif
 
-        fwrite ((char *) &Bfont,   sizeof(Bfont),       1,binary);
-        fwrite ((char *) B_char, sizeof(*B_char), charid,binary);
-        fwrite ((char *) B_def,  sizeof(*B_def),     loc,binary);
+        fwrite((char *) &Bfont, sizeof(Bfont), 1, binary);
+        fwrite((char *) B_char, sizeof(*B_char), charid, binary);
+        fwrite((char *) B_def, sizeof(*B_def), loc, binary);
 
-        fwrite ((char *) &Dir,    sizeof(Dir),     1,directory);
+        fwrite((char *) &Dir, sizeof(Dir), 1, directory);
 
         fclose(source);
         FREE(fsrcname);
 
         fclose(binary);
-        printf("Binary file %s created\n",srcname);
+        printf("Binary file %s created\n", srcname);
         FREE(binname);
 
 #ifdef DEBUG
@@ -293,17 +280,17 @@ int main(int argc, char **argv)
 #endif
 
     Dir.number = -1;
-    fwrite ((char *) &Dir, sizeof(Dir), 1, directory);
+    fwrite((char *) &Dir, sizeof(Dir), 1, directory);
 
     /* close directory file */
     fclose(directory);
     /* FREE pathname - no longer needed */
-    (void)FREE(dirname);
+    (void) FREE(dirname);
 
     /* close generator file */
     fclose(generator);
     /* FREE pathname - no longer needed */
-    (void)FREE(genname);
+    (void) FREE(genname);
 
     FREE(B_char);
     FREE(B_def);

@@ -23,7 +23,7 @@
  *
  */
 
-     /*  The following #define's may be system-dependent  */
+/*  The following #define's may be system-dependent  */
 
 #define MaxCoef      8         /*  number of coefficients in B_coef  */
 #define MaxComp    100         /*  number of Bezier points in 1 component  */
@@ -35,53 +35,47 @@
 #define DefBezFnt    200       /*  Default bezier font if we cant find the
                                    required one, should never happen!!!     */
 
-typedef enum
-{
-     BezCLOSED,
-     BezOPEN
+typedef enum {
+    BezCLOSED,
+    BezOPEN
 } BezSTATE;
 
-typedef struct bezdir
-{
+typedef struct bezdir {
     Index number;                   /*  reference number of font  */
 
     char name[MAXFNSIZE],           /*  name of font  */
-         filename[MAXFLSIZE];       /*  name of file holding font  */
+            filename[MAXFLSIZE];       /*  name of file holding font  */
 } BezDir;
 
-typedef struct bezfont
-{
-     Index number;                  /*  reference number of font  */
+typedef struct bezfont {
+    Index number;                  /*  reference number of font  */
 
-     int charids,                   /*  number of character definitions  */
-         defs;                      /*  number of point sets  */
+    int charids,                   /*  number of character definitions  */
+            defs;                      /*  number of point sets  */
 
-     float top,                     /*  top line y value  */
-           cap,                     /*  cap line y value  */
-           bottom,                  /*  bottom line y value  */
-           width,                   /*  average width ?  */
-           shear,                   /*  shear parameter  */
-           height;                  /*  derived height parameter  */
+    float top,                     /*  top line y value  */
+            cap,                     /*  cap line y value  */
+            bottom,                  /*  bottom line y value  */
+            width,                   /*  average width ?  */
+            shear,                   /*  shear parameter  */
+            height;                  /*  derived height parameter  */
 } BezFont;
 
-typedef struct bezchar
-{
+typedef struct bezchar {
     int location,                   /*  start point in character definition  */
-        numcomp;                    /*  number of components in character  */
+            numcomp;                    /*  number of components in character  */
 
     float centre,                   /*  position of centre  */
-          width;                    /*  character width  */
+            width;                    /*  character width  */
 } BezChar;
 
-typedef struct bezdef
-{
+typedef struct bezdef {
     int flag;                       /*  curve / straight flag  */
 
-    float x,y;                      /*  point  */
+    float x, y;                      /*  point  */
 } BezDef;
 
-typedef struct bezflist
-{
+typedef struct bezflist {
     BezFont *bfont;                 /*  font details for this font  */
     BezChar *bchar;                 /*  character details for this font  */
     BezDef *bdef;                   /*  character definitions for this font  */
@@ -90,13 +84,13 @@ typedef struct bezflist
 } BezFlist;
 
 
-static BezChar   *B_char=NULL;             /*  descriptors of current chars  */
+static BezChar *B_char = NULL;             /*  descriptors of current chars  */
 
-static BezDef    *B_def=NULL;              /*  Bezier definitions of ditto  */
+static BezDef *B_def = NULL;              /*  Bezier definitions of ditto  */
 
 static char *bezext = "bez",
-            *srcext = "bfs",
-            *binext = "bfb";
+        *srcext = "bfs",
+        *binext = "bfb";
 
 #ifndef GENBEZ_C
 

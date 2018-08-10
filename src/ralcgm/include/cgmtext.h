@@ -49,35 +49,34 @@
 #define MAX_FONT_CHARS 95   /* Maximum Number of Characters in Font */
 
 /* Typedef for the text item structure */
-typedef struct textitem
-{
-   /* CGM attributes that can be changed from TEXT to APNDTEXT ... */
-        char *str;
-        Index text_font, altext_font, char_set, altchar_set;
-        Enum text_prec, text_method, altext_method;
-        float char_exp, char_space, char_height;
-        Index colourindex, aux_colourindex;
-        RGBcolour text_col, aux_col;
-        Enum colour_mode, transparency;
-        float text_hcont, text_vcont;
+typedef struct textitem {
+    /* CGM attributes that can be changed from TEXT to APNDTEXT ... */
+    char *str;
+    Index text_font, altext_font, char_set, altchar_set;
+    Enum text_prec, text_method, altext_method;
+    float char_exp, char_space, char_height;
+    Index colourindex, aux_colourindex;
+    RGBcolour text_col, aux_col;
+    Enum colour_mode, transparency;
+    float text_hcont, text_vcont;
 
-   /* font details information:
-      rmaxwd   Width of widest character
-      rbot     Distance from base to bottom line
-      rtop     Distance from cap to top line
-      rwd      Character widths array
+    /* font details information:
+       rmaxwd   Width of widest character
+       rbot     Distance from base to bottom line
+       rtop     Distance from cap to top line
+       rwd      Character widths array
 
-   */
-   float  rmaxwd, rbot, rtop, rwd[MAX_FONT_CHARS];
+    */
+    float rmaxwd, rbot, rtop, rwd[MAX_FONT_CHARS];
 
-   /* pointers to coordinates of origins of each character in the string */
-        Point  *origin;
+    /* pointers to coordinates of origins of each character in the string */
+    Point *origin;
 
-   /* height and width of the bounding box of a substring item */
-        float tbxwid, tbxheight;
+    /* height and width of the bounding box of a substring item */
+    float tbxwid, tbxheight;
 
-   /* pointer to the next structure, for linking the text items info */
-        struct textitem  * next;
+    /* pointer to the next structure, for linking the text items info */
+    struct textitem *next;
 
 } Textitem;
 
@@ -93,23 +92,34 @@ extern struct attributes curatt;
 
 
 Textitem *TXTaccinf(long, char *, struct textatt *, Enum *);
-Textitem *TXTrestrict(Textitem*, double, double, struct textatt*);
+
+Textitem *TXTrestrict(Textitem *, double, double, struct textatt *);
+
 void TXTalign(Textitem *, Point, double, double);
+
 void TXTfree(Textitem *);
+
 double TXTgwidth(Textitem *);
+
 double TXTgheight(Textitem *);
+
 void TXTxform(Point, Tmatrix);
 
 #ifdef POSTSCRIPT   /* Conditionally declare font details functions */
+
 void PSgetfd(Textitem *);
+
 #endif
 #ifdef BEZIER
+
 void BEZgetfd(Textitem *);
+
 #endif
 #ifdef HERSHEY
-void HERgetfd(Textitem *);
-#endif
 
+void HERgetfd(Textitem *);
+
+#endif
 
 
 #endif   /* end of cgmtext.h */

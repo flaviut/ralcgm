@@ -23,23 +23,23 @@
 #define CGMFILE_H
 
 /* Work out Data path name */
-   char *CGMpath ( char*, char* );
+char *CGMpath(char *, char *);
 
 /* Open a file */
-   FILE *CGMfopen( char*, char, Enum );
+FILE *CGMfopen(char *, char, Enum);
 
 /* The three following routines when referring to a file, mean the path,
    filename and extension parts of the file. */
 
 /* Modify the extension part of a file */
-   void CGMmodfextn( char*, char* );
+void CGMmodfextn(char *, char *);
 
 /* Modify the filename part of a file */
-   void CGMmodfname( char*, char* );
+void CGMmodfname(char *, char *);
 
 /* Finds the position and length of the filename within the file string */
 
-   unsigned short CGMgetfname(char *fname, char **fnptr);
+unsigned short CGMgetfname(char *fname, char **fnptr);
 
 
 #endif /* CGMFILEH */

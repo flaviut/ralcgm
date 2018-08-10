@@ -27,10 +27,9 @@
       |  by the CGM system, so needs to obey the BEZxxx convention.
       */
 
-void BEZtext( Textitem *, struct textatt *, Point ,
-                     void (*)(int, Point *, Tmatrix, int) ),
-            BEZgetfd( Textitem *);
-
+void BEZtext(Textitem *, struct textatt *, Point,
+             void (*)(int, Point *, Tmatrix, int)),
+        BEZgetfd(Textitem *);
 
 
 #endif

@@ -44,8 +44,10 @@
 
 #if __STDC__  /*  ANSI C Include files */
 #define ANSI
+
 #include <stddef.h>
 #include <stdlib.h>
+
 #endif
 
 #ifdef ANSI
@@ -100,7 +102,7 @@
 #define FABS(x)  fabs( (double) (x) )
 #endif
 #ifndef MALLOC
-#define MALLOC(n,s)   malloc( (size_t) ((n)*(s)) )
+#define MALLOC(n, s)   malloc( (size_t) ((n)*(s)) )
 #endif
 
 /*  Define if font system needed */
@@ -167,8 +169,8 @@ extern void free(void *);
 
 #define LPOINT(p)          Lpoint *p
 #define BEGINLIST(p)
-#define STOREPOINT(p,q)    (*p).x = q.x; (*p++).y = q.y
-#define STOREVALUE(p,q,r)  (*p).x = q; (*p++).y = r
+#define STOREPOINT(p, q)    (*p).x = q.x; (*p++).y = q.y
+#define STOREVALUE(p, q, r)  (*p).x = q; (*p++).y = r
 #define CLOSELIST(p)
 #define NEWSUBLIST(p)
 #define ENDLIST(p)
@@ -279,11 +281,11 @@ extern void free(void *);
 #define DESNAMES
 #endif
 
-     /*  All the following definitions provide limits for the number
-      |  of values that can be read in by the font utility; they do
-      |  not cause any permanent memory to be allocated, so can be
-      |  set high for safety.
-      */
+/*  All the following definitions provide limits for the number
+ |  of values that can be read in by the font utility; they do
+ |  not cause any permanent memory to be allocated, so can be
+ |  set high for safety.
+ */
 
 #ifndef MAXCSET           /*  maximum number of ISO character sets  */
 #define MAXCSET   1000

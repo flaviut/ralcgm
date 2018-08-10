@@ -149,49 +149,59 @@
 
 /*  Functions in this module  */
 
-   void  CGMoutput ( Code c );
-   void  CGMocode ( Code c );
-   static Logical CGMgetarg( char*, int, char**, char*, Logical );
-   static Logical CGMmatch( char*, char*, int );
-   static void CGMgetenv ( void );
+void CGMoutput(Code c);
+
+void CGMocode(Code c);
+
+static Logical CGMgetarg(char *, int, char **, char *, Logical);
+
+static Logical CGMmatch(char *, char *, int);
+
+static void CGMgetenv(void);
 
 /*  Functions called from this module  */
 
-   extern int CGMerror ( char*, int, Enum, char*);
-   extern void CGMprofile ( Code );
+extern int CGMerror(char *, int, Enum, char *);
+
+extern void CGMprofile(Code);
 
 /*   Input encodings */
 
-   extern void CGMIchar( void );    /*   Character encoding  */
-   extern void CGMItext( void );    /*   Clear text encoding */
-   extern void CGMIbin( void );     /*   Binary encoding     */
+extern void CGMIchar(void);    /*   Character encoding  */
+extern void CGMItext(void);    /*   Clear text encoding */
+extern void CGMIbin(void);     /*   Binary encoding     */
 
 /*   Output drivers  */
 
-   extern void CGMOtext(FILE *, Code, long *, float *, char *);
-   extern void CGMOchar(FILE *, Code, long *, float *, char *);
-   extern void CGMObin(FILE *, Code, long *, float *, char *);
-   extern void CGMstframe( void );
+extern void CGMOtext(FILE *, Code, long *, float *, char *);
+
+extern void CGMOchar(FILE *, Code, long *, float *, char *);
+
+extern void CGMObin(FILE *, Code, long *, float *, char *);
+
+extern void CGMstframe(void);
 
 #ifdef POSTSCRIPT
-   extern void CGMOps(FILE *, Code, long *, float *, char *);
-   extern void PSoptions ( char * );
+
+extern void CGMOps(FILE *, Code, long *, float *, char *);
+
+extern void PSoptions(char *);
+
 #endif
 
-   extern FILE *CGMfopen ( char*, char, Enum );
-
+extern FILE *CGMfopen(char *, char, Enum);
 
 
 /*  Input and Output files */
 
 char *cgmroot, *cgmin,
-     *cgmofile, *cgmefile;
+        *cgmofile, *cgmefile;
 
 FILE *cgmi, *cgmo;
 
 /*  Character variable for error messages */
 
-static char dev_options[80]="", user_options[80]="";
+static char dev_options[80] = "", user_options[80] = "";
 static char mess[80];
 
 #ifdef _DEBUG_MALLOC_INC
@@ -206,28 +216,26 @@ unsigned long malloc_size, malloc_ptr1, malloc_ptr2;
 
 /******************************************************** main *********/
 int
-main ( int argc, char **argv)
-
-{
-   char *func = "CGMmain", s[80];
-   int n;
-   register long i;
-   register Code c, chr1, chr2;
-   Logical infilename = FALSE,
-           outfilename = FALSE,
+main(int argc, char **argv) {
+    char *func = "CGMmain", s[80];
+    int n;
+    register long i;
+    register Code c, chr1, chr2;
+    Logical infilename = FALSE,
+            outfilename = FALSE,
 #ifdef NOSTDOUT
-           errfilename = TRUE;
+    errfilename = TRUE;
 #else
-           errfilename = FALSE;
+            errfilename = FALSE;
 #endif
 
-   Logical Options = FALSE;
+    Logical Options = FALSE;
 
-   Logical outsuffix = FALSE;
+    Logical outsuffix = FALSE;
 
 /*  Define default error stream  */
 
-   cgmerr = stderr;
+    cgmerr = stderr;
 
 /*  Add local initialisation code if needed */
 
@@ -237,278 +245,264 @@ main ( int argc, char **argv)
 
 /*   Create memory for standard files */
 
-   cgmroot  = (char *) MALLOC( MAXFLSIZE, sizeof(char) );
-   cgmin    = (char *) MALLOC( MAXFLSIZE, sizeof(char) );
-   cgmofile = (char *) MALLOC( MAXFLSIZE, sizeof(char) );
-   cgmefile = (char *) MALLOC( MAXFLSIZE, sizeof(char) );
+    cgmroot = (char *) MALLOC(MAXFLSIZE, sizeof(char));
+    cgmin = (char *) MALLOC(MAXFLSIZE, sizeof(char));
+    cgmofile = (char *) MALLOC(MAXFLSIZE, sizeof(char));
+    cgmefile = (char *) MALLOC(MAXFLSIZE, sizeof(char));
 
 /* Set up default filenames */
-   strcpy( cgmin,  "-");
-   strcpy( cgmofile,  "-");
-   strcpy( cgmefile,  "-");
+    strcpy(cgmin, "-");
+    strcpy(cgmofile, "-");
+    strcpy(cgmefile, "-");
 
 /*   check Environment Variables */
 
-   CGMgetenv();
+    CGMgetenv();
 
 /*   check if filename entered on command line   */
 
-   if ( argc > 1 )
-   {
-      argv++;  /*  ignore command name  */
+    if (argc > 1) {
+        argv++;  /*  ignore command name  */
 
 /*  Cycle through arguments */
-      for (n = 1 ; n < argc ; n++)
-      {
-         char *arg = *argv++;
-         int len = strlen(arg)-1;
+        for (n = 1; n < argc; n++) {
+            char *arg = *argv++;
+            int len = strlen(arg) - 1;
 
-         if ( arg[0] == '-' && len )
-         {
-            char *pa = arg + 1;
+            if (arg[0] == '-' && len) {
+                char *pa = arg + 1;
 
 /*  parse option codes */
 
-            while ( len )
-            {
-               c  = toupper( *pa );
-               pa++; len--;
-               switch ( c )
-               {
-                  case 'E':  /* Error count ignore */
-                     cgmerrcount = 0;
-                     break;
+                while (len) {
+                    c = toupper(*pa);
+                    pa++;
+                    len--;
+                    switch (c) {
+                        case 'E':  /* Error count ignore */
+                            cgmerrcount = 0;
+                            break;
 
-                  case 'F':  /* Error file */
-                     errfilename = TRUE;
-                     break;
+                        case 'F':  /* Error file */
+                            errfilename = TRUE;
+                            break;
 
-                  case 'V':  /* Verbose output */
-                     cgmverbose = !cgmverbose;
-                     if(cgmverbose) cgmquiet = FALSE;
-                     break;
+                        case 'V':  /* Verbose output */
+                            cgmverbose = !cgmverbose;
+                            if (cgmverbose) cgmquiet = FALSE;
+                            break;
 
-                  case 'Q':  /* Quiet output */
-                     cgmquiet = !cgmquiet;
-                     if(cgmquiet) cgmverbose = FALSE;
-                     break;
+                        case 'Q':  /* Quiet output */
+                            cgmquiet = !cgmquiet;
+                            if (cgmquiet) cgmverbose = FALSE;
+                            break;
 
-                  case '1':  /* more Verbose output */
-                     if ( cgmverbose ) cgmverbose++;
-                     break;
+                        case '1':  /* more Verbose output */
+                            if (cgmverbose) cgmverbose++;
+                            break;
 
-                  case 'L':  /* use set profile */
-                     if( CGMgetarg( pa, len, argv, s, TRUE) )
-                     {
-                       n++; argv++;
-                     }
-                     len = 0;
-                     cgmralbin = CGMmatch(s,"OLDBIN",3);
+                        case 'L':  /* use set profile */
+                            if (CGMgetarg(pa, len, argv, s, TRUE)) {
+                                n++;
+                                argv++;
+                            }
+                            len = 0;
+                            cgmralbin = CGMmatch(s, "OLDBIN", 3);
 #ifdef EBCDIC
-                     if( CGMmatch(s,"TCPIP",3) )
-                     {
-                        cgmebcdic[0x5e] = 0x5f; /* Change 'tilde' */
-                        cgmebcdic[0xde] = 0x5f;
-                        cgmebcdic[0x7e] = 0xa1; /* Change 'carat' */
-                        cgmebcdic[0xfe] = 0xa1;
-                        cgmascii[0x5f] = 0x5e;
-                     }
-                     break;
+                        if( CGMmatch(s,"TCPIP",3) )
+                        {
+                           cgmebcdic[0x5e] = 0x5f; /* Change 'tilde' */
+                           cgmebcdic[0xde] = 0x5f;
+                           cgmebcdic[0x7e] = 0xa1; /* Change 'carat' */
+                           cgmebcdic[0xfe] = 0xa1;
+                           cgmascii[0x5f] = 0x5e;
+                        }
+                        break;
 #endif
 
 #ifdef CGMPROFILE
-/* Note this is for future development */
-                     if( CGMmatch(s,"CALS",4) ) cgmprof = PROF_CALS;
-                     else if( CGMmatch(s,"GKS",3) ) cgmprof = PROF_GKS;
-                     else if( CGMmatch(s,"IVDC",2) ) cgmprof = PROF_INTVDC;
+                        /* Note this is for future development */
+                                             if( CGMmatch(s,"CALS",4) ) cgmprof = PROF_CALS;
+                                             else if( CGMmatch(s,"GKS",3) ) cgmprof = PROF_GKS;
+                                             else if( CGMmatch(s,"IVDC",2) ) cgmprof = PROF_INTVDC;
 #endif
-                     break;
+                            break;
 
-                  case 'G':  /* set local GDPs  */
-                     if( CGMgetarg( pa, len, argv, s, TRUE) )
-                     {
-                       n++; argv++;
-                     }
-                     len = 0;
-                     cgmralgks = CGMmatch(s,"RALGKS",3);
-                     break;
+                        case 'G':  /* set local GDPs  */
+                            if (CGMgetarg(pa, len, argv, s, TRUE)) {
+                                n++;
+                                argv++;
+                            }
+                            len = 0;
+                            cgmralgks = CGMmatch(s, "RALGKS", 3);
+                            break;
 
-                  case 'B':
-                     cgmdriver = BINARY;
-                     break;
-                  case 'N':
+                        case 'B':
+                            cgmdriver = BINARY;
+                            break;
+                        case 'N':
 #ifdef EBCDIC
-                     cgmdriver = NATIVE;
-                     break;
+                            cgmdriver = NATIVE;
+                            break;
 #endif
-                  case 'C':
-                     cgmdriver = CHARACTER;
-                     break;
-                  case 'T':
-                     cgmdriver = CLEAR_TEXT;
-                     break;
+                        case 'C':
+                            cgmdriver = CHARACTER;
+                            break;
+                        case 'T':
+                            cgmdriver = CLEAR_TEXT;
+                            break;
 
-                  case 'D':  /* Device driver */
-                  {
-                     const struct cgmdrivers *drive;
-                     if (CGMgetarg( pa, len, argv, s, TRUE) )
-                     {
-                       n++; argv++;
-                     }
-                     len = 0;
-                     cgmdriver = NONE;
-
-                     for( drive=drivers; drive->type; drive++ )
-                        if( CGMmatch(s, (char*)drive->name, drive->chrs) )
+                        case 'D':  /* Device driver */
                         {
-                           cgmdriver = drive->type;
-                           break;
-                        }
+                            const struct cgmdrivers *drive;
+                            if (CGMgetarg(pa, len, argv, s, TRUE)) {
+                                n++;
+                                argv++;
+                            }
+                            len = 0;
+                            cgmdriver = NONE;
 
-                     if ( cgmdriver == NONE )
-                        exit ( CGMerror(func, ERR_NODRIVER, FATAL, s) );
-                     break;
-                  }
+                            for (drive = drivers; drive->type; drive++)
+                                if (CGMmatch(s, (char *) drive->name, drive->chrs)) {
+                                    cgmdriver = drive->type;
+                                    break;
+                                }
+
+                            if (cgmdriver == NONE)
+                                exit(CGMerror(func, ERR_NODRIVER, FATAL, s));
+                            break;
+                        }
 
 /*  Old driver options - kept for compatability */
 
 #ifdef POSTSCRIPT
-                  case 'P':
-                     cgmdriver = POSTSCRIPT;
-                     break;
+                        case 'P':
+                            cgmdriver = POSTSCRIPT;
+                            break;
 #endif
-                  case 'O':   /* Driver dependent options */
-                     if( CGMgetarg( pa, len, argv, s, FALSE) )
-                     {
-                       n++; argv++;
-                     }
-                     strcat ( user_options, s );
-                     if ( strlen(user_options) ) Options = TRUE;
-                     len = 0;
-                     break;
+                        case 'O':   /* Driver dependent options */
+                            if (CGMgetarg(pa, len, argv, s, FALSE)) {
+                                n++;
+                                argv++;
+                            }
+                            strcat(user_options, s);
+                            if (strlen(user_options)) Options = TRUE;
+                            len = 0;
+                            break;
 
-                  default:   /*  Invalid option - ignore */
-                     (void) sprintf(mess, "(-%c)", c);
-                     (void) CGMerror( func, ERR_INVARG, WARNING, mess);
-                     break;
-               }
-            }
-         }
-         else  /* end of option parsing */
-         {
+                        default:   /*  Invalid option - ignore */
+                            (void) sprintf(mess, "(-%c)", c);
+                            (void) CGMerror(func, ERR_INVARG, WARNING, mess);
+                            break;
+                    }
+                }
+            } else  /* end of option parsing */
+            {
 
 /*  at least one file name is given  */
 
-            if ( ! infilename )
-            {
+                if (!infilename) {
 
 /*  work out Input file name if present  */
 #ifdef VMS
-               int j;
+                    int j;
 
-               for ( j = strlen(arg)-1 ; (j > -1 ); j--)
-                 if(arg[j]!=']')
-                 {
-                   if (arg[j]=='.')
-                   {
-                      i=j;
-                      break;
-                   }
-                 }
-                 else
-                 {
-                    i=strlen(arg);
-                    break;
-                 }
+                    for ( j = strlen(arg)-1 ; (j > -1 ); j--)
+                      if(arg[j]!=']')
+                      {
+                        if (arg[j]=='.')
+                        {
+                           i=j;
+                           break;
+                        }
+                      }
+                      else
+                      {
+                         i=strlen(arg);
+                         break;
+                      }
 
-               if (j== -1) i = strlen(arg);
+                    if (j== -1) i = strlen(arg);
 #else
-               for ( i = 0; ( arg[i] != '.' ) &&
-                            (i < strlen(arg) ); i++);
+                    for (i = 0; (arg[i] != '.') &&
+                                (i < strlen(arg)); i++);
 #endif
-               infilename = TRUE;
+                    infilename = TRUE;
 
-               strcpy(cgmin, arg);
-               strncpy(cgmroot, arg, (int) i);
-               cgmroot[i] = '\0';
+                    strcpy(cgmin, arg);
+                    strncpy(cgmroot, arg, (int) i);
+                    cgmroot[i] = '\0';
 
 /* set default filename to stdout */
 
-               strcpy(cgmofile, "-");
+                    strcpy(cgmofile, "-");
 
 
 /* If no suffix and not stdin assume suffix 'cgm' */
 
-               if ( i == strlen(arg) && arg[0] != '-' )
-               {
-                  strcat(cgmin, FILESEP);
-                  strcat(cgmin, "cgm");
-               }
-            }
-            else if ( ! outfilename )
-            {
+                    if (i == strlen(arg) && arg[0] != '-') {
+                        strcat(cgmin, FILESEP);
+                        strcat(cgmin, "cgm");
+                    }
+                } else if (!outfilename) {
 
 /*  Output file name given  */
 
-               outfilename = TRUE;
+                    outfilename = TRUE;
 
 /* Check if filename has a suffix */
-               for (i=0; arg[i] != '\0'; i++)
-                  if ( arg[i] == '.' )
-                  {
-                     outsuffix = TRUE;
+                    for (i = 0; arg[i] != '\0'; i++)
+                        if (arg[i] == '.') {
+                            outsuffix = TRUE;
 #ifdef CMS
-/*  Convert to CMS format ie blank separators */
-                     arg[i] = ' ';
+                            /*  Convert to CMS format ie blank separators */
+                                                 arg[i] = ' ';
 #endif
-                  }
-               if ( arg[0] == '-' ) outsuffix = TRUE;
-               strcpy(cgmofile, arg);
-               if ( ! outsuffix ) strcpy(cgmroot,arg);
-            }
-            else
-            {
+                        }
+                    if (arg[0] == '-') outsuffix = TRUE;
+                    strcpy(cgmofile, arg);
+                    if (!outsuffix) strcpy(cgmroot, arg);
+                } else {
 
 /*  Error file name given  */
 
-               if ( arg[0] != '-' ) errfilename = TRUE;
+                    if (arg[0] != '-') errfilename = TRUE;
 
 #ifdef CMS     /*  Convert to CMS format ie blank separators */
-               for (i=0; arg[i] != '\0'; i++)
-                  if ( arg[i] == '.' )
-                  {
-                     arg[i] = ' ';
-                  }
+                    for (i=0; arg[i] != '\0'; i++)
+                       if ( arg[i] == '.' )
+                       {
+                          arg[i] = ' ';
+                       }
 #endif
-               strcpy(cgmefile, arg);
+                    strcpy(cgmefile, arg);
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
 #ifdef DEBUG
-   cgmquiet = FALSE;   /* No quiet output, if debugging */
+    cgmquiet = FALSE;   /* No quiet output, if debugging */
 #endif
 
 /*  make sure a driver has been specified */
 
-   if ( cgmdriver == NONE )
-      exit ( CGMerror(func, ERR_NODRIVER, FATAL, NULLSTR) );
+    if (cgmdriver == NONE)
+        exit(CGMerror(func, ERR_NODRIVER, FATAL, NULLSTR));
 
 /* Now check driver dependent options */
 
 
 
 #ifdef POSTSCRIPT
-  if ( cgmdriver == POSTSCRIPT )
-  {
-     char *env;
+    if (cgmdriver == POSTSCRIPT) {
+        char *env;
 
-     env = (char *)getenv( "CGMPSOPT" );
-     if( env != NULL ) strcpy(dev_options,env);
-     if ( Options ) strcat ( dev_options, user_options );
-     PSoptions( dev_options );
-  }
+        env = (char *) getenv("CGMPSOPT");
+        if (env != NULL) strcpy(dev_options, env);
+        if (Options) strcat(dev_options, user_options);
+        PSoptions(dev_options);
+    }
 #endif  /* POSTSCRIPT */
 
 
@@ -517,199 +511,175 @@ main ( int argc, char **argv)
 
 /*  stdin, stdout and/or stderr are used unset filename */
 
-   if ( !strcmp(cgmin, "-") )
-   {
-      infilename = FALSE;
-      strcpy(cgmin, "stdin");
-   }
-   if ( !strcmp(cgmofile, "-") )
-   {
-      outfilename = FALSE;
-      strcpy(cgmofile, "stdout");
-   }
-   if ( !strcmp(cgmefile, "-") )
-   {
-      if ( errfilename == TRUE )
-      {
-         strcpy(cgmefile, cgmroot);
-         strcat(cgmefile, FILESEP);
-         strcat(cgmefile, "err");
-      }
-      else
-      {
-         strcpy(cgmefile, "stderr");
-      }
-   }
+    if (!strcmp(cgmin, "-")) {
+        infilename = FALSE;
+        strcpy(cgmin, "stdin");
+    }
+    if (!strcmp(cgmofile, "-")) {
+        outfilename = FALSE;
+        strcpy(cgmofile, "stdout");
+    }
+    if (!strcmp(cgmefile, "-")) {
+        if (errfilename == TRUE) {
+            strcpy(cgmefile, cgmroot);
+            strcat(cgmefile, FILESEP);
+            strcat(cgmefile, "err");
+        } else {
+            strcpy(cgmefile, "stderr");
+        }
+    }
 
 /* Open Input file  */
 
 #ifdef DEBUG
-   OUTMESS "Output driver: %d Options: %s\n", cgmdriver, dev_options);
-   OUTMESS "Input file: '%s'\n", cgmin);
+    OUTMESS "Output driver: %d Options: %s\n", cgmdriver, dev_options);
+    OUTMESS "Input file: '%s'\n", cgmin);
 #endif
 
-   if ( infilename )
-   {
-      if ( (cgmi = CGMfopen(cgmin, F_READ, CLEAR_TEXT)) == NULL)
-      {
-         (void) sprintf( mess, "(Input file: %s)", cgmin);
-         exit ( CGMerror(func, ERR_OPENFILE, FATAL, mess) );
-      }
+    if (infilename) {
+        if ((cgmi = CGMfopen(cgmin, F_READ, CLEAR_TEXT)) == NULL) {
+            (void) sprintf(mess, "(Input file: %s)", cgmin);
+            exit(CGMerror(func, ERR_OPENFILE, FATAL, mess));
+        }
 /*  can use random frame access if disk file input */
-      cgmrandom = TRUE;
+        cgmrandom = TRUE;
 /*  Initialise Random Access structure */
-      CGMstframe();
-   }
-   else
-   {
+        CGMstframe();
+    } else {
 #ifdef NOSTDIN
-         exit ( CGMerror(func, ERR_NOFILE, FATAL, NULLSTR) );
+        exit ( CGMerror(func, ERR_NOFILE, FATAL, NULLSTR) );
 #else
-      cgmi = stdin;
-      cgmterm = TRUE;
+        cgmi = stdin;
+        cgmterm = TRUE;
 #endif
-   }
+    }
 
 /* Determine type of encoding, get first 2 bytes then reopen file */
 
-   chr1 = fgetc( cgmi );
-   chr2 = fgetc( cgmi );
+    chr1 = fgetc(cgmi);
+    chr2 = fgetc(cgmi);
 
-   switch ( (chr1<<8 | chr2) & 0xfff8 )
-   {
-      case 0x3020:   /*  ASCII Character  */
-         cgminput = CHARACTER;
+    switch ((chr1 << 8 | chr2) & 0xfff8) {
+        case 0x3020:   /*  ASCII Character  */
+            cgminput = CHARACTER;
 #ifdef BINFILE
-/*  Reopen the file as binary */
-         fclose(cgmi);
-         cgmi = CGMfopen(cgmin, F_READ, CHARACTER);
+        /*  Reopen the file as binary */
+                 fclose(cgmi);
+                 cgmi = CGMfopen(cgmin, F_READ, CHARACTER);
 #endif
-         break;
+            break;
 
 
 #ifdef EBCDIC
-      case 0xf040:  /*  Native character input (EBCDIC)  */
-         cgminput = NATIVE;
-         break;
+        case 0xf040:  /*  Native character input (EBCDIC)  */
+           cgminput = NATIVE;
+           break;
 #endif
 
-      case 0x0020:   /*  Binary  */
-      case 0x0028:
-      case 0x0030:
-      case 0x0038:
-         cgminput = BINARY;
+        case 0x0020:   /*  Binary  */
+        case 0x0028:
+        case 0x0030:
+        case 0x0038:
+            cgminput = BINARY;
 #ifdef BINFILE
-         fclose(cgmi);
-         cgmi = CGMfopen(cgmin, F_READ, BINARY);
+        fclose(cgmi);
+        cgmi = CGMfopen(cgmin, F_READ, BINARY);
 #endif
-         break;
+            break;
 
-      default:
-         cgminput = CLEAR_TEXT;   /*  Clear text encoding */
-         break;
-   }
+        default:
+            cgminput = CLEAR_TEXT;   /*  Clear text encoding */
+            break;
+    }
 
-   if ( cgmterm )
-   {
+    if (cgmterm) {
 #ifdef CMS
-      if ( cgminput == CHARACTER || cgminput == BINARY )
-         exit ( CGMerror(func, ERR_REDIRECT, FATAL, NULLSTR) );
+        if ( cgminput == CHARACTER || cgminput == BINARY )
+           exit ( CGMerror(func, ERR_REDIRECT, FATAL, NULLSTR) );
 #else
 /*  unget 2 characters if reading from stdin. MAY NOT ALWAYS WORK */
-      ungetc( chr2, cgmi ); ungetc( chr1, cgmi );
+        ungetc(chr2, cgmi);
+        ungetc(chr1, cgmi);
 #endif
-   }
-   else
-   {
-      rewind ( cgmi );
-   }
+    } else {
+        rewind(cgmi);
+    }
 
-   if( !cgmquiet)
-   {
-      if ( errfilename )
-      {
-         if ( (cgmerr = CGMfopen(cgmefile, F_WRITE, CLEAR_TEXT)) == NULL)
-         {
-            (void) sprintf( mess, "(Error file: %s)", cgmefile);
-            exit ( CGMerror(func, ERR_OPENFILE, FATAL, mess) );
-         }
-      }
+    if (!cgmquiet) {
+        if (errfilename) {
+            if ((cgmerr = CGMfopen(cgmefile, F_WRITE, CLEAR_TEXT)) == NULL) {
+                (void) sprintf(mess, "(Error file: %s)", cgmefile);
+                exit(CGMerror(func, ERR_OPENFILE, FATAL, mess));
+            }
+        }
 /* Announce CGM Version */
 
-      OUTMESS "%s\n", cgmversion);
-   }
+        OUTMESS "%s\n", cgmversion);
+    }
 
 
-   if ( cgmverbose && infilename )
-   {
-      OUTMESS " Input file (" );
-      switch ( cgminput )
-      {
-         case BINARY:
-            OUTMESS "Binary Encoding" );
-            break;
-         case CHARACTER:
-            OUTMESS "Character Encoding" );
-            break;
+    if (cgmverbose && infilename) {
+        OUTMESS " Input file (");
+        switch (cgminput) {
+            case BINARY:
+                OUTMESS "Binary Encoding");
+                break;
+            case CHARACTER:
+                OUTMESS "Character Encoding");
+                break;
 #ifdef EBCDIC
-         case NATIVE:
-            OUTMESS "Character Encoding - EBCDIC" );
-            break;
+            case NATIVE:
+               OUTMESS "Character Encoding - EBCDIC" );
+               break;
 #endif
-         case CLEAR_TEXT:
-         default:
-            OUTMESS "Clear Text Encoding" );
-            break;
-      }
-      OUTMESS "): %s\n", cgmin);
-   }
+            case CLEAR_TEXT:
+            default:
+                OUTMESS "Clear Text Encoding");
+                break;
+        }
+        OUTMESS "): %s\n", cgmin);
+    }
 
 #ifdef DEBUG
-   OUTMESS "Output file: '%s'\n", cgmofile);
+    OUTMESS "Output file: '%s'\n", cgmofile);
 #endif
 
 /*  Work out Output Driver  */
 
-   switch (cgmdriver)
-   {
+    switch (cgmdriver) {
 #ifdef EBCDIC
         case NATIVE:   /* Native character Output (EBCDIC) */
 #endif
 
         case CHARACTER:   /* Character Output   */
-            if ( !outsuffix )
-            {
+            if (!outsuffix) {
 #ifdef NOSTDOUT
-               outfilename = TRUE;
+                outfilename = TRUE;
 #else
-               if ( outfilename )
+                if (outfilename)
 #endif
-               {
-                  strcpy(cgmofile, cgmroot);
-                  strcat(cgmofile, FILESEP);
-                  strcat(cgmofile, "chr");
-               }
+                {
+                    strcpy(cgmofile, cgmroot);
+                    strcat(cgmofile, FILESEP);
+                    strcat(cgmofile, "chr");
+                }
             }
             break;
 
         case BINARY:   /* Binary Output */
-            if ( !outsuffix )
-            {
+            if (!outsuffix) {
 #ifdef NOSTDOUT
-               outfilename = TRUE;
+                outfilename = TRUE;
 #else
-               if ( outfilename )
+                if (outfilename)
 #endif
-               {
-                  strcpy(cgmofile, cgmroot);
-                  strcat(cgmofile, FILESEP);
-                  strcat(cgmofile, "bin");
-               }
+                {
+                    strcpy(cgmofile, cgmroot);
+                    strcat(cgmofile, FILESEP);
+                    strcat(cgmofile, "bin");
+                }
             }
             break;
-
-
-
 
 
 #ifdef POSTSCRIPT
@@ -718,16 +688,15 @@ main ( int argc, char **argv)
             outfilename = TRUE;
             if ( !outsuffix)
 #else
-            if ( !outsuffix && outfilename )
+            if (!outsuffix && outfilename)
 #endif
             {
-               strcpy(cgmofile, cgmroot);
-               strcat(cgmofile, FILESEP);
-               strcat(cgmofile, "ps");
+                strcpy(cgmofile, cgmroot);
+                strcat(cgmofile, FILESEP);
+                strcat(cgmofile, "ps");
             }
             break;
 #endif
-
 
 
         case CLEAR_TEXT:   /*  Clear Text Output  */
@@ -735,102 +704,95 @@ main ( int argc, char **argv)
             outfilename = TRUE;
             if( !outsuffix)
 #else
-            if ( !outsuffix && outfilename )
+            if (!outsuffix && outfilename)
 #endif
             {
-               strcpy(cgmofile, cgmroot);
-               strcat(cgmofile, FILESEP);
-               strcat(cgmofile, "clt");
+                strcpy(cgmofile, cgmroot);
+                strcat(cgmofile, FILESEP);
+                strcat(cgmofile, "clt");
             }
             break;
 
         default:    /*  Unknown Driver  */
-            (void) sprintf( mess, "(%d)", cgmdriver );
-            exit ( CGMerror(func, ERR_NOCODE, FATAL, mess) );
-   }
+            (void) sprintf(mess, "(%d)", cgmdriver);
+            exit(CGMerror(func, ERR_NOCODE, FATAL, mess));
+    }
 
-   if ( outfilename )
-   {
-      switch ( cgmdriver )
-      {
-         case BINARY:
-            cgmo = CGMfopen(cgmofile, F_WRITE, BINARY);
-            break;
+    if (outfilename) {
+        switch (cgmdriver) {
+            case BINARY:
+                cgmo = CGMfopen(cgmofile, F_WRITE, BINARY);
+                break;
 
 
-         case CHARACTER:
-            cgmo = CGMfopen(cgmofile, F_WRITE, CHARACTER);
-            break;
+            case CHARACTER:
+                cgmo = CGMfopen(cgmofile, F_WRITE, CHARACTER);
+                break;
 
-         default:
-            cgmo = CGMfopen(cgmofile, F_WRITE, CLEAR_TEXT);
-      }
-      if (cgmo == NULL)
-      {
-         (void) sprintf( mess, "(Output file: %s)", cgmofile);
-         exit ( CGMerror(func, ERR_OPENFILE, FATAL, mess) );
-      }
-   }
-   else cgmo = stdout;
+            default:
+                cgmo = CGMfopen(cgmofile, F_WRITE, CLEAR_TEXT);
+        }
+        if (cgmo == NULL) {
+            (void) sprintf(mess, "(Output file: %s)", cgmofile);
+            exit(CGMerror(func, ERR_OPENFILE, FATAL, mess));
+        }
+    } else cgmo = stdout;
 
-   if ( cgmverbose )
-   {
-      OUTMESS " Output file (");
-      switch ( cgmdriver )
-      {
-         case BINARY:
-            OUTMESS "Binary Encoding" );
-            break;
-         case CHARACTER:
-            OUTMESS "Character Encoding" );
-            break;
+    if (cgmverbose) {
+        OUTMESS " Output file (");
+        switch (cgmdriver) {
+            case BINARY:
+                OUTMESS "Binary Encoding");
+                break;
+            case CHARACTER:
+                OUTMESS "Character Encoding");
+                break;
 #ifdef CMS
-         case NATIVE:
-            OUTMESS "Character Encoding - EBCDIC" );
-            break;
+            case NATIVE:
+               OUTMESS "Character Encoding - EBCDIC" );
+               break;
 #endif
 #ifdef POSTSCRIPT
-         case POSTSCRIPT:
-            OUTMESS "Postscript file" );
-            break;
+            case POSTSCRIPT:
+                OUTMESS "Postscript file");
+                break;
 #endif
 
-         case CLEAR_TEXT:
-         default:
-            OUTMESS "Clear Text Encoding" );
-               break;
-      }
+            case CLEAR_TEXT:
+            default:
+                OUTMESS "Clear Text Encoding");
+                break;
+        }
 #ifdef NOSTDOUT
-      if(outfilename)
-        OUTMESS ") %s\n",cgmofile);
-      else
-        OUTMESS ") graphics output\n");
+        if(outfilename)
+          OUTMESS ") %s\n",cgmofile);
+        else
+          OUTMESS ") graphics output\n");
 #else
-      OUTMESS "): %s\n", cgmofile);
+        OUTMESS "): %s\n", cgmofile);
 #endif
-   }
+    }
 
-   if ( cgmverbose )
-         OUTMESS " Error file: %s\n\n",  cgmefile);
+    if (cgmverbose)
+        OUTMESS " Error file: %s\n\n", cgmefile);
 
-           /*  Define initial buffers for dynamic allocation */
+    /*  Define initial buffers for dynamic allocation */
 
 #ifdef VAR_BUFFER
-   pint = (long *) MALLOC ( ARRAY_MAX, sizeof(long) );
-   pimax = pint + ARRAY_MAX;
-   preal= (float *) MALLOC ( ARRAY_MAX, sizeof(float) );
-   prmax = preal + ARRAY_MAX;
-   str = (char *) MALLOC ( STRING_MAX, sizeof(char) );
-   strmax = str + STRING_MAX;
-   if ( pint == NULL || preal == NULL || str == NULL )
-   {
-      exit ( CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR) );
-   }
+    pint = (long *) MALLOC (ARRAY_MAX, sizeof(long));
+    pimax = pint + ARRAY_MAX;
+    preal = (float *) MALLOC (ARRAY_MAX, sizeof(float));
+    prmax = preal + ARRAY_MAX;
+    str = (char *) MALLOC (STRING_MAX, sizeof(char));
+    strmax = str + STRING_MAX;
+    if (pint == NULL || preal == NULL || str == NULL) {
+        exit(CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+    }
 #ifdef DEBUG
-   OUTMESS "Buffers allocated\n  int:  %x-%x (%d)\n",
-                                   pint, pimax, pimax - pint);
-   OUTMESS " real:  %x-%x (%d)\n", preal, prmax, prmax - preal);
-   OUTMESS " char:  %x-%x (%d)\n", str, strmax, strmax - str );
+        OUTMESS "Buffers allocated\n  int:  %x-%x (%d)\n",
+                                        pint, pimax, pimax - pint);
+        OUTMESS " real:  %x-%x (%d)\n", preal, prmax, prmax - preal);
+        OUTMESS " char:  %x-%x (%d)\n", str, strmax, strmax - str );
 #endif
 #endif
 
@@ -841,191 +803,176 @@ main ( int argc, char **argv)
     FREE(cgmroot);
 
 #ifdef _DEBUG_MALLOC_INC
-   dbfile = open("malloc.log",O_WRONLY);
-   malloc_size = malloc_inuse( &malloc_ptr1 );
-   malloc_dump(dbfile);
+    dbfile = open("malloc.log",O_WRONLY);
+    malloc_size = malloc_inuse( &malloc_ptr1 );
+    malloc_dump(dbfile);
 #endif
 
-           /*  Run Interpreter  */
+    /*  Run Interpreter  */
 
-   if ( cgmverbose ) OUTMESS "Interpreter started\n");
-   switch ( cgminput )
-   {
+    if (cgmverbose) OUTMESS "Interpreter started\n");
+    switch (cgminput) {
 #ifdef EBCDIC
-      case NATIVE:  /*  Native character input (EBCDIC)  */
-         cgminnative = TRUE;
+        case NATIVE:  /*  Native character input (EBCDIC)  */
+           cgminnative = TRUE;
 #endif
-      case CHARACTER:
-         CGMIchar( );
-         break;
+        case CHARACTER:
+            CGMIchar();
+            break;
 
-      case CLEAR_TEXT:
-         CGMItext( );
-         break;
+        case CLEAR_TEXT:
+            CGMItext();
+            break;
 
-      case BINARY:
-         CGMIbin( );
-         break;
+        case BINARY:
+            CGMIbin();
+            break;
 
-      default:
-         exit ( CGMerror(func, ERR_NOCODE, FATAL, NULLSTR) );
-   }
+        default:
+            exit(CGMerror(func, ERR_NOCODE, FATAL, NULLSTR));
+    }
 
-   if(cgmverbose && cgmfinished) OUTMESS "Interpreter Finished OK\n");
+    if (cgmverbose && cgmfinished) OUTMESS "Interpreter Finished OK\n");
 #ifdef WINDOWS
-   return;
+    return;
 #else
-   exit (0);
+    exit(0);
 #endif
 }
 
 /********************************************************* CGMgetenv ***/
-static void CGMgetenv( void )
+static void CGMgetenv(void) {
+    char *env;
 
-{
-   char *env;
+    env = (char *) getenv("CGMOUTPUT");
+    if (env != NULL) {
+        const struct cgmdrivers *drive;
+        for (drive = drivers; drive->type; drive++)
+            if (CGMmatch(env, (char *) drive->name, drive->chrs)) {
+                cgmdriver = drive->type;
+                break;
+            }
+    }
 
-   env = (char *)getenv( "CGMOUTPUT" );
-   if ( env != NULL )
-   {
-      const struct cgmdrivers *drive;
-      for( drive=drivers; drive->type; drive++ )
-         if( CGMmatch(env, (char*)drive->name, drive->chrs) )
-         {
-            cgmdriver = drive->type;
-            break;
-         }
-   }
+    env = (char *) getenv("CGMVERBOSE");
+    cgmverbose = (env != NULL && CGMmatch(env, "ON", 2) ? TRUE : FALSE);
 
-   env = (char *)getenv( "CGMVERBOSE" );
-   cgmverbose = ( env != NULL && CGMmatch(env, "ON", 2) ? TRUE : FALSE);
+    env = (char *) getenv("CGMERRCOUNT");
+    if (env != NULL) cgmerrcount = atoi(env);
 
-   env = (char *)getenv( "CGMERRCOUNT" );
-   if( env != NULL ) cgmerrcount = atoi( env );
+    env = (char *) getenv("CGMGDP");
+    if (env != NULL)
+        cgmralgks = (CGMmatch(env, "RALGKS", 3) ? TRUE : FALSE);
 
-   env = (char *)getenv( "CGMGDP" );
-   if( env != NULL)
-      cgmralgks = (CGMmatch(env, "RALGKS", 3) ? TRUE : FALSE);
+    env = (char *) getenv("CGMPROFILE");
+    if (env != NULL) {
+        cgmralbin = CGMmatch(env, "OLDBIN", 3);
+    }
 
-   env = (char *)getenv( "CGMPROFILE" );
-   if ( env != NULL )
-   {
-       cgmralbin = CGMmatch(env,"OLDBIN",3);
-   }
-
-   return;
+    return;
 }
+
 /********************************************************* CGMgetarg ***/
 
-static Logical CGMgetarg ( char *pa, int len,
-                           char **argv, char *s, Logical upcase )
+static Logical CGMgetarg(char *pa, int len,
+                         char **argv, char *s, Logical upcase) {
+    register int i;
+    Logical newarg = FALSE;
 
-{
-  register int i;
-  Logical newarg = FALSE;
-
-  if ( len )    /* parameter follows option */
-  {
-     if ( upcase )
-        for ( i = 0; i <= strlen(pa); i++)
-           *(s+i) = toupper(*(pa+i));
-     else
-        strcpy(s, pa);
-  }
-  else  /* space after option */
-  {
-     newarg = TRUE;
-     if ( upcase )
-        for ( i = 0; i <= strlen(*argv); i++)
-           *(s+i) = toupper(*(*argv+i));
-     else
-        strcpy(s, *argv);
-  }
+    if (len)    /* parameter follows option */
+    {
+        if (upcase)
+            for (i = 0; i <= strlen(pa); i++)
+                *(s + i) = toupper(*(pa + i));
+        else
+            strcpy(s, pa);
+    } else  /* space after option */
+    {
+        newarg = TRUE;
+        if (upcase)
+            for (i = 0; i <= strlen(*argv); i++)
+                *(s + i) = toupper(*(*argv + i));
+        else
+            strcpy(s, *argv);
+    }
 #ifdef DEBUG
-  OUTMESS "arg: %s\n", s);
+    OUTMESS "arg: %s\n", s);
 #endif
 
-  return newarg;
+    return newarg;
 
 }
 
 /********************************************************* CGMmatch ****/
-static Logical CGMmatch( char *str1, char *str2, int n )
-{
-   if ( strlen(str1) < n || strlen(str1) > strlen(str2) ) return FALSE;
+static Logical CGMmatch(char *str1, char *str2, int n) {
+    if (strlen(str1) < n || strlen(str1) > strlen(str2)) return FALSE;
 
-   if ( strlen(str1) > n ) n = strlen( str1 );
-   while (n--)
-   {
-      if ( toupper(*str1) != toupper(*str2) ) return FALSE;
-      str1++; str2++;
-   }
+    if (strlen(str1) > n) n = strlen(str1);
+    while (n--) {
+        if (toupper(*str1) != toupper(*str2)) return FALSE;
+        str1++;
+        str2++;
+    }
 
-   return TRUE;
+    return TRUE;
 }
 
 
-void CGMoutput ( Code c )
-
-{
-   struct defaults saveset;
+void CGMoutput(Code c) {
+    struct defaults saveset;
 
 #ifdef DEBUG
-   OUTMESS "Output code: 0x%x\n", c );
+    OUTMESS "Output code: 0x%x\n", c );
 #endif
 
-   if ( cgmprof )       /* use a profile */
-   {
-      saveset = cur;    /*  Save common settings */
-      (void) CGMprofile(c);
-      cur = saveset;    /*  Restore settings */
-   }
-   else CGMocode( c );
+    if (cgmprof)       /* use a profile */
+    {
+        saveset = cur;    /*  Save common settings */
+        (void) CGMprofile(c);
+        cur = saveset;    /*  Restore settings */
+    } else CGMocode(c);
 
-   return;
+    return;
 }
 
 /********************************************************* CGMocode ****/
 
-void CGMocode ( Code c )
-
-{
-   switch ( cgmdriver )
-   {
+void CGMocode(Code c) {
+    switch (cgmdriver) {
 #ifdef EBCDIC
-      case NATIVE:
+        case NATIVE:
 #endif
-      case CHARACTER:
-         CGMOchar(cgmo, c, pint, preal, str );
-         break;
+        case CHARACTER:
+            CGMOchar(cgmo, c, pint, preal, str);
+            break;
 
-      case CLEAR_TEXT:
-         CGMOtext(cgmo, c, pint, preal, str );
-         break;
+        case CLEAR_TEXT:
+            CGMOtext(cgmo, c, pint, preal, str);
+            break;
 
-      case BINARY:
-         CGMObin(cgmo, c, pint, preal, str );
-         break;
+        case BINARY:
+            CGMObin(cgmo, c, pint, preal, str);
+            break;
 
 #ifdef POSTSCRIPT
-      case POSTSCRIPT:
-         CGMOps(cgmo, c, pint, preal, str );
-         break;
+        case POSTSCRIPT:
+            CGMOps(cgmo, c, pint, preal, str);
+            break;
 #endif
 
-      default:
-         exit ( CGMerror("CGMoutput", ERR_NOCODE, FATAL, NULLSTR) );
-   }
+        default:
+            exit(CGMerror("CGMoutput", ERR_NOCODE, FATAL, NULLSTR));
+    }
 
 #ifdef _DEBUG_MALLOC_INC
-   if ( c == ENDPIC )
-   {
-      malloc_size = malloc_inuse(&malloc_ptr2);
-      printf("Malloc Size: %ld\n", malloc_size);
-      malloc_list(dbfile, malloc_ptr1, malloc_ptr2);
-      malloc_ptr1 = malloc_ptr2;
-   }
+    if ( c == ENDPIC )
+    {
+       malloc_size = malloc_inuse(&malloc_ptr2);
+       printf("Malloc Size: %ld\n", malloc_size);
+       malloc_list(dbfile, malloc_ptr1, malloc_ptr2);
+       malloc_ptr1 = malloc_ptr2;
+    }
 #endif
 
-   return;
+    return;
 }

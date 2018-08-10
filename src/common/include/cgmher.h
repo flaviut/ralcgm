@@ -27,10 +27,9 @@
 #ifndef CGMHER_H
 #define CGMHER_H
 
-void HERtext( Textitem *, Point ,
-                     void (*)( int, Point*, Tmatrix, int ) ),
-            HERgetfd( Textitem *txtit);
-
+void HERtext(Textitem *, Point,
+             void (*)(int, Point *, Tmatrix, int)),
+        HERgetfd(Textitem *txtit);
 
 
 #endif

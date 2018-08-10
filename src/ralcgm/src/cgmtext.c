@@ -89,25 +89,30 @@
  */
 
 #define CGMTEXT_C
+
 #include "cgmout.h"
 #include "cgmtext.h"
 #include "cgmfont.h"
 
-static char *func="cgmtext";
+static char *func = "cgmtext";
 
 typedef struct res_text {
-   Textitem   *ptr;
-   Logical    minimum;
+    Textitem *ptr;
+    Logical minimum;
 } Restxt_item;
 
-   static Logical scale_spc_exp( Textitem*, double, double, Logical );
-   static Textitem *clip_text( Textitem*, double, double, int );
-   static void font_load( Textitem* );
-   static double calc_scale( Restxt_item*, int, double, double );
-   static int size_check( Textitem*, double*, double*, double, double, float *);
+static Logical scale_spc_exp(Textitem *, double, double, Logical);
 
-Textitem *TXTaccinf( long num, char *str, struct textatt *ta,
-                     Enum *prefmethods )
+static Textitem *clip_text(Textitem *, double, double, int);
+
+static void font_load(Textitem *);
+
+static double calc_scale(Restxt_item *, int, double, double);
+
+static int size_check(Textitem *, double *, double *, double, double, float *);
+
+Textitem *TXTaccinf(long num, char *str, struct textatt *ta,
+                    Enum *prefmethods)
 /*
  *    TXTaccinf(): Function to store a string, reserve a structure
  *                 for it and fill-in all the necessary attributes
@@ -143,140 +148,133 @@ Textitem *TXTaccinf( long num, char *str, struct textatt *ta,
  */
 
 {
-   static Textitem *head=NULL, *tail=NULL;
-   Textitem *new, *tmp;
-   char *func="TXTaccinf", *cp;
-   Enum methods[2];
-   Index fonts[2];
-   Int ichar;
-   Logical string_error=FALSE; /* Flag to prevent repeated error messages */
+    static Textitem *head = NULL, *tail = NULL;
+    Textitem *new, *tmp;
+    char *func = "TXTaccinf", *cp;
+    Enum methods[2];
+    Index fonts[2];
+    Int ichar;
+    Logical string_error = FALSE; /* Flag to prevent repeated error messages */
 
-   /* Get memory for this item's structure */
-   new=(Textitem *)MALLOC( 1, sizeof(Textitem) );
+    /* Get memory for this item's structure */
+    new = (Textitem *) MALLOC(1, sizeof(Textitem));
 
-   /* Exit if insufficient memory */
-   if (new==NULL)
-      exit ((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+    /* Exit if insufficient memory */
+    if (new == NULL)
+        exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
 
-   /* Make this item last item in the list */
-   new->next=NULL;
+    /* Make this item last item in the list */
+    new->next = NULL;
 
-   /*
-      Initialize head and tail if this is the first item,
-      link properly if not.
-   */
-   if (head==NULL)
-   {
-      head=new;
-      tail=new;
-   }
-   else
-   {
-      tail->next=new;
-      tail=new;
-   }
+    /*
+       Initialize head and tail if this is the first item,
+       link properly if not.
+    */
+    if (head == NULL) {
+        head = new;
+        tail = new;
+    } else {
+        tail->next = new;
+        tail = new;
+    }
 
-   /* Allocate memory for and store the string. */
-   new->str=(char *)MALLOC (1,(strlen(str)+1) );
+    /* Allocate memory for and store the string. */
+    new->str = (char *) MALLOC (1, (strlen(str) + 1));
 
-   /* Exit if insufficient memory */
-   if (new->str==NULL)
-      exit ((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+    /* Exit if insufficient memory */
+    if (new->str == NULL)
+        exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
 
-   (void)strcpy(new->str,str);
+    (void) strcpy(new->str, str);
 
 
-   /* Check validity of characters in string */
-   for( cp = new->str; *cp != '\0'; cp++ )
-   {
+    /* Check validity of characters in string */
+    for (cp = new->str; *cp != '\0'; cp++) {
 #ifdef EBCDIC   /* Translate to ASCII on EBCDIC machines */
-      *cp = cgmascii[(unsigned int)*cp];
+        *cp = cgmascii[(unsigned int)*cp];
 #endif
-      ichar = (unsigned short)(*cp) - 0x20;
-      if( 0 > ichar || ichar >= MAX_FONT_CHARS )
-      {
-         if(!string_error) CGMerror (func, ERR_NPCINSTR, ERROR, str);
-         string_error = TRUE;
-         *cp = ' ';
-      }
-   }
+        ichar = (unsigned short) (*cp) - 0x20;
+        if (0 > ichar || ichar >= MAX_FONT_CHARS) {
+            if (!string_error) CGMerror(func, ERR_NPCINSTR, ERROR, str);
+            string_error = TRUE;
+            *cp = ' ';
+        }
+    }
 
 
-   /* Fill details from the text attributes structure */
-   new->text_font=ta->fontindex;
-   new->text_prec=ta->precision;
-   new->char_exp=ta->expansion;
-   new->char_space=ta->spacing;
-   new->colourindex=ta->colindex;
-   new->text_col.red=ta->col.red;
-   new->text_col.green=ta->col.green;
-   new->text_col.blue=ta->col.blue;
-   new->char_height=ta->height;
-   new->text_hcont=ta->hcont;
-   new->text_vcont=ta->vcont;
+    /* Fill details from the text attributes structure */
+    new->text_font = ta->fontindex;
+    new->text_prec = ta->precision;
+    new->char_exp = ta->expansion;
+    new->char_space = ta->spacing;
+    new->colourindex = ta->colindex;
+    new->text_col.red = ta->col.red;
+    new->text_col.green = ta->col.green;
+    new->text_col.blue = ta->col.blue;
+    new->char_height = ta->height;
+    new->text_hcont = ta->hcont;
+    new->text_vcont = ta->vcont;
 
-   /* Fill in shared attributes */
-   new->aux_colourindex=ta->shared->auxindex;
-   new->aux_col.red=ta->shared->aux.red;
-   new->aux_col.green=ta->shared->aux.green;
-   new->aux_col.blue=ta->shared->aux.blue;
-   new->colour_mode=ta->shared->colmode;
-   new->transparency=ta->shared->transparency;
+    /* Fill in shared attributes */
+    new->aux_colourindex = ta->shared->auxindex;
+    new->aux_col.red = ta->shared->aux.red;
+    new->aux_col.green = ta->shared->aux.green;
+    new->aux_col.blue = ta->shared->aux.blue;
+    new->colour_mode = ta->shared->colmode;
+    new->transparency = ta->shared->transparency;
 
-   /*
-      Call routine to get the text method, and font number.
-   */
+    /*
+       Call routine to get the text method, and font number.
+    */
 
-   (void)FNTmatch(ta, prefmethods, methods, fonts);
-   new->text_method = methods[0];
-   new->altext_method = methods[1];
-   new->text_font = fonts[0];
-   new->altext_font = fonts[1];
+    (void) FNTmatch(ta, prefmethods, methods, fonts);
+    new->text_method = methods[0];
+    new->altext_method = methods[1];
+    new->text_font = fonts[0];
+    new->altext_font = fonts[1];
 
-   /* Depending on font method used, call appropriate font enquiry routine */
+    /* Depending on font method used, call appropriate font enquiry routine */
 #ifdef DEBUG
-   (void) fprintf(stderr, "Font method: %d\n", new->text_method);
+    (void) fprintf(stderr, "Font method: %d\n", new->text_method);
 #endif
-   switch (new->text_method)
-   {
+    switch (new->text_method) {
 #ifdef HERSHEY
-      case HER:
-         HERgetfd(new);
-      break;
+        case HER:
+            HERgetfd(new);
+            break;
 #endif
 #ifdef BEZIER
-      case BEZ:
-         BEZgetfd(new);
-      break;
+        case BEZ:
+            BEZgetfd(new);
+            break;
 #endif
 #ifdef POSTSCRIPT
-      case PS:
-         PSgetfd(new);
-      break;
+        case PS:
+            PSgetfd(new);
+            break;
 #endif
 #ifdef TEX
-      case TEX:
-          /* awaiting decision */
-      break;
+        case TEX:
+            /* awaiting decision */
+            break;
 #endif
-      default:
-          /* Should do same thing as for hardware!
-             But for the moment, tell people
-             we didn't find a valid textstyle!!         */
-      (void) CGMerror(func,ERR_TXTSYSNFND,ERROR,NULLSTR);
-      break;
-   }
-   if (num == FINAL)
-   {
-      tmp = head;
-      head = tail = NULL;
-      return tmp;
-   }
-   /* All done - exit TXTaccinf() */
-   return head;
+        default:
+            /* Should do same thing as for hardware!
+               But for the moment, tell people
+               we didn't find a valid textstyle!!         */
+            (void) CGMerror(func, ERR_TXTSYSNFND, ERROR, NULLSTR);
+            break;
+    }
+    if (num == FINAL) {
+        tmp = head;
+        head = tail = NULL;
+        return tmp;
+    }
+    /* All done - exit TXTaccinf() */
+    return head;
 }
 
-void TXTalign ( Textitem *txtlist, Point txtp, double horext, double vertext )
+void TXTalign(Textitem *txtlist, Point txtp, double horext, double vertext)
 /*
  *    TXTalign(): function to process the text list and insert
  *                the information on origin coordinates (in untransformed
@@ -339,230 +337,224 @@ void TXTalign ( Textitem *txtlist, Point txtp, double horext, double vertext )
  */
 
 {
-   int i;
-   float twid, theight, xadj, yadj, h1, ch1;
-   float lastbot, lastheight, lastorigin, lastspace, lastwidth;
-   float a_rth, a_rbot, a_rtop;
-   float af_rth, af_rbot, af_rtop;
-   float al_rth, al_rbot, al_rtop;
-   float ntxtx, ntxty;
-   char *cp;
-   Textitem *txtlp ,*activeitem;
+    int i;
+    float twid, theight, xadj, yadj, h1, ch1;
+    float lastbot, lastheight, lastorigin, lastspace, lastwidth;
+    float a_rth, a_rbot, a_rtop;
+    float af_rth, af_rbot, af_rtop;
+    float al_rth, al_rbot, al_rtop;
+    float ntxtx, ntxty;
+    char *cp;
+    Textitem *txtlp, *activeitem;
 
 #ifdef DEBUG
-     fprintf(stderr,"TXTalign: (%f,%f) %f %f\n", txtp.x, txtp.y,
-                      horext, vertext);
+    fprintf(stderr,"TXTalign: (%f,%f) %f %f\n", txtp.x, txtp.y,
+                     horext, vertext);
 #endif
-   txtlp = txtlist;
+    txtlp = txtlist;
 
-   /* pick up the width of bounding box  */
-   twid = horext;
+    /* pick up the width of bounding box  */
+    twid = horext;
 
-   /* pick up the height of bounding box */
-   theight = vertext;
+    /* pick up the height of bounding box */
+    theight = vertext;
 
-   /*
-     For left and right paths, find the X displacement from the alignment
-     point to the X origin of the first character in the first string.
-     For up and down paths, horizontal alignment is done to the
-     centre-line of the text, so we want to find the displacement
-     from the alignment point to the centre-line.
-   */
-   switch (curatt.text_halign)
-   {
-      case NORMHORIZ: /* xadj is 0 for all paths */
-           xadj = 0.0;
-           break;
+    /*
+      For left and right paths, find the X displacement from the alignment
+      point to the X origin of the first character in the first string.
+      For up and down paths, horizontal alignment is done to the
+      centre-line of the text, so we want to find the displacement
+      from the alignment point to the centre-line.
+    */
+    switch (curatt.text_halign) {
+        case NORMHORIZ: /* xadj is 0 for all paths */
+            xadj = 0.0;
+            break;
 
-      case LEFT:  /* left */
-           switch (curatt.text_path)
-           {
-               case P_LEFT:
-                   /*
-                      we need to substract width of the first character
-                      here, but it will be more convenient to do it later.
-                    */
+        case LEFT:  /* left */
+            switch (curatt.text_path) {
+                case P_LEFT:
+                    /*
+                       we need to substract width of the first character
+                       here, but it will be more convenient to do it later.
+                     */
                     xadj = twid;
                     break;
-               case P_RIGHT:
-                    xadj = 0.0 ;
+                case P_RIGHT:
+                    xadj = 0.0;
                     break;
-               case P_UP:
-               case P_DOWN:
-                    xadj = twid/2.0;
+                case P_UP:
+                case P_DOWN:
+                    xadj = twid / 2.0;
                     break;
-           }
-           break;
+            }
+            break;
 
-      case CTR:  /* centre */
-           switch (curatt.text_path)
-           {
-               case P_LEFT:
+        case CTR:  /* centre */
+            switch (curatt.text_path) {
+                case P_LEFT:
                     /*
                       we need to substract width of the first character
                       here, but it will be more convenient to do it later.
                      */
-                    xadj = twid/2.0;
+                    xadj = twid / 2.0;
                     break;
-               case P_RIGHT:
-                    xadj = -twid/2.0;
+                case P_RIGHT:
+                    xadj = -twid / 2.0;
                     break;
-               case P_UP:
-               case P_DOWN:
+                case P_UP:
+                case P_DOWN:
                     xadj = 0.0;
                     break;
-           }
-           break;
+            }
+            break;
 
-      case RIGHT:  /* right */
-           switch (curatt.text_path)
-           {
-               case P_LEFT:
+        case RIGHT:  /* right */
+            switch (curatt.text_path) {
+                case P_LEFT:
                     /*
                       we need to substract width of the first character
                       here, but it will be more convenient to do it later.
                      */
                     xadj = 0.0;
                     break;
-               case P_RIGHT:
+                case P_RIGHT:
                     xadj = -twid;
                     break;
-               case P_UP:
-               case P_DOWN:
-                    xadj = -twid/2.0;
+                case P_UP:
+                case P_DOWN:
+                    xadj = -twid / 2.0;
                     break;
-           }
-           break;
+            }
+            break;
 
-      case CONTHORIZ:  /* continuous horizontal - needs to be checked*/
-           xadj = -twid * curatt.text_hcont;
-           break;
-   }
+        case CONTHORIZ:  /* continuous horizontal - needs to be checked*/
+            xadj = -twid * curatt.text_hcont;
+            break;
+    }
 
-   /*
-     Get the adjustment value for the Y coordinate of the
-     alignment point, such that we eventually arrive at the
-     base line of the first character in the text, regardless
-     of the path and alignment.
-   */
-   switch (curatt.text_path)
-   {
-      case P_LEFT:
-      case P_RIGHT:
-           /*
-             For left and right, vertical alignment is dictated by the
-             "active" item, i.e. the item with biggest value for character
-             height. Here we find it.
-            */
-           h1 = 0;
-           txtlp = txtlist ;
-           while (txtlp!=NULL)
-           {
-              ch1 = txtlp->char_height;
-              if (ch1>h1)
-                    { h1 = ch1; activeitem = txtlp;}
-              txtlp = txtlp->next;
-           }
+    /*
+      Get the adjustment value for the Y coordinate of the
+      alignment point, such that we eventually arrive at the
+      base line of the first character in the text, regardless
+      of the path and alignment.
+    */
+    switch (curatt.text_path) {
+        case P_LEFT:
+        case P_RIGHT:
+            /*
+              For left and right, vertical alignment is dictated by the
+              "active" item, i.e. the item with biggest value for character
+              height. Here we find it.
+             */
+            h1 = 0;
+            txtlp = txtlist;
+            while (txtlp != NULL) {
+                ch1 = txtlp->char_height;
+                if (ch1 > h1) {
+                    h1 = ch1;
+                    activeitem = txtlp;
+                }
+                txtlp = txtlp->next;
+            }
 
-           /* Get relevant font data of the active item */
-           a_rth = activeitem->char_height;
-           a_rbot = activeitem->rbot * a_rth;
-           a_rtop = activeitem->rtop * a_rth;
+            /* Get relevant font data of the active item */
+            a_rth = activeitem->char_height;
+            a_rbot = activeitem->rbot * a_rth;
+            a_rtop = activeitem->rtop * a_rth;
 
-           /* Now go down to the lower left corner of the bounding box */
-           switch (curatt.text_valign)
-           {
-              case TOP:  /* top */
-                   yadj = - theight ;
-                   break;
-              case CAP:  /* cap */
-                   yadj = - theight + a_rtop ;
-                   break;
-              case HALF:  /* half */
-                   yadj = - a_rth/2.0 - a_rbot;
-                   break;
-              case NORMVERT: /* normal vertical */
-              case BASE:  /* base */
-                   yadj = - a_rbot;
-                   break;
-              case BOTTOM:  /* bottom */
-                  yadj = 0.0;
-                  break;
-              case CONTVERT:  /* continuous vertical - needs checking*/
+            /* Now go down to the lower left corner of the bounding box */
+            switch (curatt.text_valign) {
+                case TOP:  /* top */
+                    yadj = -theight;
+                    break;
+                case CAP:  /* cap */
+                    yadj = -theight + a_rtop;
+                    break;
+                case HALF:  /* half */
+                    yadj = -a_rth / 2.0 - a_rbot;
+                    break;
+                case NORMVERT: /* normal vertical */
+                case BASE:  /* base */
+                    yadj = -a_rbot;
+                    break;
+                case BOTTOM:  /* bottom */
+                    yadj = 0.0;
+                    break;
+                case CONTVERT:  /* continuous vertical - needs checking*/
                     yadj = -theight * curatt.text_vcont;
                     break;
-           }
+            }
 
-           /* Having found the bottom line, move up to the base line */
-           yadj = yadj + a_rbot;
-           break;
+            /* Having found the bottom line, move up to the base line */
+            yadj = yadj + a_rbot;
+            break;
 
-      case P_UP:
-      case P_DOWN:
-           /* For up and down, first and last character are important */
-           af_rth = txtlist->char_height;
-           af_rbot = txtlist->rbot * af_rth;
-           af_rtop = txtlist->rtop * af_rth;
+        case P_UP:
+        case P_DOWN:
+            /* For up and down, first and last character are important */
+            af_rth = txtlist->char_height;
+            af_rbot = txtlist->rbot * af_rth;
+            af_rtop = txtlist->rtop * af_rth;
 
-           txtlp = txtlist ;
-           while (txtlp->next)
-               txtlp=txtlp->next;
-           al_rth = txtlp->char_height;
-           al_rbot = txtlp->rbot * al_rth;
-           al_rtop = txtlp->rtop * al_rth;
+            txtlp = txtlist;
+            while (txtlp->next)
+                txtlp = txtlp->next;
+            al_rth = txtlp->char_height;
+            al_rbot = txtlp->rbot * al_rth;
+            al_rtop = txtlp->rtop * al_rth;
 
-           switch ( curatt.text_valign)
-           {
-              case NORMVERT: /* normal vertical */
-                   if (curatt.text_path == P_UP)
-                      yadj = 0.  ;
-                   else     /* down */
-                      yadj = - af_rtop   - af_rth;
-                   break;
+            switch (curatt.text_valign) {
+                case NORMVERT: /* normal vertical */
+                    if (curatt.text_path == P_UP)
+                        yadj = 0.;
+                    else     /* down */
+                        yadj = -af_rtop - af_rth;
+                    break;
 
-              case TOP:  /* top */
-                   if (curatt.text_path == P_UP)
-                      yadj = - theight  + af_rbot  ;
-                   else     /* down */
-                      yadj = - af_rtop   - af_rth;
-                   break;
+                case TOP:  /* top */
+                    if (curatt.text_path == P_UP)
+                        yadj = -theight + af_rbot;
+                    else     /* down */
+                        yadj = -af_rtop - af_rth;
+                    break;
 
-              case CAP:  /* cap */
-                   if (curatt.text_path == P_UP)
-                      yadj = - theight + al_rtop + af_rbot  ;
-                   else
-                      yadj =  - af_rth;
-                   break;
+                case CAP:  /* cap */
+                    if (curatt.text_path == P_UP)
+                        yadj = -theight + al_rtop + af_rbot;
+                    else
+                        yadj = -af_rth;
+                    break;
 
-              case HALF:  /* half */
-                   if (curatt.text_path == P_UP)
-                      yadj = -(theight-(al_rtop+al_rth/2.)
-                             -(af_rbot+af_rth/2.)) / 2. - af_rth/2.;
-                   else
-                      yadj = (theight-(af_rtop+af_rth/2.)
-                               -(al_rbot+af_rth/2.)) / 2. - af_rth/2.0;
-                   break;
+                case HALF:  /* half */
+                    if (curatt.text_path == P_UP)
+                        yadj = -(theight - (al_rtop + al_rth / 2.)
+                                 - (af_rbot + af_rth / 2.)) / 2. - af_rth / 2.;
+                    else
+                        yadj = (theight - (af_rtop + af_rth / 2.)
+                                - (al_rbot + af_rth / 2.)) / 2. - af_rth / 2.0;
+                    break;
 
-              case BASE:  /* base */
-                   if (curatt.text_path == P_UP)
-                      yadj = 0.;
-                   else
-                      yadj = theight - al_rbot - af_rtop - af_rth;
-                   break;
+                case BASE:  /* base */
+                    if (curatt.text_path == P_UP)
+                        yadj = 0.;
+                    else
+                        yadj = theight - al_rbot - af_rtop - af_rth;
+                    break;
 
-              case BOTTOM:  /* bottom */
-                   if (curatt.text_path == P_UP)
-                      yadj = af_rbot;
-                   else
-                      yadj = theight - af_rtop - af_rth;
-                   break;
+                case BOTTOM:  /* bottom */
+                    if (curatt.text_path == P_UP)
+                        yadj = af_rbot;
+                    else
+                        yadj = theight - af_rtop - af_rth;
+                    break;
 
-              case CONTVERT:  /* continuous vertical - needs checking*/
-                   yadj = -theight * curatt.text_vcont;
-                   break;
-           }
-           break;
-  }
+                case CONTVERT:  /* continuous vertical - needs checking*/
+                    yadj = -theight * curatt.text_vcont;
+                    break;
+            }
+            break;
+    }
 
 
 /*
@@ -570,138 +562,131 @@ void TXTalign ( Textitem *txtlist, Point txtp, double horext, double vertext )
    get the origin of the first character; for up and down get the
    base line and centre-line intersection of the first character .
  */
-   ntxtx = txtp.x + xadj;
-   ntxty = txtp.y + yadj;
+    ntxtx = txtp.x + xadj;
+    ntxty = txtp.y + yadj;
 
 /* Now work out the origin of each character and in every string. */
-   txtlp = txtlist;
-   while (txtlp)
-   {
-      txtlp->origin = (Point *)MALLOC ( strlen(txtlp->str), sizeof(Point) );
-      i=0;
-      for(cp = txtlp->str; *cp!='\0'; cp++)
-      {
-         switch (curatt.text_path)
-         {
-            case P_RIGHT:
-                 /* formula :
-                 First character of first string:
-                             x = ntxtx;
-                             y = ntxty;
-                 Then:
-                             x += height * (exp*normalized_width + spacing)
-                             y = ntxty
-                 */
-
-                 /* if first character of first string x= ntxtx */
-                 if((i==0)&&(txtlp == txtlist))
-                 {
-                    lastorigin =  ntxtx;
-                    lastwidth =  0.;
-                    lastspace =  0.;
-                 }
-                 txtlp->origin[i].x = lastorigin + lastwidth + lastspace;
-                 lastorigin = txtlp->origin[i].x;
-                 lastwidth = txtlp->char_height *
-                             txtlp->char_exp *
-                             txtlp->rwd[(int)(*cp)-32];
-                 lastspace = txtlp->char_height *
-                             txtlp->char_space;
-                 txtlp->origin[i].y = ntxty;
-                 break;
-
-            case P_LEFT:
-                 /*
-                    First ever:
-                               x = nxtx-height*(expansion*normalized_width);
-                               y = ntxty;
+    txtlp = txtlist;
+    while (txtlp) {
+        txtlp->origin = (Point *) MALLOC (strlen(txtlp->str), sizeof(Point));
+        i = 0;
+        for (cp = txtlp->str; *cp != '\0'; cp++) {
+            switch (curatt.text_path) {
+                case P_RIGHT:
+                    /* formula :
+                    First character of first string:
+                                x = ntxtx;
+                                y = ntxty;
                     Then:
-                               x - = height* (exp*normwid + spacing);
-                               y = ntxty;
-                 */
+                                x += height * (exp*normalized_width + spacing)
+                                y = ntxty
+                    */
 
-                 /* if first character of str x = ntxtx - width(1st) */
+                    /* if first character of first string x= ntxtx */
+                    if ((i == 0) && (txtlp == txtlist)) {
+                        lastorigin = ntxtx;
+                        lastwidth = 0.;
+                        lastspace = 0.;
+                    }
+                    txtlp->origin[i].x = lastorigin + lastwidth + lastspace;
+                    lastorigin = txtlp->origin[i].x;
+                    lastwidth = txtlp->char_height *
+                                txtlp->char_exp *
+                                txtlp->rwd[(int) (*cp) - 32];
+                    lastspace = txtlp->char_height *
+                                txtlp->char_space;
+                    txtlp->origin[i].y = ntxty;
+                    break;
 
-                 if((i==0)&&(txtlp == txtlist))
-                 {
-                    lastorigin = ntxtx;
-                    lastspace = 0.;
-                 }
-		                                    /*  PMG change sign of lastspace */
-                 txtlp->origin[i].x = lastorigin -
-                                     txtlp->char_height *
-                                     txtlp->char_exp *
-                                     txtlp->rwd[(int)(*cp)-32] - lastspace;
-                 lastorigin = txtlp->origin[i].x;
-                 lastspace = txtlp->char_space * txtlp->char_height;
+                case P_LEFT:
+                    /*
+                       First ever:
+                                  x = nxtx-height*(expansion*normalized_width);
+                                  y = ntxty;
+                       Then:
+                                  x - = height* (exp*normwid + spacing);
+                                  y = ntxty;
+                    */
 
-                 txtlp->origin[i].y = ntxty;
-                 break;
+                    /* if first character of str x = ntxtx - width(1st) */
 
-            case P_UP:
-                 /*
-                   First ever:
-                              x = ntxtx - half_of_current_width;
-                              y = ntxty;
-                   Then:
-                              x = ntxtx - half_of_current_width;
-                              y += current_height + top + spacing + bot;
-                 */
+                    if ((i == 0) && (txtlp == txtlist)) {
+                        lastorigin = ntxtx;
+                        lastspace = 0.;
+                    }
+                    /*  PMG change sign of lastspace */
+                    txtlp->origin[i].x = lastorigin -
+                                         txtlp->char_height *
+                                         txtlp->char_exp *
+                                         txtlp->rwd[(int) (*cp) - 32] - lastspace;
+                    lastorigin = txtlp->origin[i].x;
+                    lastspace = txtlp->char_space * txtlp->char_height;
 
-                 txtlp->origin[i].x = ntxtx -
-                                     txtlp->char_height * txtlp->char_exp *
-                                     (txtlp->rwd[(int)(*cp)-32])/2.0;
+                    txtlp->origin[i].y = ntxty;
+                    break;
 
-                 if((i==0)&&(txtlp == txtlist))
-                 {
-                    lastorigin =  ntxty - txtlp->char_height * txtlp->rbot;
-                    lastheight =  0.;
-                 }
+                case P_UP:
+                    /*
+                      First ever:
+                                 x = ntxtx - half_of_current_width;
+                                 y = ntxty;
+                      Then:
+                                 x = ntxtx - half_of_current_width;
+                                 y += current_height + top + spacing + bot;
+                    */
 
-                 txtlp->origin[i].y = lastorigin + lastheight +
-                                     txtlp->char_height *
-                                     txtlp->rbot;
-                 lastorigin = txtlp->origin[i].y;
-                 lastheight = txtlp->char_height * (1 + txtlp->rtop) ;
-                 break;
+                    txtlp->origin[i].x = ntxtx -
+                                         txtlp->char_height * txtlp->char_exp *
+                                         (txtlp->rwd[(int) (*cp) - 32]) / 2.0;
 
-            case P_DOWN:
-                 /*
-                   First ever:
-                             x = ntxtx - half_of_current_width;
-                             y = ntxty;
-                   Then:
-                             x = x;
-                             y -= bot - spacing - top - height;
-                  */
+                    if ((i == 0) && (txtlp == txtlist)) {
+                        lastorigin = ntxty - txtlp->char_height * txtlp->rbot;
+                        lastheight = 0.;
+                    }
 
-                 txtlp->origin[i].x = ntxtx - txtlp->char_height *
-                                     txtlp->char_exp *
-                                     (txtlp->rwd[(int)(*cp)-32])/2.0;
+                    txtlp->origin[i].y = lastorigin + lastheight +
+                                         txtlp->char_height *
+                                         txtlp->rbot;
+                    lastorigin = txtlp->origin[i].y;
+                    lastheight = txtlp->char_height * (1 + txtlp->rtop);
+                    break;
 
-                 /* if first character of str y = ntxty */
-                 if((i==0)&&(txtlp == txtlist))
-                 {
-                    lastorigin =  ntxty +
-                                  txtlp->char_height *
-                                  (1 + txtlp->rtop);
-                    lastbot =  0.;
-                 }
-                 txtlp->origin[i].y = lastorigin - lastbot -
+                case P_DOWN:
+                    /*
+                      First ever:
+                                x = ntxtx - half_of_current_width;
+                                y = ntxty;
+                      Then:
+                                x = x;
+                                y -= bot - spacing - top - height;
+                     */
+
+                    txtlp->origin[i].x = ntxtx - txtlp->char_height *
+                                                 txtlp->char_exp *
+                                                 (txtlp->rwd[(int) (*cp) - 32]) / 2.0;
+
+                    /* if first character of str y = ntxty */
+                    if ((i == 0) && (txtlp == txtlist)) {
+                        lastorigin = ntxty +
                                      txtlp->char_height *
                                      (1 + txtlp->rtop);
-                 lastorigin = txtlp->origin[i].y;
-                 lastbot = txtlp->char_height * txtlp->rbot ;
-         }
-         i++;
-      }
-      txtlp = txtlp -> next;
-   }
-   /* return from TXTalign */
-   return;
+                        lastbot = 0.;
+                    }
+                    txtlp->origin[i].y = lastorigin - lastbot -
+                                         txtlp->char_height *
+                                         (1 + txtlp->rtop);
+                    lastorigin = txtlp->origin[i].y;
+                    lastbot = txtlp->char_height * txtlp->rbot;
+            }
+            i++;
+        }
+        txtlp = txtlp->next;
+    }
+    /* return from TXTalign */
+    return;
 }
 
-void  TXTfree( Textitem *txtlist )
+void TXTfree(Textitem *txtlist)
 /*
  *    TXTfree(): Function which frees the memory allocated while
  *               processing text.
@@ -730,28 +715,27 @@ void  TXTfree( Textitem *txtlist )
  * LOCALS
  * ------
  */
-   Textitem *txtlistp1;     /* temp pointer used for struct position */
+    Textitem *txtlistp1;     /* temp pointer used for struct position */
 
-   /* Work down the list */
-   while (txtlist!=NULL)
-   {
-      /* Store the pointer to the structure */
-      txtlistp1 = txtlist;
+    /* Work down the list */
+    while (txtlist != NULL) {
+        /* Store the pointer to the structure */
+        txtlistp1 = txtlist;
 
-      /* Move the item pointer on */
-      txtlist = txtlist->next;
+        /* Move the item pointer on */
+        txtlist = txtlist->next;
 
-      /* Free string and origins first */
-      FREE(txtlistp1->str);
-      FREE(txtlistp1->origin);
-      /* Free the structure */
-      FREE(txtlistp1);
-   }
+        /* Free string and origins first */
+        FREE(txtlistp1->str);
+        FREE(txtlistp1->origin);
+        /* Free the structure */
+        FREE(txtlistp1);
+    }
 
-   return;
+    return;
 }
 
-double TXTgwidth( Textitem *txtlist )
+double TXTgwidth(Textitem *txtlist)
 /*
  *   TXTgwidth(): Function to calculate the untransformed horizontal text
  *                 extent of each substring and the entire text.
@@ -779,56 +763,54 @@ double TXTgwidth( Textitem *txtlist )
  */
 
 {
-   float cwid, width;
-   char *cp;
+    float cwid, width;
+    char *cp;
 
-   width = 0.0;
-   /* Walk through the list and process each character */
-   while (txtlist)
-   {
-      switch (curatt.text_path)
-      {
-        case P_RIGHT :
-        case P_LEFT  :
-             /*
-               For left and right paths, take total width, add spacing and
-               multiply by number of characters in each string. Make
-               ammendments for the last character of the last string
-               later.
-             */
-             cwid = 0. ;
-             /* Loop through the string */
-             for(cp = txtlist->str; *cp!='\0'; cp++)
-                cwid += txtlist->rwd[(int)(*cp)-32];
-             cwid = (cwid * txtlist->char_exp +
-                    strlen(txtlist->str) * txtlist->char_space)
-                    * txtlist->char_height;
+    width = 0.0;
+    /* Walk through the list and process each character */
+    while (txtlist) {
+        switch (curatt.text_path) {
+            case P_RIGHT :
+            case P_LEFT  :
+                /*
+                  For left and right paths, take total width, add spacing and
+                  multiply by number of characters in each string. Make
+                  ammendments for the last character of the last string
+                  later.
+                */
+                cwid = 0.;
+                /* Loop through the string */
+                for (cp = txtlist->str; *cp != '\0'; cp++)
+                    cwid += txtlist->rwd[(int) (*cp) - 32];
+                cwid = (cwid * txtlist->char_exp +
+                        strlen(txtlist->str) * txtlist->char_space)
+                       * txtlist->char_height;
 
-             /* Take out one spacing for the last string */
-             if (txtlist->next == NULL)
-                cwid -= txtlist->char_space * txtlist->char_height;
+                /* Take out one spacing for the last string */
+                if (txtlist->next == NULL)
+                    cwid -= txtlist->char_space * txtlist->char_height;
 
-             /* Accumulate */
-             width += cwid;
-             break;
-        case P_UP    :
-        case P_DOWN  :
-             /* For up and down, just return the maximum width */
-             cwid = txtlist->rmaxwd*txtlist->char_exp * txtlist->char_height ;
-             if (cwid>width)
-                width = cwid;
-             break;
-      }
+                /* Accumulate */
+                width += cwid;
+                break;
+            case P_UP    :
+            case P_DOWN  :
+                /* For up and down, just return the maximum width */
+                cwid = txtlist->rmaxwd * txtlist->char_exp * txtlist->char_height;
+                if (cwid > width)
+                    width = cwid;
+                break;
+        }
 
-      /* Store each string's extent into the structure */
-      txtlist->tbxwid = cwid;
+        /* Store each string's extent into the structure */
+        txtlist->tbxwid = cwid;
 
-      txtlist = txtlist->next;
-   }
-   return width;
+        txtlist = txtlist->next;
+    }
+    return width;
 }
 
-double TXTgheight ( Textitem *txtlist )
+double TXTgheight(Textitem *txtlist)
 /*
  *   TXTgheight(): Function to calculate the untransformed vertical text
  *                 extent of each substring and the entire text.
@@ -855,51 +837,49 @@ double TXTgheight ( Textitem *txtlist )
  */
 
 {
-   float height , cheight;
+    float height, cheight;
 
-   height = 0.0;
-   /* Walk through the list and process each character */
-   while (txtlist!=NULL)
-   {
-      switch (curatt.text_path)
-      {
-        case P_RIGHT :
-        case P_LEFT  :
-             /* For left and right paths, just return the maximum height */
-             cheight = (1 + txtlist->rtop + txtlist->rbot) *
-                       txtlist->char_height;
-             if (cheight>height)
-                height = cheight;
-             break;
-        case P_UP    :
-        case P_DOWN  :
-             /*
-               For up and down paths, take total height, add spacing and
-               multiply by number of characters in each string. Make
-               ammendments for the last character of the last string
-               later.
-             */
-             cheight = (1 +txtlist->rtop + txtlist->rbot+ txtlist->char_space)
-                       * strlen(txtlist->str);
-             cheight *=  txtlist->char_height;
+    height = 0.0;
+    /* Walk through the list and process each character */
+    while (txtlist != NULL) {
+        switch (curatt.text_path) {
+            case P_RIGHT :
+            case P_LEFT  :
+                /* For left and right paths, just return the maximum height */
+                cheight = (1 + txtlist->rtop + txtlist->rbot) *
+                          txtlist->char_height;
+                if (cheight > height)
+                    height = cheight;
+                break;
+            case P_UP    :
+            case P_DOWN  :
+                /*
+                  For up and down paths, take total height, add spacing and
+                  multiply by number of characters in each string. Make
+                  ammendments for the last character of the last string
+                  later.
+                */
+                cheight = (1 + txtlist->rtop + txtlist->rbot + txtlist->char_space)
+                          * strlen(txtlist->str);
+                cheight *= txtlist->char_height;
 
-             /* Take out one spacing for the last string */
-             if (txtlist->next==NULL)
-                cheight -= txtlist->char_space * txtlist->char_height;
-             /* Accumulate */
-             height += cheight;
-             break;
-      }
+                /* Take out one spacing for the last string */
+                if (txtlist->next == NULL)
+                    cheight -= txtlist->char_space * txtlist->char_height;
+                /* Accumulate */
+                height += cheight;
+                break;
+        }
 
-      /* Store each string's extent into the structure */
-      txtlist->tbxheight = cheight;
+        /* Store each string's extent into the structure */
+        txtlist->tbxheight = cheight;
 
-      txtlist = txtlist->next;
-   }
-   return height ;
+        txtlist = txtlist->next;
+    }
+    return height;
 }
 
-void TXTxform( Point txtp, Tmatrix matrix )
+void TXTxform(Point txtp, Tmatrix matrix)
 /*
  *    TXTxform(): Function to calculate the character orientation transform.
  *
@@ -935,16 +915,16 @@ void TXTxform( Point txtp, Tmatrix matrix )
  * LOCALS
  * ------
  */
-  Vector ora,     /* character base vector */
-         orb;     /* character up vector */
-  double modua,   /* length of char base vector, used in calc of cosa & sina */
-         modub,   /* length of char up vector, used in calc of cosb & sinb */
-         sina,    /* sin of angle of base vector */
-         sinb,    /* sin of angle of up vector */
-         cosa,    /* cos of angle of base vector */
-         cosb,    /* cos of angle of up vector */
-         e1,      /* x-shift to take text pt to origin and back */
-         f1;      /* y-shift to take text pt to origin and back */
+    Vector ora,     /* character base vector */
+            orb;     /* character up vector */
+    double modua,   /* length of char base vector, used in calc of cosa & sina */
+            modub,   /* length of char up vector, used in calc of cosb & sinb */
+            sina,    /* sin of angle of base vector */
+            sinb,    /* sin of angle of up vector */
+            cosa,    /* cos of angle of base vector */
+            cosb,    /* cos of angle of up vector */
+            e1,      /* x-shift to take text pt to origin and back */
+            f1;      /* y-shift to take text pt to origin and back */
 
 /*
       resulting transformation = transform_1 * transform_2 * transform_3,
@@ -953,78 +933,75 @@ void TXTxform( Point txtp, Tmatrix matrix )
       transform_2 = shearing
       transform_1 = translation of the alignment point back;
 */
-      e1 = txtp.x;
-      f1 = txtp.y;
+    e1 = txtp.x;
+    f1 = txtp.y;
 /*
       get char_up, char_base and calculate the relevant angles.
 */
-      if(cur.vdc_type == REAL)
-      {
-         ora.x = curatt.char_base.x.real;
-         ora.y = curatt.char_base.y.real;
-         orb.x = curatt.char_up.x.real;
-         orb.y = curatt.char_up.y.real;
-      }
-      else
-      {
-         ora.x = curatt.char_base.x.intr;
-         ora.y = curatt.char_base.y.intr;
-         orb.x = curatt.char_up.x.intr;
-         orb.y = curatt.char_up.y.intr;
-      }
+    if (cur.vdc_type == REAL) {
+        ora.x = curatt.char_base.x.real;
+        ora.y = curatt.char_base.y.real;
+        orb.x = curatt.char_up.x.real;
+        orb.y = curatt.char_up.y.real;
+    } else {
+        ora.x = curatt.char_base.x.intr;
+        ora.y = curatt.char_base.y.intr;
+        orb.x = curatt.char_up.x.intr;
+        orb.y = curatt.char_up.y.intr;
+    }
 
-      modua = SQRT( ora.x*ora.x + ora.y*ora.y );
-      modub = SQRT( orb.x*orb.x + orb.y*orb.y );
+    modua = SQRT(ora.x * ora.x + ora.y * ora.y);
+    modub = SQRT(orb.x * orb.x + orb.y * orb.y);
 
-      if(REQUAL(modua,0.0))  /* Check for zero base vector */
-      {
-          CGMerror (func,ERR_CHBASEZERO,ERROR,NULLSTR);
-          sina = 0.0;  cosa = 1.0;
-      }
-      else  /* Normalize base vector */
-      {
-         sina = ora.y / modua;
-         cosa = ora.x / modua;
-      }
+    if (REQUAL(modua, 0.0))  /* Check for zero base vector */
+    {
+        CGMerror(func, ERR_CHBASEZERO, ERROR, NULLSTR);
+        sina = 0.0;
+        cosa = 1.0;
+    } else  /* Normalize base vector */
+    {
+        sina = ora.y / modua;
+        cosa = ora.x / modua;
+    }
 
-      if(REQUAL(modub,0.0))  /* Check for zero up vector */
-      {
-          CGMerror (func,ERR_CHUPZERO,ERROR,NULLSTR);
-          sinb = 1.0;  cosb = 0.0;
-      }
-      else  /* Noramalize up vector */
-      {
-         sinb = orb.y / modub;
-         cosb = orb.x / modub;
-      }
+    if (REQUAL(modub, 0.0))  /* Check for zero up vector */
+    {
+        CGMerror(func, ERR_CHUPZERO, ERROR, NULLSTR);
+        sinb = 1.0;
+        cosb = 0.0;
+    } else  /* Noramalize up vector */
+    {
+        sinb = orb.y / modub;
+        cosb = orb.x / modub;
+    }
 
 
-      /*** This is the real bit of the transformation,
-              i.e the rotate, scale, skew etc           */
-      matrix[0][0] = cosa;
-      matrix[0][1] = sina;
-      matrix[1][0] = cosb;
-      matrix[1][1] = sinb;
+    /*** This is the real bit of the transformation,
+            i.e the rotate, scale, skew etc           */
+    matrix[0][0] = cosa;
+    matrix[0][1] = sina;
+    matrix[1][0] = cosb;
+    matrix[1][1] = sinb;
 
-      /*** This is the shift to, then from the origin.
-           NOTE: use of negated e1 & f1, transformed by the above
-                 part of the matrix to shift back to original position */
-      matrix[2][0] = e1 - e1*cosa - f1*cosb;
-      matrix[2][1] = f1 - e1*sina - f1*sinb;
+    /*** This is the shift to, then from the origin.
+         NOTE: use of negated e1 & f1, transformed by the above
+               part of the matrix to shift back to original position */
+    matrix[2][0] = e1 - e1 * cosa - f1 * cosb;
+    matrix[2][1] = f1 - e1 * sina - f1 * sinb;
 
 #ifdef DEBUG
-      { int i,j;
-         fprintf(stderr, "Transformation Matrix:\n");
-         for ( i=0; i<3; i++ )
-         {
-            for ( j=0; j<3; j++)
-               fprintf(stderr, " %f", matrix[i][j] );
-            fprintf(stderr,"\n");
-         }
-      }
+    { int i,j;
+       fprintf(stderr, "Transformation Matrix:\n");
+       for ( i=0; i<3; i++ )
+       {
+          for ( j=0; j<3; j++)
+             fprintf(stderr, " %f", matrix[i][j] );
+          fprintf(stderr,"\n");
+       }
+    }
 #endif
 
-      return;
+    return;
 }
 
 /*
@@ -1077,16 +1054,15 @@ void TXTxform( Point txtp, Tmatrix matrix )
  *
  */
 
-Textitem *TXTrestrict( Textitem *txtlist, double rwidth, double rheight, struct textatt *ta)
-
-{  int curr_item, pass, items, guilty, font;
-   double twidth, theight;
-   float scale, chr_hgt, grain;
-   Enum method;
-   Textitem  *tptr;
-   Restxt_item  *item;
-   Logical changed, restricted;
-   char *func="TXTrestrict";
+Textitem *TXTrestrict(Textitem *txtlist, double rwidth, double rheight, struct textatt *ta) {
+    int curr_item, pass, items, guilty, font;
+    double twidth, theight;
+    float scale, chr_hgt, grain;
+    Enum method;
+    Textitem *tptr;
+    Restxt_item *item;
+    Logical changed, restricted;
+    char *func = "TXTrestrict";
 
 #define TEXT_FITS         0
 #define TEXT_TOO_HIGH     1
@@ -1096,48 +1072,48 @@ Textitem *TXTrestrict( Textitem *txtlist, double rwidth, double rheight, struct 
 /* Firstly, make sure that everything is drawn at 'STROKE' precision.
 */
 
-   tptr=txtlist;
-   while (tptr!=NULL)
-   {   tptr->text_prec=2;
-       tptr=tptr->next;
-   }
+    tptr = txtlist;
+    while (tptr != NULL) {
+        tptr->text_prec = 2;
+        tptr = tptr->next;
+    }
 
 /* Now check to see if current size already fits the restriction
    required, if this is true then do nothing but return now.
 */
 
-   guilty=size_check(txtlist, &twidth, &theight, rwidth, rheight, &scale);
-   if (guilty==TEXT_FITS) return txtlist;
+    guilty = size_check(txtlist, &twidth, &theight, rwidth, rheight, &scale);
+    if (guilty == TEXT_FITS) return txtlist;
 
 /* We are going to create an array structures that contain information about
    each substring, but first we need to count how many there are
 */
 
-   for (items=0,tptr=txtlist  ; (tptr!=NULL) ; items++)
-       tptr=tptr->next;
+    for (items = 0, tptr = txtlist; (tptr != NULL); items++)
+        tptr = tptr->next;
 
 /* Allocate enough memory to contain the array of 'res_text' structures.
 */
 
-   item=(Restxt_item *) MALLOC(items, sizeof (struct res_text));
+    item = (Restxt_item *) MALLOC(items, sizeof(struct res_text));
 
 /* Now initialize the structure to contains two things, a pointer to the
    substring and a flag as to whether it is already at it's minimum size.
 */
 
-   tptr=txtlist;
-   for (curr_item=0; (curr_item<items) ; curr_item++)
-   {   item[curr_item].ptr=tptr;
-       item[curr_item].minimum=FALSE;
-       tptr=tptr->next;
-   }
+    tptr = txtlist;
+    for (curr_item = 0; (curr_item < items); curr_item++) {
+        item[curr_item].ptr = tptr;
+        item[curr_item].minimum = FALSE;
+        tptr = tptr->next;
+    }
 
 /* Choose the 'grain' value - this is the mapping between character height
    in VDCs and in pixels/points (whatever is appropriate for the device.)
 */
 
-   grain=ta->shared->ygrain;
-   grain=(grain < ta->shared->xgrain) ? grain : ta->shared->xgrain;
+    grain = ta->shared->ygrain;
+    grain = (grain < ta->shared->xgrain) ? grain : ta->shared->xgrain;
 
 /* What follows is the main bulk of the restriction code. The idea is to
    look at the current size of the text, and determine a scale factor by
@@ -1154,57 +1130,55 @@ Textitem *TXTrestrict( Textitem *txtlist, double rwidth, double rheight, struct 
          to avoid infinite looping.)
 */
 
-   for (pass=0; (pass<15) ; pass++)
-   {
+    for (pass = 0; (pass < 15); pass++) {
 
 /* Calculate the scale factor required, but multiply it by 0.99 so that
    it always underestimates a little, this reduces the number of
    passes made.
 */
 
-      changed=FALSE;
-      restricted=TRUE;
+        changed = FALSE;
+        restricted = TRUE;
 
-      scale=calc_scale(item, items, rwidth, rheight);
-      if (scale>0.999) break;
+        scale = calc_scale(item, items, rwidth, rheight);
+        if (scale > 0.999) break;
 
 
- /* For each item, call the routine which attempts the scale. If font ids,
-   method, etc. change then load up the details of the new font.
-*/
+        /* For each item, call the routine which attempts the scale. If font ids,
+          method, etc. change then load up the details of the new font.
+       */
 
-      for (curr_item=0; (curr_item<items); curr_item++)
-      {   tptr=(item+curr_item)->ptr;
-          if (tptr!=NULL)
-          {
+        for (curr_item = 0; (curr_item < items); curr_item++) {
+            tptr = (item + curr_item)->ptr;
+            if (tptr != NULL) {
 
 /* Get the current font, method and character height of this item.
 */
-              method = tptr->text_method;
-              font   = tptr->text_font;
-              chr_hgt = tptr->char_height;
+                method = tptr->text_method;
+                font = tptr->text_font;
+                chr_hgt = tptr->char_height;
 
 /* Attempt to scale it, and flag whether a change occurs.
 */
 
-              if (FNTscale( &method, &font, &chr_hgt , scale, grain)==TRUE)
-                 changed=TRUE;
-              else
-              {   restricted=FALSE;
-                  (item+curr_item)->minimum=FALSE;
-              }
+                if (FNTscale(&method, &font, &chr_hgt, scale, grain) == TRUE)
+                    changed = TRUE;
+                else {
+                    restricted = FALSE;
+                    (item + curr_item)->minimum = FALSE;
+                }
 
-              tptr->char_height = chr_hgt;
+                tptr->char_height = chr_hgt;
 
 /* If the font or method changes, then we load up the new font to get it's details.
 */
-              if ((font != tptr->text_font) || (method != tptr->text_method))
-              {   tptr->text_method = method;
-                  tptr->text_font   = font;
-                  font_load(tptr);
-              }
-          }
-      }
+                if ((font != tptr->text_font) || (method != tptr->text_method)) {
+                    tptr->text_method = method;
+                    tptr->text_font = font;
+                    font_load(tptr);
+                }
+            }
+        }
 
 /* After the first pass ONLY, we also make an attempt to achieve restriction by
    reducing character spacing (and expansion if appropriate) that is larger than
@@ -1212,50 +1186,48 @@ Textitem *TXTrestrict( Textitem *txtlist, double rwidth, double rheight, struct 
    Horizontal text paths may use spacing or expansion, vertical ones can only
    use spacing.
 */
-      if (restricted==TRUE) break;
+        if (restricted == TRUE) break;
 
-      if (pass==0)
-      {
-         guilty=size_check(txtlist, &twidth, &theight, rwidth, rheight, &scale);
-         switch (curatt.text_path)
-         {
+        if (pass == 0) {
+            guilty = size_check(txtlist, &twidth, &theight, rwidth, rheight, &scale);
+            switch (curatt.text_path) {
 
-           case P_UP   :
-           case P_DOWN :
-                          if (guilty&TEXT_TOO_HIGH)
-                          {  restricted=scale_spc_exp(txtlist, theight, rheight, TRUE);
-                             if ((guilty==TEXT_TOO_HIGH)&&(restricted==TRUE)) restricted=TRUE;
-                          }
-                break;
+                case P_UP   :
+                case P_DOWN :
+                    if (guilty & TEXT_TOO_HIGH) {
+                        restricted = scale_spc_exp(txtlist, theight, rheight, TRUE);
+                        if ((guilty == TEXT_TOO_HIGH) && (restricted == TRUE)) restricted = TRUE;
+                    }
+                    break;
 
-           case P_RIGHT:
-           case P_LEFT :
-                         if (guilty&TEXT_TOO_WIDE)
-                         {  restricted=scale_spc_exp(txtlist, twidth, rwidth, FALSE);
-                            if ((guilty==TEXT_TOO_WIDE)&&(restricted==TRUE)) restricted=TRUE;
-                         }
-                break;
-          }
-      }
+                case P_RIGHT:
+                case P_LEFT :
+                    if (guilty & TEXT_TOO_WIDE) {
+                        restricted = scale_spc_exp(txtlist, twidth, rwidth, FALSE);
+                        if ((guilty == TEXT_TOO_WIDE) && (restricted == TRUE)) restricted = TRUE;
+                    }
+                    break;
+            }
+        }
 
-      if ((changed==FALSE)||(restricted==TRUE)) break;
-   }
+        if ((changed == FALSE) || (restricted == TRUE)) break;
+    }
 
 /* Deallocate the temporary structures, now that we're finished with them.
 */
 
-   FREE(item);
+    FREE(item);
 
 /* If the restricted flag was set somewhere in the previous loop, then we may exit now.
 */
 
-   if (restricted==TRUE) return txtlist;
+    if (restricted == TRUE) return txtlist;
 
 /* Otherwise, a last check that restriction has been achieved.
 */
 
-   guilty=size_check(txtlist, &twidth, &theight, rwidth, rheight, &scale);
-   if (guilty==TEXT_FITS) return txtlist;
+    guilty = size_check(txtlist, &twidth, &theight, rwidth, rheight, &scale);
+    if (guilty == TEXT_FITS) return txtlist;
 
 /* Last resort is to clip the text to fit the box - this involves clipping
    the individual characters if possible, but if at least one character is
@@ -1276,10 +1248,8 @@ Textitem *TXTrestrict( Textitem *txtlist, double rwidth, double rheight, struct 
    on any two servers is the same.
 */
 
-   return (clip_text(txtlist, rwidth, rheight, guilty));
+    return (clip_text(txtlist, rwidth, rheight, guilty));
 }
-
-
 
 
 /*
@@ -1308,468 +1278,433 @@ Textitem *TXTrestrict( Textitem *txtlist, double rwidth, double rheight, struct 
  * func
  */
 
-Textitem *TXTcopy( Textitem *txtlist )
+Textitem *TXTcopy(Textitem *txtlist) {
+    Textitem *head, *tail;
+    Textitem *new;
+    char *func = "TXTcopy";
 
-{
-   Textitem *head, *tail;
-   Textitem *new;
-   char *func="TXTcopy";
+    head = NULL;
+    tail = NULL;
 
-   head=NULL;
-   tail=NULL;
+    while (txtlist != NULL) {
+        new = (Textitem *) MALLOC(1, sizeof(Textitem));
 
-   while (txtlist!=NULL)
-   {
-      new=(Textitem *)MALLOC( 1, sizeof(Textitem) );
-
-      if (new==NULL)
-      exit ((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+        if (new == NULL)
+            exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
 
 /* Copy the whole structure.
 */
-      *new = *txtlist;
-      new->next=NULL;
+        *new = *txtlist;
+        new->next = NULL;
 
 /* Reserve memory for, and copy, the string pointed to by
    this Textitem.
 */
-      new->str=(char *)MALLOC (1,(strlen(txtlist->str)+1) );
-      if (new->str==NULL)
-      exit ((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
+        new->str = (char *) MALLOC (1, (strlen(txtlist->str) + 1));
+        if (new->str == NULL)
+            exit((int) CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
 
-      (void)strcpy(new->str,txtlist->str);
+        (void) strcpy(new->str, txtlist->str);
 
 /* Link into list correctly.
 */
-      if (head==NULL)
-      {
-          head=new;
-          tail=new;
-      }
-      else
-      {
-         tail->next=new;
-         tail=new;
-      }
-      txtlist = txtlist->next;
-   }
+        if (head == NULL) {
+            head = new;
+            tail = new;
+        } else {
+            tail->next = new;
+            tail = new;
+        }
+        txtlist = txtlist->next;
+    }
 
-   return head;
+    return head;
 }
 
 
+/*-----------------------------------------------------------------*
+ |                                                                 |
+ |      scale_spc_exp()                                            |
+ |                                                                 |
+ |      Evaluates and scales character spacing (and expansion)     |
+ |        IN:  Address of first Textitem,                          |
+ |             Current size in direction to be restricted          |
+ |             Restricted size required                            |
+ |             A logical flag, TRUE if text path is vertical,      |
+ |                FALSE if it is horizontal.                       |
+ |        OUT: None.                                               |
+ |        RETURN: TRUE if text has been restricted,                |
+ |                FALSE otherwise.                                 |
+ |                                                                 |
+ *-----------------------------------------------------------------*/
 
-     /*-----------------------------------------------------------------*
-      |                                                                 |
-      |      scale_spc_exp()                                            |
-      |                                                                 |
-      |      Evaluates and scales character spacing (and expansion)     |
-      |        IN:  Address of first Textitem,                          |
-      |             Current size in direction to be restricted          |
-      |             Restricted size required                            |
-      |             A logical flag, TRUE if text path is vertical,      |
-      |                FALSE if it is horizontal.                       |
-      |        OUT: None.                                               |
-      |        RETURN: TRUE if text has been restricted,                |
-      |                FALSE otherwise.                                 |
-      |                                                                 |
-      *-----------------------------------------------------------------*/
 
+static Logical scale_spc_exp(Textitem *txtlist, double tsize, double rsize, Logical isvertical) {
+    Textitem *tptr;
+    float ssize, esize, temp;
+    char *cp;
+    int nc;
+    double scale;
+    Logical restricted;
 
-static Logical scale_spc_exp( Textitem *txtlist, double tsize, double rsize, Logical isvertical)
+    ssize = esize = 0.0;
+    restricted = TRUE;
+    tptr = txtlist;
 
-{
-   Textitem *tptr;
-   float ssize,esize,temp;
-   char *cp;
-   int nc;
-   double scale;
-   Logical restricted;
-
-   ssize = esize = 0.0;
-   restricted=TRUE;
-   tptr=txtlist;
-
-   while (tptr!=NULL)
-   {
+    while (tptr != NULL) {
 
 /* Sum up size due only to excess spacing
 */
-          if (tptr->char_space > 0.0 )
-          {  nc=strlen(tptr->str);
-             if (tptr->next==NULL) --nc;
-             ssize += nc * tptr->char_space * tptr->char_height;
-          }
+        if (tptr->char_space > 0.0) {
+            nc = strlen(tptr->str);
+            if (tptr->next == NULL) --nc;
+            ssize += nc * tptr->char_space * tptr->char_height;
+        }
 
 /* Sum up size due only to excess expansion (only if
    a horizontal text path.)
 */
-          if ((tptr->char_exp > 1.0) && (isvertical==FALSE))
-          {   temp=0.0;
-              for(cp = tptr->str; *cp!='\0'; cp++)
-              temp  += tptr->rwd[(int)(*cp)-32];
-              esize += temp * (tptr->char_exp -1.0) * tptr->char_height;
-          }
+        if ((tptr->char_exp > 1.0) && (isvertical == FALSE)) {
+            temp = 0.0;
+            for (cp = tptr->str; *cp != '\0'; cp++)
+                temp += tptr->rwd[(int) (*cp) - 32];
+            esize += temp * (tptr->char_exp - 1.0) * tptr->char_height;
+        }
 
-          tptr = tptr->next;
-   }
+        tptr = tptr->next;
+    }
 
 /* Evaluate scaling to apply.
 */
-  if (isvertical==FALSE) scale=1.0-((tsize-rsize)/(ssize+esize));
-                    else scale=1.0-((tsize-rsize)/ssize);
+    if (isvertical == FALSE) scale = 1.0 - ((tsize - rsize) / (ssize + esize));
+    else scale = 1.0 - ((tsize - rsize) / ssize);
 
 /* If it's less than zero, scale to zero but flag
    restriction not achieved.
 */
-  if (scale<0.0)
-     {   scale=0.0;
-         restricted=FALSE;
-     }
+    if (scale < 0.0) {
+        scale = 0.0;
+        restricted = FALSE;
+    }
 
 /* Now apply the calculated scale factor to each item with
    excess spacing/expansion.
 */
-  tptr = txtlist;
-  while (tptr!=NULL)
-  {
-      if (tptr->char_space > 0.0)
-         tptr->char_space *= scale;
+    tptr = txtlist;
+    while (tptr != NULL) {
+        if (tptr->char_space > 0.0)
+            tptr->char_space *= scale;
 
-      if ((tptr->char_exp > 1.0)&&(isvertical==FALSE))
-         tptr->char_exp = ((tptr->char_exp-1.0)*scale)+1.0;
-      tptr = tptr->next;
-  }
-  return (restricted);
+        if ((tptr->char_exp > 1.0) && (isvertical == FALSE))
+            tptr->char_exp = ((tptr->char_exp - 1.0) * scale) + 1.0;
+        tptr = tptr->next;
+    }
+    return (restricted);
 }
 
 
-     /*-----------------------------------------------------------------*
-      |                                                                 |
-      |      clip_text()                                                |
-      |                                                                 |
-      |      clips text at the character that overflows the size box    |
-      |      given, deallocating the extra text that is clipped.        |
-      |        IN:  Address of first Textitem,                          |
-      |             Width & height of restriction box                   |
-      |             The 'guilty-party' returned from size_check         |
-      |        OUT: None                                                |
-      |        RET: Pointer to first item, or NULL if it's all been     |
-      |             clipped.                                            |
-      |                                                                 |
-      *-----------------------------------------------------------------*/
+/*-----------------------------------------------------------------*
+ |                                                                 |
+ |      clip_text()                                                |
+ |                                                                 |
+ |      clips text at the character that overflows the size box    |
+ |      given, deallocating the extra text that is clipped.        |
+ |        IN:  Address of first Textitem,                          |
+ |             Width & height of restriction box                   |
+ |             The 'guilty-party' returned from size_check         |
+ |        OUT: None                                                |
+ |        RET: Pointer to first item, or NULL if it's all been     |
+ |             clipped.                                            |
+ |                                                                 |
+ *-----------------------------------------------------------------*/
 
-static Textitem *clip_text( Textitem *txtlist, double rwidth, double rheight, int guilty)
+static Textitem *clip_text(Textitem *txtlist, double rwidth, double rheight, int guilty) {
+    Textitem *tptr = txtlist, *prev_tptr = NULL;
+    Logical clip = FALSE;
+    float size, size2;
+    char *cp;
 
+    size = 0.0;
 
-{
-   Textitem *tptr=txtlist, *prev_tptr=NULL;
-   Logical clip=FALSE;
-   float size,size2;
-   char *cp;
-
-   size = 0.0;
-
-   while ((tptr!=NULL)&&(clip==FALSE))
-   {
-      cp= tptr->str;
-      switch (curatt.text_path)
-      {
-        case P_RIGHT :
-        case P_LEFT  :
+    while ((tptr != NULL) && (clip == FALSE)) {
+        cp = tptr->str;
+        switch (curatt.text_path) {
+            case P_RIGHT :
+            case P_LEFT  :
 
 /* If text path horizontal & text is too high, clip EVERYTHING.
 */
-             if (guilty&1)
-             {   clip=TRUE;
-                 break;
-             }
+                if (guilty & 1) {
+                    clip = TRUE;
+                    break;
+                }
 /* Otherise, sum up width until it exceeds the restriction width.
 */
-             for(; *cp!='\0'; cp++)
-             {
-                 if (tptr->next !=NULL)
-                    {   size2 = (((tptr->rwd[(int)(*cp)-32])* tptr->char_exp) +
-                                tptr->char_space);
+                for (; *cp != '\0'; cp++) {
+                    if (tptr->next != NULL) {
+                        size2 = (((tptr->rwd[(int) (*cp) - 32]) * tptr->char_exp) +
+                                 tptr->char_space);
+                    } else {
+                        size2 = (tptr->rwd[(int) (*cp) - 32]) * tptr->char_exp;
+                        if (*(cp + 1) != '\0') size2 += tptr->char_space;
                     }
-                 else
-                    {   size2 = (tptr->rwd[(int)(*cp)-32])* tptr->char_exp;
-                        if (*(cp+1)!='\0') size2+=tptr->char_space;
-                    }
-                 size += size2*tptr->char_height;
-                 if (size>rwidth)
-                    {   clip=TRUE;
+                    size += size2 * tptr->char_height;
+                    if (size > rwidth) {
+                        clip = TRUE;
                         break;
                     }
-             }
-             break;
+                }
+                break;
 
-        case P_UP    :
-        case P_DOWN  :
+            case P_UP    :
+            case P_DOWN  :
 
 /* If text path vertical & text is too wide, clip EVERYTHING.
 */
-            if (guilty&2)
-             {   clip=TRUE;
-                 break;
-             }
+                if (guilty & 2) {
+                    clip = TRUE;
+                    break;
+                }
 
 /* Otherise, sum up height until it exceeds the restriction height.
 */
-             for(; *cp!='\0'; cp++)
-             {
-                 size+=(1 +tptr->rtop + tptr->rbot+ tptr->char_space)
-                        * tptr->char_height;
-                 if (size>rheight)
-                    {   clip=TRUE;
+                for (; *cp != '\0'; cp++) {
+                    size += (1 + tptr->rtop + tptr->rbot + tptr->char_space)
+                            * tptr->char_height;
+                    if (size > rheight) {
+                        clip = TRUE;
                         break;
                     }
-             }
-             break;
-      }
+                }
+                break;
+        }
 
-      if (clip==FALSE)
-      {  prev_tptr=tptr;
-         tptr = tptr->next;
-      }
-   }
+        if (clip == FALSE) {
+            prev_tptr = tptr;
+            tptr = tptr->next;
+        }
+    }
 
-   if (clip==TRUE)
-      {   if (cp==tptr->str)
-             {   if (prev_tptr==NULL)
-                    {   TXTfree(txtlist);  /* All text clip */
-                        return NULL;
-                    }
-                 else
-                    {   prev_tptr->next=NULL;
-                        TXTfree(tptr);
-                        return txtlist;   /* Whole item clip */
-                    }
-             }
-          else                            /* Partial item clip */
-             {   *cp='\0';
-                 if (tptr->next != NULL) TXTfree(tptr->next);
-                 tptr->next=NULL;
-                 return txtlist;
-             }
-      }
-   else return txtlist;
+    if (clip == TRUE) {
+        if (cp == tptr->str) {
+            if (prev_tptr == NULL) {
+                TXTfree(txtlist);  /* All text clip */
+                return NULL;
+            } else {
+                prev_tptr->next = NULL;
+                TXTfree(tptr);
+                return txtlist;   /* Whole item clip */
+            }
+        } else                            /* Partial item clip */
+        {
+            *cp = '\0';
+            if (tptr->next != NULL) TXTfree(tptr->next);
+            tptr->next = NULL;
+            return txtlist;
+        }
+    } else return txtlist;
 }
 
 
-     /*-----------------------------------------------------------------*
-      |                                                                 |
-      |      font_load()                                                |
-      |                                                                 |
-      |      Calls the appropraite function to update the information   |
-      |      held within a Textitem about the font it is using.         |
-      |        IN:  Address of Textitem                                 |
-      |        OUT: None  RETURN: None                                  |
-      |                                                                 |
-      *-----------------------------------------------------------------*/
+/*-----------------------------------------------------------------*
+ |                                                                 |
+ |      font_load()                                                |
+ |                                                                 |
+ |      Calls the appropraite function to update the information   |
+ |      held within a Textitem about the font it is using.         |
+ |        IN:  Address of Textitem                                 |
+ |        OUT: None  RETURN: None                                  |
+ |                                                                 |
+ *-----------------------------------------------------------------*/
 
-static void font_load( Textitem *txtlist)
-
-{
-   switch (txtlist->text_method)
-   {
+static void font_load(Textitem *txtlist) {
+    switch (txtlist->text_method) {
 #ifdef HERSHEY
-      case HER:
-         HERgetfd(txtlist);
-      break;
+        case HER:
+            HERgetfd(txtlist);
+            break;
 #endif
 #ifdef BEZIER
-      case BEZ:
-         BEZgetfd(txtlist);
-      break;
+        case BEZ:
+            BEZgetfd(txtlist);
+            break;
 #endif
 #ifdef POSTSCRIPT
-      case PS:
-         PSgetfd(txtlist);
-      break;
+        case PS:
+            PSgetfd(txtlist);
+            break;
 #endif
 #ifdef TEX
-      case TEX:
-          /* awaiting decision */
-      break;
+        case TEX:
+            /* awaiting decision */
+            break;
 #endif
-      default:
-          /* Should do same thing as for hardware!
-             But for the moment, tell people
-             we didn't find a valid textstyle!!         */
-      (void) CGMerror(func,ERR_TXTSYSNFND,ERROR,NULLSTR);
-      break;
-   }
+        default:
+            /* Should do same thing as for hardware!
+               But for the moment, tell people
+               we didn't find a valid textstyle!!         */
+            (void) CGMerror(func, ERR_TXTSYSNFND, ERROR, NULLSTR);
+            break;
+    }
 }
 
 
+/*-----------------------------------------------------------------*
+ |                                                                 |
+ |      size_check()                                               |
+ |                                                                 |
+ |      Evaluates the current width & height of all text held in   |
+ |      the text structure, compares it against the given width    |
+ |      and height and calculates the scale factor needed to       |
+ |      reduce the current size to the size given.                 |
+ |        IN:  Address of first Textitem                           |
+ |        OUT: Current width & height of the text.                 |
+ |        RET: An integer 'guilty party' - reflects whether it is  |
+ |             width, height or both that are too big              |
+ |                                                                 |
+ *-----------------------------------------------------------------*/
 
-
-     /*-----------------------------------------------------------------*
-      |                                                                 |
-      |      size_check()                                               |
-      |                                                                 |
-      |      Evaluates the current width & height of all text held in   |
-      |      the text structure, compares it against the given width    |
-      |      and height and calculates the scale factor needed to       |
-      |      reduce the current size to the size given.                 |
-      |        IN:  Address of first Textitem                           |
-      |        OUT: Current width & height of the text.                 |
-      |        RET: An integer 'guilty party' - reflects whether it is  |
-      |             width, height or both that are too big              |
-      |                                                                 |
-      *-----------------------------------------------------------------*/
-
-static int size_check( Textitem *txtlist, double *width, double *height, double rwidth, double rheight,
-                       float *scale)
-
-{   double scale1,scale2;
-    *width=TXTgwidth(txtlist);
-    *height=TXTgheight(txtlist);
-    scale1=rwidth/ *width;
-    scale2=rheight/ *height;
-    *scale=(scale1 < scale2)? scale1 : scale2;
-    if (rwidth>=*width)
-       return (rheight>=*height) ?       TEXT_FITS : TEXT_TOO_HIGH ;
-    else return (rheight>=*height) ? TEXT_TOO_WIDE : TEXT_BOTH_TOO_BIG ;
+static int size_check(Textitem *txtlist, double *width, double *height, double rwidth, double rheight,
+                      float *scale) {
+    double scale1, scale2;
+    *width = TXTgwidth(txtlist);
+    *height = TXTgheight(txtlist);
+    scale1 = rwidth / *width;
+    scale2 = rheight / *height;
+    *scale = (scale1 < scale2) ? scale1 : scale2;
+    if (rwidth >= *width)
+        return (rheight >= *height) ? TEXT_FITS : TEXT_TOO_HIGH;
+    else return (rheight >= *height) ? TEXT_TOO_WIDE : TEXT_BOTH_TOO_BIG;
 }
 
 
+/*-----------------------------------------------------------------*
+ |                                                                 |
+ |      calc_scale()                                               |
+ |                                                                 |
+ |      Evaluates the scale factor required to reduce the width    |
+ |      and height of the text list supplied to the restricted     |
+ |      values given, taking into account that some of the Text    |
+ |      items may already be at minimum size.                      |
+ |        IN:  Address of the array holding Textitem information   |
+ |             Number of items in that array.                      |
+ |             Width & height to restrict to.                      |
+ |        OUT: None.                                               |
+ |        RETURN: Scale factor to apply to character height        |
+ |                                                                 |
+ *-----------------------------------------------------------------*/
 
+static double calc_scale(Restxt_item *item, int items, double rwidth, double rheight) {
+    double scale1, scale2;
+    Textitem *txtlist;
+    float size, cwid, cheight;
+    char *cp;
+    int i;
 
-
-     /*-----------------------------------------------------------------*
-      |                                                                 |
-      |      calc_scale()                                               |
-      |                                                                 |
-      |      Evaluates the scale factor required to reduce the width    |
-      |      and height of the text list supplied to the restricted     |
-      |      values given, taking into account that some of the Text    |
-      |      items may already be at minimum size.                      |
-      |        IN:  Address of the array holding Textitem information   |
-      |             Number of items in that array.                      |
-      |             Width & height to restrict to.                      |
-      |        OUT: None.                                               |
-      |        RETURN: Scale factor to apply to character height        |
-      |                                                                 |
-      *-----------------------------------------------------------------*/
-
-static double calc_scale( Restxt_item *item, int items, double rwidth, double rheight)
-
-{  double scale1,scale2;
-   Textitem *txtlist;
-   float size, cwid, cheight;
-   char *cp;
-   int i;
-
-   size = 0.0;
+    size = 0.0;
 
 /* Evaluate the scale factor needed to reduce width.
 */
 
-   for ( i=0 ; (i<items) ; i++)
-   {
-      txtlist=(item+i)->ptr;
-      switch (curatt.text_path)
-      {
-        case P_RIGHT :
-        case P_LEFT  :
+    for (i = 0; (i < items); i++) {
+        txtlist = (item + i)->ptr;
+        switch (curatt.text_path) {
+            case P_RIGHT :
+            case P_LEFT  :
 
-             cwid = 0.0 ;
+                cwid = 0.0;
 
 /* Evaluate the width of this item */
 
-             for(cp = txtlist->str; *cp!='\0'; cp++)
-                cwid += txtlist->rwd[(int)(*cp)-32];
-             cwid = (cwid * txtlist->char_exp +
-                    strlen(txtlist->str) * txtlist->char_space)
-                    * txtlist->char_height;
+                for (cp = txtlist->str; *cp != '\0'; cp++)
+                    cwid += txtlist->rwd[(int) (*cp) - 32];
+                cwid = (cwid * txtlist->char_exp +
+                        strlen(txtlist->str) * txtlist->char_space)
+                       * txtlist->char_height;
 
 /* Ignore spacing on the end of the last string.
 */
-             if (txtlist->next == NULL)
-                cwid -= txtlist->char_space * txtlist->char_height;
+                if (txtlist->next == NULL)
+                    cwid -= txtlist->char_space * txtlist->char_height;
 
 /* If this item is minimum size, subtract it from the restriction
    width, otherise add it to the current width.
 */
-             if ( (item+i)->minimum==TRUE) rwidth -= cwid;
-             else                     size += cwid;
+                if ((item + i)->minimum == TRUE) rwidth -= cwid;
+                else size += cwid;
 
-             break;
+                break;
 
-        case P_UP    :
-        case P_DOWN  :
+            case P_UP    :
+            case P_DOWN  :
 
 
 /* Take the width to be the largest width of any single item.
 */
-             cwid = txtlist->rmaxwd*txtlist->char_exp * txtlist->char_height ;
-             if (cwid>size)
-                size = cwid;
-             break;
-      }
-   }
+                cwid = txtlist->rmaxwd * txtlist->char_exp * txtlist->char_height;
+                if (cwid > size)
+                    size = cwid;
+                break;
+        }
+    }
 
 /* The scale factor for width =
      (Restricted width required - Width of all minimum sized items) /
                     (Width of all non-minimum sized items.)
 */
 
-   scale1= (rwidth/size);
+    scale1 = (rwidth / size);
 
 
 /* Now evaluate scale factor for height.
 */
 
-   size = 0.0;
-   for ( i=0 ; (i<items) ; i++)
-   {
-      txtlist=(item+i)->ptr;
-      switch (curatt.text_path)
-      {
-        case P_RIGHT :
-        case P_LEFT  :
+    size = 0.0;
+    for (i = 0; (i < items); i++) {
+        txtlist = (item + i)->ptr;
+        switch (curatt.text_path) {
+            case P_RIGHT :
+            case P_LEFT  :
 
 /* For horizontal paths, take largest height.
 */
-             cheight = (1 + txtlist->rtop + txtlist->rbot) *
-                       txtlist->char_height;
-             if (cheight>size)
-                size = cheight;
-             break;
+                cheight = (1 + txtlist->rtop + txtlist->rbot) *
+                          txtlist->char_height;
+                if (cheight > size)
+                    size = cheight;
+                break;
 
-        case P_UP    :
-        case P_DOWN  :
+            case P_UP    :
+            case P_DOWN  :
 
 /* Vertical paths sum up height of each character.
 */
-             cheight = (1 +txtlist->rtop + txtlist->rbot+ txtlist->char_space)
-                       * strlen(txtlist->str);
-             cheight *=  txtlist->char_height;
+                cheight = (1 + txtlist->rtop + txtlist->rbot + txtlist->char_space)
+                          * strlen(txtlist->str);
+                cheight *= txtlist->char_height;
 
 /* Ignore spacing on the end of the last string.
 */
-             if (txtlist->next==NULL)
-                cheight -= txtlist->char_space * txtlist->char_height;
+                if (txtlist->next == NULL)
+                    cheight -= txtlist->char_space * txtlist->char_height;
 
 /* If this item is minimum size, subtract it from the restriction
    height, otherise add it to the current height.
 */
-             if ( (item+i)->minimum==TRUE) rheight -=cheight;
-             else                     size += cheight;
+                if ((item + i)->minimum == TRUE) rheight -= cheight;
+                else size += cheight;
 
-             break;
-      }
-   }
+                break;
+        }
+    }
 
 /* The scale factor for height  =
       (Restricted height required - Height of all minimum sized items) /
                      (Height of all non-minimum sized items.)
 */
-   scale2= (rheight/size) ;
+    scale2 = (rheight / size);
 
 /* Choose the minimum of the two scale factors and return it.
 */
-   return (scale1 < scale2) ? scale1 : scale2;
+    return (scale1 < scale2) ? scale1 : scale2;
 }

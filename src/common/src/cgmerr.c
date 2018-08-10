@@ -41,63 +41,56 @@
 extern Int cgmerrcount;
 extern Logical cgmquiet;
 
-static int errcount=ZERO;
+static int errcount = ZERO;
 
 /********************************************************* CGMerror ****/
 
-int CGMerror ( char *func, int errnr, Enum errtype, char *mess )
-{
-   register struct errmessage *emess=cgmerrs;
+int CGMerror(char *func, int errnr, Enum errtype, char *mess) {
+    register struct errmessage *emess = cgmerrs;
 
-   do
-   {
-      if ( errnr == emess->number )
-      {
-         break;
-      }
-      emess++;
-   } while ( emess->number != ERR_NOTFOUND );
-
-   if(cgmquiet)
-   {   /* Just count error */
-      if(errtype != WARNING) errcount++;
-   }
-   else
-   {  /* Report error and count it */
-
-      switch ( errtype )
-      {
-         case WARNING:
-            ERRMESS "\n***WARNING:");
+    do {
+        if (errnr == emess->number) {
             break;
+        }
+        emess++;
+    } while (emess->number != ERR_NOTFOUND);
 
-         case FATAL:
-            ERRMESS "\n***FATAL ERROR:");
-            errcount++;
-            break;
+    if (cgmquiet) {   /* Just count error */
+        if (errtype != WARNING) errcount++;
+    } else {  /* Report error and count it */
 
-         case ERROR:
-         default:
-            ERRMESS "\n***ERROR:");
-            errcount++;
-            break;
-      }
-      ERRMESS " %s [%d] %s", func, emess->number, emess->mess );
-      if ( mess != NULL ) ERRMESS " %s", mess );
-      ERRMESS "\n");
+        switch (errtype) {
+            case WARNING:
+                ERRMESS "\n***WARNING:");
+                break;
 
-      if ( cgmerrcount && errcount > cgmerrcount )
-      {
-         ERRMESS "\n*** Maximum Error count exceeded ***\n");
-         exit (0);
-      }
-   } /* Endif/else cgmquiet */
+            case FATAL:
+                ERRMESS "\n***FATAL ERROR:");
+                errcount++;
+                break;
 
-   return ( emess->rc );
+            case ERROR:
+            default:
+                ERRMESS "\n***ERROR:");
+                errcount++;
+                break;
+        }
+        ERRMESS " %s [%d] %s", func, emess->number, emess->mess);
+        if (mess != NULL) ERRMESS " %s", mess);
+        ERRMESS "\n");
+
+        if (cgmerrcount && errcount > cgmerrcount) {
+            ERRMESS "\n*** Maximum Error count exceeded ***\n");
+            exit(0);
+        }
+    } /* Endif/else cgmquiet */
+
+    return (emess->rc);
 }
+
 /********************************************************* CGMcounterr ****/
 
-int CGMcounterr ( void )
+int CGMcounterr(void)
 /* Return Error Count */
 {
     return errcount;

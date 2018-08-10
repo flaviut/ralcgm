@@ -26,62 +26,57 @@
 
 /*  CGM Utilities in File  */
 
-   void CGMprofile( Code );
-   static void PROindcol( Code );
+void CGMprofile(Code);
+
+static void PROindcol(Code);
 
 /* External functions */
 
-   void CGMocode ( Code );
+void CGMocode(Code);
 
 /**************************************************** CGMprofile *******/
 
-void CGMprofile( Code c )
-{
-   switch (cgmprof)
-   {
-      case PROF_CALS:     /* CALS profiling */
-      case PROF_GKS:      /* GKS profile */
-      case PROF_INDEXCOL: /* Indexed colour only */
-            PROindcol( c );
+void CGMprofile(Code c) {
+    switch (cgmprof) {
+        case PROF_CALS:     /* CALS profiling */
+        case PROF_GKS:      /* GKS profile */
+        case PROF_INDEXCOL: /* Indexed colour only */
+            PROindcol(c);
             break;
-      case PROF_INTVDC:   /* Integer VDC only */
+        case PROF_INTVDC:   /* Integer VDC only */
             break;
 
-      default:
+        default:
             break;
-   }
+    }
 
-   return;
+    return;
 
 }
 
 /**************************************************** PROindcol ********/
 
-static void PROindcol ( Code c )
-{
-   static Logical dircol = FALSE;
+static void PROindcol(Code c) {
+    static Logical dircol = FALSE;
 
-   if ( c == COLRMODE )
-   {
-      dircol = ( cur.color_mode == DIRECT );
-      if ( dircol )  cur.color_mode = INDEXED;
-   }
-   else if ( dircol && cur.color_mode == DIRECT )
-      switch ( c )
-      {
-         case LINECOLR:
-         case MARKERCOLR:
-         case FILLCOLR:
-         case TEXTCOLR:
-         case EDGECOLR:
-         case CELLARRAY:
-           break;
-         case COLRTABLE:
-           break;
-         default:
-           break;
-      }
+    if (c == COLRMODE) {
+        dircol = (cur.color_mode == DIRECT);
+        if (dircol) cur.color_mode = INDEXED;
+    } else if (dircol && cur.color_mode == DIRECT)
+        switch (c) {
+            case LINECOLR:
+            case MARKERCOLR:
+            case FILLCOLR:
+            case TEXTCOLR:
+            case EDGECOLR:
+            case CELLARRAY:
+                break;
+            case COLRTABLE:
+                break;
+            default:
+                break;
+        }
 
-   CGMocode( c );
-   return;
+    CGMocode(c);
+    return;
 }

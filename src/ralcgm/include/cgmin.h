@@ -37,84 +37,90 @@
 
 /*  external variables needed by reader   */
 
-  extern const struct char_defaults chardef;
-  extern struct char_defaults mfichar, curichar;
-  extern const struct text_defaults textdef;
-  extern struct text_defaults mfitext, curitext;
-  extern const struct bin_defaults bindef;
-  extern struct bin_defaults  mfibin, curibin;
-  extern const struct defaults commondef;
-  extern struct defaults mf, cur;
-  extern const struct attributes defatt;
-  extern struct attributes mfatt, curatt;
+extern const struct char_defaults chardef;
+extern struct char_defaults mfichar, curichar;
+extern const struct text_defaults textdef;
+extern struct text_defaults mfitext, curitext;
+extern const struct bin_defaults bindef;
+extern struct bin_defaults mfibin, curibin;
+extern const struct defaults commondef;
+extern struct defaults mf, cur;
+extern const struct attributes defatt;
+extern struct attributes mfatt, curatt;
 
-  extern char *cgmversion;
-  extern Enum cgmverno;
-  extern Enum cgmstate, cgmprof;
-  extern Logical cgmcharsub, cgmterm, cgmlist, cgmEOF, cgmfinished,
-                 cgmverbose, cgmquiet;
-  extern Logical cgmralgks, cgmralbin;
+extern char *cgmversion;
+extern Enum cgmverno;
+extern Enum cgmstate, cgmprof;
+extern Logical cgmcharsub, cgmterm, cgmlist, cgmEOF, cgmfinished,
+        cgmverbose, cgmquiet;
+extern Logical cgmralgks, cgmralbin;
 
 #ifdef EBCDIC
-  extern Logical cgminnative;
-  extern char cgmascii[], cgmebcdic[];
+extern Logical cgminnative;
+extern char cgmascii[], cgmebcdic[];
 #endif
 
 #ifdef FIXED_BUFFER
-  extern long pint[], *pimax;
-  extern float preal[], *prmax;
-  extern char str[], *strmax;
+extern long pint[], *pimax;
+extern float preal[], *prmax;
+extern char str[], *strmax;
 #else
-  extern long *pint, *pimax;
-  extern float *preal, *prmax;
-  extern char *str, *strmax;
+extern long *pint, *pimax;
+extern float *preal, *prmax;
+extern char *str, *strmax;
 #endif
 
 /*  Reallocation of Variable buffer space */
 
-  long  *CGMialloc( long*, long );
-  float *CGMralloc( float*, long );
-  char  *CGMsalloc( char*, long );
+long *CGMialloc(long *, long);
+
+float *CGMralloc(float *, long);
+
+char *CGMsalloc(char *, long);
 
 /*  Random Access Function  */
 
 #ifndef CGMLIB
-  extern Code CGMframe( Code );
+
+extern Code CGMframe(Code);
+
 #ifdef VMS
-  extern void CGMvaxst();
+extern void CGMvaxst();
 #endif
 #endif /* Not for CGMLIB */
 
 /*  Function to set Current ASF values for all encodings */
 
-  void CGMsetasf( long * );
+void CGMsetasf(long *);
 
 /*  Set structure values to defaults */
 
-  void CGMdefaults( Code, Enum );
+void CGMdefaults(Code, Enum);
 
-  extern FILE *CGMfopen( char*, char, Enum);
+extern FILE *CGMfopen(char *, char, Enum);
 
 
-  extern long *null;
+extern long *null;
 
-  extern Code st_start, st_term;
+extern Code st_start, st_term;
 
 /*  Variables for random frame access    */
 
-  extern Logical cgmrandom;
-  extern long cgmnext, cgmpresent, cgmabort, cgmoverrun;
+extern Logical cgmrandom;
+extern long cgmnext, cgmpresent, cgmabort, cgmoverrun;
 
 #ifdef FONTSYSTEM
 /*  Structures for Font list and character set list */
 
-  extern struct cgmfont cgmfonts;
-  extern struct cgmcset cgmcsets;
+extern struct cgmfont cgmfonts;
+extern struct cgmcset cgmcsets;
 
 /*  Font storing routine */
 
-  extern void FNTflist ( long *, long *, char *, struct cgmfont *);
-  extern void FNTclist ( long *, long *, char *, struct cgmcset *);
+extern void FNTflist(long *, long *, char *, struct cgmfont *);
+
+extern void FNTclist(long *, long *, char *, struct cgmcset *);
+
 #endif
 
 #endif  /*  end of cgmin.h */

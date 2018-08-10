@@ -27,11 +27,15 @@
 #ifndef CGMFONT_H
 #define CGMFONT_H
 
-void FNTinit    ( void );
-void FNTmatch   ( struct textatt *, Enum *, Enum *, Index * );
-void FNTdebug   ( int );
-void FNTdisplay ( void );
-Logical FNTscale ( Enum*, int*, float*, float, float );
+void FNTinit(void);
+
+void FNTmatch(struct textatt *, Enum *, Enum *, Index *);
+
+void FNTdebug(int);
+
+void FNTdisplay(void);
+
+Logical FNTscale(Enum *, int *, float *, float, float);
 
 
 #endif /* End of CGMFONT_H */
