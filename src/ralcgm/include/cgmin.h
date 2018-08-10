@@ -84,9 +84,6 @@ char *CGMsalloc(char *, long);
 
 extern Code CGMframe(Code);
 
-#ifdef VMS
-extern void CGMvaxst();
-#endif
 #endif /* Not for CGMLIB */
 
 /*  Function to set Current ASF values for all encodings */

@@ -143,50 +143,12 @@ FILE *CGMfopen(char *filename, char mode, Enum type)
 #endif
     sprintf(fmode, "%c", mode);
 
-#ifdef CMS
-    if ( type == BINARY || type == CHARACTER )
-#ifdef IBMC
-       strcat(fmode, "b");
-#endif
-#ifdef WATC
-    {
-       if ( mode == F_READ )
-          strcat( fname, " (bin" );
-       else
-          strcat( fname, " (bin recfm f lrecl 80" );
-    }
-    else
-       if ( mode == F_WRITE )
-          strcat( fname, " (recfm v lrecl 132" );
-#endif
-#endif
-
-#ifdef MSOFTC
-    if ( type == BINARY )
-       strcat(fmode, "b");
-#endif
-
-#ifdef BORLANDC
-    if ( type == BINARY )
-       strcat(fmode, "b");
-#endif
 
 
-#ifdef RS6000
-    if ( type == BINARY )
-       strcat(fmode, "b");
-#endif
 
-#ifdef VMS
-    if ( (type == CLEAR_TEXT || type == CHARACTER) && mode == F_WRITE )
-       file = fopen(fname, fmode, "rfm=var", "rat=cr");
-    else if ( (type == BINARY) && mode == F_WRITE )
-       file = fopen(fname, fmode, "rfm=fix", "mrs=512", "bls=512", "ctx=stm");
-    else
-       file = fopen(fname, fmode );
-#else
+
+
     file = fopen(fname, fmode);
-#endif
 
 #ifdef DEBUG
     (void) fprintf(stderr, "Open file: '%s' '%s' %x\n",
@@ -231,61 +193,6 @@ FILE *CGMfopen(char *filename, char mode, Enum type)
 void CGMmodfextn(char *fn, char *extn) {
     char *cp1, *filesep = FILESEP;
 
-#ifdef CMS
-    char *fn2, *func = "CGMmodfextn";
-
-    /*
-      Create a copy of the string, and set original to NULL ready to start
-      reconstruction.
-    */
-
-    fn2 = (char *)malloc( (size_t) (sizeof(char) * (strlen(fn) + 1)) );
-    if ( fn2 == NULL )
-      exit((int)CGMerror(func, ERR_NOMEMORY, FATAL, NULLSTR));
-    strcpy( fn2, fn);
-    cp1 = fn2;
-    *fn = '\0';
-
-    /*
-     Search for space between filename and extension
-    */
-    while ( *cp1 != '\0' )
-    {
-      if ( *cp1 == *filesep )
-        break;
-      cp1++;
-    }
-
-    /*
-     Copy up to the space into fn, then add the default separator and new extn.
-    */
-    (void)strncat(fn, fn2, cp1 - fn2 );
-    (void)strcat(fn, FILESEP);
-    (void)strcat(fn, extn);
-
-    /*
-     Carry on searching in case there's a filemode
-    */
-    if ( *cp1 != '\0' )
-    {
-      cp1++;
-      while ( *cp1 != '\0' )
-      {
-        /*
-         Another separator found, so there must be and extension,
-         add the rest of the string to fn.
-        */
-        if ( *cp1 == *filesep )
-        {
-          (void)strcat(fn, cp1);
-          break;
-        }
-        cp1++;
-      }
-    }
-    FREE(fn2);
-
-#else /* CMS */
     /*
      Look through the filename backwards until either ...
        the beginning of the extension is found, or
@@ -293,10 +200,6 @@ void CGMmodfextn(char *fn, char *extn) {
          looking for the pathname delimter or the beginning of the string.
     */
 
-#ifdef VMS
-    if ((cp1 = (char *)getenv(fn)) != NULL)
-      fn = cp1;
-#endif
 
     for (cp1 = fn + strlen(fn); cp1 > fn; cp1--)
         if (*cp1 == PATHDELIM) {
@@ -316,7 +219,6 @@ void CGMmodfextn(char *fn, char *extn) {
     /* Add the new extension to the filename */
     (void) strcat(fn, extn);
 
-#endif /* CMS */
 
     return;
 
@@ -361,30 +263,7 @@ void CGMmodfname(char *fn, char *newname) {
 
     (void) strcpy(fn2, fn);
 
-#ifdef CMS
-    *fn = '\0';
-    cp1 = fn2;
-    (void)strcat(fn,newname);
 
-    /*
-     Skip over filename by searching for filename/extension separator.
-    */
-    while ( *cp1 != '\0' )
-    {
-      if ( *cp1 == *filesep ) break;
-      cp1++;
-    }
-    /*
-     Then append the rest of the filename after the new part.
-    */
-    (void)strcat(fn,cp1);
-
-#else /* Not CMS */
-
-#ifdef VMS
-    if ((cp1 = (char *)getenv(fn)) != NULL)
-      (void)strcpy(fn2,(fn = cp1));
-#endif
 
     for (cp1 = fn2 + strlen(fn2); cp1 >= fn2; cp1--)
 
@@ -406,7 +285,6 @@ void CGMmodfname(char *fn, char *newname) {
     (void) strcat(fn, newname);
     (void) strcat(fn, extnptr);
 
-#endif
 
     FREE(fn2);
 
@@ -439,27 +317,7 @@ unsigned short CGMgetfname(char *fname, char **fnptr) {
     char *fsptr, *cptr;
     unsigned short fnlen, extnflag = 0;
 
-#ifdef CMS
-    char *fnend, *func = "CGMgetfname";
 
-    *fnptr = fname;
-    fnend = fname + strlen(fname);
-
-    /*
-     Search for the filename/filetype separator.
-    */
-    for ( cptr = fname; cptr < fnend; cptr++)
-      if (*cptr == *filesep)
-        break;
-
-    fnlen = cptr - fname;
-
-#else /* Not CMS */
-
-#ifdef VMS
-    if ((cptr = (char *)getenv(fname)) != NULL)
-      fname = cptr;
-#endif
 
     /*
      Search for the LAST separator in the filename, and the pathname/filename
@@ -477,7 +335,6 @@ unsigned short CGMgetfname(char *fname, char **fnptr) {
     fnlen = (extnflag == 1 ? (fsptr - *fnptr)
                            : fname + strlen(fname) - *fnptr);
 
-#endif
 
     return (fnlen);
 }

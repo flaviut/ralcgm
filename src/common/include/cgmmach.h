@@ -332,8 +332,6 @@ extern void free(void *);
 #define DFLUSH    (void) fprintf(stderr,"/n");
 #endif
 
-#ifndef BORLANDC          /*  Define 'huge' for BORLANDC */
 #define huge
-#endif
 
 #endif /* end of cgmmach.h */

@@ -404,29 +404,8 @@ main(int argc, char **argv) {
                 if (!infilename) {
 
 /*  work out Input file name if present  */
-#ifdef VMS
-                    int j;
-
-                    for ( j = strlen(arg)-1 ; (j > -1 ); j--)
-                      if(arg[j]!=']')
-                      {
-                        if (arg[j]=='.')
-                        {
-                           i=j;
-                           break;
-                        }
-                      }
-                      else
-                      {
-                         i=strlen(arg);
-                         break;
-                      }
-
-                    if (j== -1) i = strlen(arg);
-#else
                     for (i = 0; (arg[i] != '.') &&
                                 (i < strlen(arg)); i++);
-#endif
                     infilename = TRUE;
 
                     strcpy(cgmin, arg);
@@ -454,10 +433,6 @@ main(int argc, char **argv) {
                     for (i = 0; arg[i] != '\0'; i++)
                         if (arg[i] == '.') {
                             outsuffix = TRUE;
-#ifdef CMS
-                            /*  Convert to CMS format ie blank separators */
-                                                 arg[i] = ' ';
-#endif
                         }
                     if (arg[0] == '-') outsuffix = TRUE;
                     strcpy(cgmofile, arg);
@@ -468,13 +443,6 @@ main(int argc, char **argv) {
 
                     if (arg[0] != '-') errfilename = TRUE;
 
-#ifdef CMS     /*  Convert to CMS format ie blank separators */
-                    for (i=0; arg[i] != '\0'; i++)
-                       if ( arg[i] == '.' )
-                       {
-                          arg[i] = ' ';
-                       }
-#endif
                     strcpy(cgmefile, arg);
                 }
             }
@@ -593,14 +561,9 @@ main(int argc, char **argv) {
     }
 
     if (cgmterm) {
-#ifdef CMS
-        if ( cgminput == CHARACTER || cgminput == BINARY )
-           exit ( CGMerror(func, ERR_REDIRECT, FATAL, NULLSTR) );
-#else
 /*  unget 2 characters if reading from stdin. MAY NOT ALWAYS WORK */
         ungetc(chr2, cgmi);
         ungetc(chr1, cgmi);
-#endif
     } else {
         rewind(cgmi);
     }
@@ -747,11 +710,6 @@ main(int argc, char **argv) {
             case CHARACTER:
                 OUTMESS "Character Encoding");
                 break;
-#ifdef CMS
-            case NATIVE:
-               OUTMESS "Character Encoding - EBCDIC" );
-               break;
-#endif
 #ifdef POSTSCRIPT
             case POSTSCRIPT:
                 OUTMESS "Postscript file");
