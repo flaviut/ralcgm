@@ -23,16 +23,9 @@
 #ifndef CGMGDP_H
 #define CGMGDP_H
 
-#ifdef CGMGDP_C
-#define Extern
-#else
-#define Extern extern
-#endif
+/*  GDP Utilities    */
 
-
-                               /*  GDP Utilities    */
-
-   Extern void
+   void
    /* Find centre given three points  */
         GDPcentre( Point *cen, Double *rad, Double *ang,
                    Point *a, Point *b, Point *c ),
@@ -53,5 +46,4 @@
                     Point *a, Point *b,
                     Double rat, long *np, LPOINT(pt), Enum close );
 
-#undef Extern
 #endif /* CGMGDP_H */

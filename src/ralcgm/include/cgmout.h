@@ -84,6 +84,5 @@
 #define XPROD(a,b,c,d) ( (b->x - a->x)*(d->y - c->y)\
                        - (d->x - c->x)*(b->y - a->y) )
 
-#undef Extern
 
 #endif   /*  end of cgmout.h */

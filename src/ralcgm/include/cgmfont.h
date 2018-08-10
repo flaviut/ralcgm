@@ -27,18 +27,11 @@
 #ifndef CGMFONT_H
 #define CGMFONT_H
 
-#ifdef CGMFONT_C
-#define Extern
-#else
-#define Extern extern
-#endif
+void FNTinit    ( void );
+void FNTmatch   ( struct textatt *, Enum *, Enum *, Index * );
+void FNTdebug   ( int );
+void FNTdisplay ( void );
+Logical FNTscale ( Enum*, int*, float*, float, float );
 
-Extern void FNTinit    ( void );
-Extern void FNTmatch   ( struct textatt *, Enum *, Enum *, Index * );
-Extern void FNTdebug   ( int );
-Extern void FNTdisplay ( void );
-Extern Logical FNTscale ( Enum*, int*, float*, float, float );
-
-#undef Extern
 
 #endif /* End of CGMFONT_H */

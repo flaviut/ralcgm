@@ -24,13 +24,7 @@
 #ifndef CGMCELL_H
 #define CGMCELL_H
 
-#ifdef CGMCELL_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-Extern void
+void
 /* Get cell array parameters from driver argument list */
       CELLparget( Long *, Float *, Point *, Point *, Point *,
                   Int *, Int *, Int * ),
@@ -44,5 +38,4 @@ Extern void
                  void (*)(Int, Point*, Tmatrix, Int) ); /* linedraw */
 
 
-#undef Extern
 #endif /* CGMCELL_H */

@@ -22,18 +22,10 @@
 #ifndef CGMRAND_H
 #define CGMRAND_H
 
-#ifdef CGMRAND_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-
 /*  CGM Utilities in File  */
 
-   Extern Code CGMframe( Code );
-   Extern void CGMstframe( void );
+   Code CGMframe( Code );
+   void CGMstframe( void );
 
 
-#undef Extern
 #endif /* CGMRAND_H */

@@ -23,23 +23,16 @@
 #ifndef CGMCOLR_H
 #define CGMCOLR_H
 
-#ifdef CGMCOLR_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-Extern void
+void
       /* Put colours into CGM colour table */
       COLRput (Long , Long *),
 
       /* Free space allocated to CGM colour table */
       COLRfree ( void );
 
-Extern RGBcolour *
+RGBcolour *
       /* Get entry of CGM colour table */
       COLRtab (Index);
 
 
-#undef Extern
 #endif /* CGMCOLR_H */

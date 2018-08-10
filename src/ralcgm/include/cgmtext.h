@@ -88,31 +88,28 @@ extern struct attributes curatt;
 /* Declare functions accessible outside cgmtext.c */
 
 #ifdef CGMTEXT_C /* Declare without extern if included from cgmtext.c*/
-#define Extern
 #else
-#define Extern extern
 #endif
 
 
-Extern Textitem *TXTaccinf(long, char *, struct textatt *, Enum *);
-Extern Textitem *TXTrestrict(Textitem*, double, double, struct textatt*);
-Extern void TXTalign(Textitem *, Point, double, double);
-Extern void TXTfree(Textitem *);
-Extern double TXTgwidth(Textitem *);
-Extern double TXTgheight(Textitem *);
-Extern void TXTxform(Point, Tmatrix);
+Textitem *TXTaccinf(long, char *, struct textatt *, Enum *);
+Textitem *TXTrestrict(Textitem*, double, double, struct textatt*);
+void TXTalign(Textitem *, Point, double, double);
+void TXTfree(Textitem *);
+double TXTgwidth(Textitem *);
+double TXTgheight(Textitem *);
+void TXTxform(Point, Tmatrix);
 
 #ifdef POSTSCRIPT   /* Conditionally declare font details functions */
-Extern void PSgetfd(Textitem *);
+void PSgetfd(Textitem *);
 #endif
 #ifdef BEZIER
-Extern void BEZgetfd(Textitem *);
+void BEZgetfd(Textitem *);
 #endif
 #ifdef HERSHEY
-Extern void HERgetfd(Textitem *);
+void HERgetfd(Textitem *);
 #endif
 
 
-#undef Extern
 
 #endif   /* end of cgmtext.h */

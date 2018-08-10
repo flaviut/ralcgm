@@ -23,12 +23,6 @@
 #ifndef CGMTRAP_H
 #define CGMTRAP_H
 
-#ifdef CGMTRAP_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
 /* Trapezoid (Horizontal Trapezium) */
 typedef struct {
    float top_left, top_right, top, base_left, base_right, base;
@@ -36,12 +30,11 @@ typedef struct {
 
                           /* Trapezoid Decomposition utilities */
 
-   Extern void
+   void
       /* Fill Polygon(set) by trapezoid decomposition */
       TRPfill(Polygonset *, Int ,Float, void (*) ( Int, Trapezoid *) );
 
 
 
 
-#undef Extern
 #endif /* CGMTRAP_H */

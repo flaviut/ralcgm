@@ -34,7 +34,6 @@
    extern Enum cgmdriver;
    extern Logical cgmerrcount;
 
-#define Extern    /*  routines are in this module */
 
 #else             /*  User entry point */
 
@@ -42,14 +41,13 @@
 
    FILE *cgmo, *cgmi = NULL;
 
-#define Extern extern     /*  routines are extern to user program */
 
 #endif
 
 
-   Extern void cgminit ( Enum, char* );  /*  Initialise CGM output */
-   Extern void CGMout  ( Code, long*, float*, char* );
-   Extern int CGMerror ( char *, int, Enum, char * );
+   void cgminit ( Enum, char* );  /*  Initialise CGM output */
+   void CGMout  ( Code, long*, float*, char* );
+   int CGMerror ( char *, int, Enum, char * );
 
 /*  Define functions as 6 character names for portability */
 
@@ -150,119 +148,118 @@
 
 /*  Metafile Delimiter elements */
 
-Extern void  m_begmf ( char* );
-Extern void  m_endmf ( void );
-Extern void  m_begpic ( char* );
-Extern void  m_begpicbody ( void );
-Extern void  m_endpic ( void );
+void  m_begmf ( char* );
+void  m_endmf ( void );
+void  m_begpic ( char* );
+void  m_begpicbody ( void );
+void  m_endpic ( void );
 
 /*  Metafile Descriptor Elements */
 
-Extern void  m_mfversion ( int );
-Extern void  m_mfdesc ( char* );
-Extern void  m_vdctype ( Enum );
-Extern void  m_integerprec ( int );
-Extern void  m_realprec ( int, int, int, Enum );
-Extern void  m_indexprec ( int );
-Extern void  m_colrprec ( int );
-Extern void  m_colrindexprec ( int );
-Extern void  m_maxcolrindex ( int );
-Extern void  m_colrvalueext ( RGBcolour, RGBcolour );
-Extern void  m_mfelemlist ( int, Code* );
-Extern void  m_begmfdefaults ( void );
-Extern void  m_endmfdefaults ( void );
-Extern void  m_fontlist ( int, char** );
-Extern void  m_charsetlist ( int, int*, char** );
-Extern void  m_charcoding ( Enum );
+void  m_mfversion ( int );
+void  m_mfdesc ( char* );
+void  m_vdctype ( Enum );
+void  m_integerprec ( int );
+void  m_realprec ( int, int, int, Enum );
+void  m_indexprec ( int );
+void  m_colrprec ( int );
+void  m_colrindexprec ( int );
+void  m_maxcolrindex ( int );
+void  m_colrvalueext ( RGBcolour, RGBcolour );
+void  m_mfelemlist ( int, Code* );
+void  m_begmfdefaults ( void );
+void  m_endmfdefaults ( void );
+void  m_fontlist ( int, char** );
+void  m_charsetlist ( int, int*, char** );
+void  m_charcoding ( Enum );
 
 /*  Picture Descriptor elements */
 
-Extern void  m_scalemode ( Enum, float );
-Extern void  m_colrmode ( Enum );
-Extern void  m_linewidthmode ( Enum );
-Extern void  m_markersizemode ( Enum );
-Extern void  m_edgewidthmode ( Enum );
-Extern void  m_vdcext ( Point, Point );
-Extern void  m_backcolr ( RGBcolour );
+void  m_scalemode ( Enum, float );
+void  m_colrmode ( Enum );
+void  m_linewidthmode ( Enum );
+void  m_markersizemode ( Enum );
+void  m_edgewidthmode ( Enum );
+void  m_vdcext ( Point, Point );
+void  m_backcolr ( RGBcolour );
 
 /*  Control elements  */
 
-Extern void  m_vdcintegerprec ( int );
-Extern void  m_vdcrealprec ( int, int, int, Enum );
-Extern void  m_auxcolr ( Colour );
-Extern void  m_transparency ( Enum );
-Extern void  m_cliprect ( Point, Point );
-Extern void  m_clip ( Enum );
+void  m_vdcintegerprec ( int );
+void  m_vdcrealprec ( int, int, int, Enum );
+void  m_auxcolr ( Colour );
+void  m_transparency ( Enum );
+void  m_cliprect ( Point, Point );
+void  m_clip ( Enum );
 
 /*  Graphical Primitives */
 
-Extern void  m_line ( int, Point* );
-Extern void  m_disjtline ( int, Point* );
-Extern void  m_marker ( int, Point* );
-Extern void  m_text ( Point, Enum, char* );
-Extern void  m_restrtext ( Point, Point, Enum, char* );
-Extern void  m_apndtext ( Enum, char* );
-Extern void  m_polygon ( int, Point* );
-Extern void  m_polygonset ( int, Point*, Enum* );
-Extern void  m_cellarray ( Point, Point, Point, int, int,
+void  m_line ( int, Point* );
+void  m_disjtline ( int, Point* );
+void  m_marker ( int, Point* );
+void  m_text ( Point, Enum, char* );
+void  m_restrtext ( Point, Point, Enum, char* );
+void  m_apndtext ( Enum, char* );
+void  m_polygon ( int, Point* );
+void  m_polygonset ( int, Point*, Enum* );
+void  m_cellarray ( Point, Point, Point, int, int,
                            Indexcolour*, RGBcolour* );
-Extern void  m_gdp ( int, int, Point*, char* );
-Extern void  m_rect ( Point, Point );
+void  m_gdp ( int, int, Point*, char* );
+void  m_rect ( Point, Point );
 
-Extern void  m_circle ( Point, Point, float );
-Extern void  m_arc3pt ( Point, Point, Point );
-Extern void  m_arc3ptclose ( Point, Point, Point, Enum );
-Extern void  m_arcctr ( Point, Point, Point, float );
-Extern void  m_arcctrclose ( Point, Point, Point, float, Enum );
-Extern void  m_ellipse ( Point, Point, Point );
-Extern void  m_elliparc ( Point, Point, Point, Point, Point );
-Extern void  m_elliparcclose ( Point, Point, Point, Point, Point, Enum );
+void  m_circle ( Point, Point, float );
+void  m_arc3pt ( Point, Point, Point );
+void  m_arc3ptclose ( Point, Point, Point, Enum );
+void  m_arcctr ( Point, Point, Point, float );
+void  m_arcctrclose ( Point, Point, Point, float, Enum );
+void  m_ellipse ( Point, Point, Point );
+void  m_elliparc ( Point, Point, Point, Point, Point );
+void  m_elliparcclose ( Point, Point, Point, Point, Point, Enum );
 
 /*  Attributes */
 
-Extern void  m_lineindex ( Index );
-Extern void  m_linetype ( Index );
-Extern void  m_linewidth ( float );
-Extern void  m_linecolr ( Colour );
-Extern void  m_markerindex ( Index );
-Extern void  m_markertype ( Index );
-Extern void  m_markersize ( float );
-Extern void  m_markercolr ( Colour );
-Extern void  m_textindex ( Index );
-Extern void  m_textfontindex ( Index );
-Extern void  m_textprec ( Enum );
-Extern void  m_charexpan ( float );
-Extern void  m_charspace ( float );
-Extern void  m_textcolr ( Colour );
-Extern void  m_charheight ( float );
-Extern void  m_charori ( Vector, Vector );
-Extern void  m_textpath ( Enum );
-Extern void  m_textalign ( Enum, Enum, float, float );
-Extern void  m_charsetindex ( Index );
-Extern void  m_altcharsetindex ( Index );
-Extern void  m_fillindex ( Index );
-Extern void  m_intstyle ( Enum );
-Extern void  m_fillcolr ( Colour );
-Extern void  m_hatchindex ( Index );
-Extern void  m_patindex ( Index );
-Extern void  m_edgeindex ( Index );
-Extern void  m_edgetype ( Index );
-Extern void  m_edgewidth ( float );
-Extern void  m_edgecolr ( Colour );
-Extern void  m_edgevis ( Enum );
-Extern void  m_fillrefpt ( Point );
-Extern void  m_pattable ( Index, int, int, Prec, Colour* );
-Extern void  m_patsize ( Vector, Vector );
-Extern void  m_colrtable ( Index, int, RGBcolour* );
-Extern void  m_asf ( int, Code*, Enum* );
+void  m_lineindex ( Index );
+void  m_linetype ( Index );
+void  m_linewidth ( float );
+void  m_linecolr ( Colour );
+void  m_markerindex ( Index );
+void  m_markertype ( Index );
+void  m_markersize ( float );
+void  m_markercolr ( Colour );
+void  m_textindex ( Index );
+void  m_textfontindex ( Index );
+void  m_textprec ( Enum );
+void  m_charexpan ( float );
+void  m_charspace ( float );
+void  m_textcolr ( Colour );
+void  m_charheight ( float );
+void  m_charori ( Vector, Vector );
+void  m_textpath ( Enum );
+void  m_textalign ( Enum, Enum, float, float );
+void  m_charsetindex ( Index );
+void  m_altcharsetindex ( Index );
+void  m_fillindex ( Index );
+void  m_intstyle ( Enum );
+void  m_fillcolr ( Colour );
+void  m_hatchindex ( Index );
+void  m_patindex ( Index );
+void  m_edgeindex ( Index );
+void  m_edgetype ( Index );
+void  m_edgewidth ( float );
+void  m_edgecolr ( Colour );
+void  m_edgevis ( Enum );
+void  m_fillrefpt ( Point );
+void  m_pattable ( Index, int, int, Prec, Colour* );
+void  m_patsize ( Vector, Vector );
+void  m_colrtable ( Index, int, RGBcolour* );
+void  m_asf ( int, Code*, Enum* );
 
 /* Escape and External elements */
 
-Extern void  m_escape ( int, char* );
-Extern void  m_message ( Enum, char* );
-Extern void  m_appldata ( int, char* );
+void  m_escape ( int, char* );
+void  m_message ( Enum, char* );
+void  m_appldata ( int, char* );
 
 
-#undef Extern
 
 #endif  /*  end of cgmlib.h */

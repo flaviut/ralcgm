@@ -22,21 +22,13 @@
 #ifndef CGMFILL_H
 #define CGMFILL_H
 
-#ifdef CGMFILL_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-
 /* Main Fill Area routine  */
-   Extern void FILarea( Long,  Long*, Float*, Enum, Logical,
+   void FILarea( Long,  Long*, Float*, Enum, Logical,
                         void (*)( Long, Point* ),
                         void (*)( Long, Point*, Enum* ) );
 
 /* Classify polygon type */
-   Extern Enum FILpolycheck( Long, Point* );
+   Enum FILpolycheck( Long, Point* );
 
 
-#undef Extern
 #endif /* CGMFILLH */

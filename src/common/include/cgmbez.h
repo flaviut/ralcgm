@@ -23,22 +23,14 @@
 #ifndef CGMBEZ_H
 #define CGMBEZ_H
 
-#ifdef CGMBEZ_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-
-     /*  The following routines are the only ones that are callable
+/*  The following routines are the only ones that are callable
       |  by the CGM system, so needs to obey the BEZxxx convention.
       */
 
-Extern void BEZtext( Textitem *, struct textatt *, Point ,
+void BEZtext( Textitem *, struct textatt *, Point ,
                      void (*)(int, Point *, Tmatrix, int) ),
             BEZgetfd( Textitem *);
 
 
-#undef Extern
 
 #endif

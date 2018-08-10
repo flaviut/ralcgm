@@ -22,23 +22,15 @@
 #ifndef CGMGRAPH_H
 #define CGMGRAPH_H
 
-#ifdef CGMGRAPH_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-
 /* Check if lines intersect and find intersection */
-   Extern Logical GRAcross( Point *a, Point *b, Point *c, Point *d,
+   Logical GRAcross( Point *a, Point *b, Point *c, Point *d,
                      Logical *i, Point *x ),
 
 /* Check polygon for intersections and add points */
                   GRAinsect( Long n, Long *ni, Point *x, Enum *edge );
 
 /* Sort points list */
-   Extern void    GRAsort( Long np, Point *x, Int *px );
+   void    GRAsort( Long np, Point *x, Int *px );
 
 
-#undef Extern
 #endif /* CGMGRAPH_H */

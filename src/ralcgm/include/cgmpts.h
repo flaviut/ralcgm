@@ -30,13 +30,7 @@
 #include "cgmtypes.h"
 #include "cgmpar.h"
 
-#ifdef CGMPTS_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-Extern void
+void
 /* Get clipping rectangle */
        PTSclipget( Enum *, Rect *),
 
@@ -60,9 +54,8 @@ Extern void
 /* Get VDC extent */
        PTSvdcextget (Rect * );
 
-Extern Point*
+Point*
 /* Get points from arguments, store them and return pointer to store */
        PTSlist( Long, Long *, Float *, Enum **);
 
-#undef Extern
 #endif /* CGMPTS_H */

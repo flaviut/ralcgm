@@ -24,12 +24,6 @@
 #ifndef CGMPOLY_H
 #define CGMPOLY_H
 
-#ifdef CGMPOLY_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
 /* Typedef for Polygon Set */
 typedef struct {
    Long n;          /* Number of points or edge-out flags */
@@ -99,7 +93,7 @@ typedef struct sectlist
 
                           /* PolygonSet utilities */
 
-   Extern void
+   void
       /* Get data into a polygon set structure */
       POLget ( Long, Long *, Float *, Logical, Logical, Polygonset *),
 
@@ -109,23 +103,23 @@ typedef struct sectlist
       /* Find either or both the end vertex indices of a polygon */
       POLend ( Long, Enum *, Index, Index *, Index *);
 
-   Extern Polygonset
+   Polygonset
       /* Clip a polygon (set) */
       * POLhandle( Polygonset *, Rect *, Logical, Polygonset * );
 
-   Extern Int
+   Int
       /* Return the number of polygons (or 0 if invalid) */
       POLnumber( Long, Enum *);
 
-   Extern Long
+   Long
       /* Count the number of self intersections of one polygon */
       POLselfx( Long, Point *, Long);
 
-   Extern Logical
+   Logical
      /* Determine if a particular point is inside a polygon (set) */
       POLin( Polygonset *, Point *);
 
-   Extern Point
+   Point
     /* Add selected corners of the rectangle to a list of points */
       * POLaddcnrs( Enum, Enum, Logical, Rect *, Point *);
 
@@ -135,7 +129,7 @@ typedef struct sectlist
 
                           /*  Polygon Sectionlist Utilities */
 
-   Extern void
+   void
    /* Derive bounding box of the polygon that the scursor is on */
         POLbbox_sl ( Sectlist *, Long, Scursor, Rect * ),
 
@@ -163,12 +157,12 @@ typedef struct sectlist
    /* Put a scursor on a polygon */
         POLscursor_sl ( Sectlist *, Int, Scursor *);
 
-   Extern Polygonset
+   Polygonset
    /* Return the polygonset corresponding to a given section list */
       * POLpts_sl( Sectlist *, Polygonset *);
 
 
-   Extern Sectlist
+   Sectlist
    /* Return a section list for a clipped polygon set */
       * POLclip_sl( Polygonset *, Rect *),
 
@@ -181,11 +175,10 @@ typedef struct sectlist
    /* Return a section list for a polygon set */
       * POLpoly_sl( Polygonset *, Int );
 
-   Extern Logical
+   Logical
    /* Determine if one polygon is inside other, neither crossing */
       POLinpoly_sl ( Sectlist *, Int, Int );
 
 
 
-#undef Extern
 #endif /* CGMPOLY_H */

@@ -32,12 +32,6 @@
 
 #include "cgmtypes.h"
 
-#ifdef CGMERR_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
 #ifdef CGMINIT_H
   FILE *cgmerr;
 #else
@@ -45,10 +39,10 @@
 #endif
 
 /*  Error function call */
-   Extern int CGMerror ( char*, int, Enum, char*);
+   int CGMerror ( char*, int, Enum, char*);
 
 /* Get Error Count */
-   Extern int CGMcounterr ( void );
+   int CGMcounterr ( void );
 
 /*  Macro to make life a little simpler  */
 
@@ -201,7 +195,6 @@
 #define  ERR_NOMEMPSL    400
 #define  ERR_BADEDGETAB  401
 
-#undef Extern
 
 #ifdef CGMERR_C
 

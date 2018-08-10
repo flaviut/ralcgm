@@ -70,17 +70,11 @@
   extern char *str, *strmax;
 #endif
 
-#ifdef CGMINPUT_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
 /*  Reallocation of Variable buffer space */
 
-  Extern long  *CGMialloc( long*, long );
-  Extern float *CGMralloc( float*, long );
-  Extern char  *CGMsalloc( char*, long );
+  long  *CGMialloc( long*, long );
+  float *CGMralloc( float*, long );
+  char  *CGMsalloc( char*, long );
 
 /*  Random Access Function  */
 
@@ -93,11 +87,11 @@
 
 /*  Function to set Current ASF values for all encodings */
 
-  Extern void CGMsetasf( long * );
+  void CGMsetasf( long * );
 
 /*  Set structure values to defaults */
 
-  Extern void CGMdefaults( Code, Enum );
+  void CGMdefaults( Code, Enum );
 
   extern FILE *CGMfopen( char*, char, Enum);
 
@@ -123,5 +117,4 @@
   extern void FNTclist ( long *, long *, char *, struct cgmcset *);
 #endif
 
-#undef Extern
 #endif  /*  end of cgmin.h */

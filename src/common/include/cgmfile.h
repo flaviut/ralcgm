@@ -22,32 +22,24 @@
 #ifndef CGMFILE_H
 #define CGMFILE_H
 
-#ifdef CGMFILE_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-
 /* Work out Data path name */
-   Extern char *CGMpath ( char*, char* );
+   char *CGMpath ( char*, char* );
 
 /* Open a file */
-   Extern FILE *CGMfopen( char*, char, Enum );
+   FILE *CGMfopen( char*, char, Enum );
 
 /* The three following routines when referring to a file, mean the path,
    filename and extension parts of the file. */
 
 /* Modify the extension part of a file */
-   Extern void CGMmodfextn( char*, char* );
+   void CGMmodfextn( char*, char* );
 
 /* Modify the filename part of a file */
-   Extern void CGMmodfname( char*, char* );
+   void CGMmodfname( char*, char* );
 
 /* Finds the position and length of the filename within the file string */
 
-   Extern unsigned short CGMgetfname(char *fname, char **fnptr);
+   unsigned short CGMgetfname(char *fname, char **fnptr);
 
 
-#undef Extern
 #endif /* CGMFILEH */

@@ -21,13 +21,7 @@
 
 #ifndef CGMATT_H
 #define CGMATT_H
-#ifdef CGMATT_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-     /*  Include the files on which this is dependent.  */
+/*  Include the files on which this is dependent.  */
 
 #include "cgmtypes.h"
 
@@ -165,17 +159,16 @@ struct edgebundle {
 
 typedef struct edgebundle Edgebundle;
 
-Extern void ATTline(int, struct linebundle *,
+void ATTline(int, struct linebundle *,
                     int, struct lineatt *);
-Extern void ATTmarker(int, struct markerbundle *,
+void ATTmarker(int, struct markerbundle *,
                     int, struct markeratt *);
-Extern void ATTtext(int, struct textbundle *,
+void ATTtext(int, struct textbundle *,
                     int, struct textatt *);
-Extern void ATTfill(int, struct fillbundle *,
+void ATTfill(int, struct fillbundle *,
                     int, struct fillatt *);
-Extern void ATTedge(int, struct edgebundle *,
+void ATTedge(int, struct edgebundle *,
                     int, struct edgeatt *);
 
-#undef Extern
 
 #endif   /*  end of cgmatt.h */

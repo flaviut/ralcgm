@@ -27,18 +27,10 @@
 #ifndef CGMHER_H
 #define CGMHER_H
 
-#ifdef CGMHER_C
-#define Extern
-#else
-#define Extern extern
-#endif
-
-
-Extern void HERtext( Textitem *, Point ,
+void HERtext( Textitem *, Point ,
                      void (*)( int, Point*, Tmatrix, int ) ),
             HERgetfd( Textitem *txtit);
 
 
-#undef Extern
 
 #endif
